@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>test page</title>
+    <script src="gentest.js"></script>
+
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: Helvetica;
+        font-size: 14px;
+        font-weight: 100;
+      }
+
+      div, span {
+        box-sizing: border-box;
+        position: relative;
+        border: 0 solid black;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        flex-shrink: 0;
+      }
+
+      body > * {
+        position: absolute;
+      }
+
+      #ltr-container > * {
+        position: absolute;
+        direction: ltr;
+      }
+
+      #rtl-container > * {
+        position: absolute;
+        direction: rtl;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id='ltr-container'>
+
+       
+ <div id="align_items_stretch" style="width: 100px; height: 100px;">
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="align_items_center" style="width: 100px; height: 100px; align-items: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="align_items_flex_start" style="width: 100px; height: 100px; align-items: flex-start;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="align_items_flex_end" style="width: 100px; height: 100px; align-items: flex-end;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="align_self_center" style="width:100px; height: 100px;">
+   <div style="height: 10px; width: 10px; align-self: center;"></div>
+ </div>
+
+ <div id="align_self_flex_end" style="width:100px; height: 100px;">
+   <div style="height: 10px; width: 10px; align-self: flex-end;"></div>
+ </div>
+
+ <div id="align_self_flex_start" style="width:100px; height: 100px;">
+   <div style="height: 10px; width: 10px; align-self: flex-start;"></div>
+ </div>
+
+ <div id="align_self_flex_end_override_flex_start" style="width:100px; height: 100px; align-items: flex-start;">
+   <div style="height: 10px; width: 10px; align-self: flex-end;"></div>
+ </div>
+
+ <div id="border_no_size" style="border-width: 10px;">
+ </div>
+
+ <div id="border_container_match_child" style="border-width: 10px;">
+   <div style="width: 10px; height: 10px;"></div>
+ </div>
+
+ <div id="border_stretch_child" style="width: 100px; height: 100px; border-width: 10px;">
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="border_center_child" style="width: 100px; height: 100px; border-left-width-because-start: 1; border-left-width: 10px; border-top-width: 10px; border-right-width-because-end: 1; border-right-width: 20px; border-bottom-width: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="max_width" style="width: 100px; height: 100px;">
+   <div style="height: 10px; max-width: 50px;"></div>
+ </div>
+
+ <div id="max_height" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="width: 10px; max-height: 50px;"></div>
+ </div>
+
+
+ <div id="padding_no_size" style="padding: 10px;">
+ </div>
+
+ <div id="padding_container_match_child" style="padding: 10px;">
+   <div style="width: 10px; height: 10px;"></div>
+ </div>
+
+
+ <div id="padding_stretch_child" style="width: 100px; height: 100px; padding: 10px;">
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="padding_center_child" style="width: 100px; height: 100px; padding-left-because-start: 1; padding-left: 10px; padding-top: 10px; padding-right-because-end: 1;  padding-right: 20px; padding-bottom: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_width_height_start_top" style="width: 100px; height: 100px;">
+   <div style="width:10px; height: 10px; position: absolute; left-because-start: 1; left: 10px; top: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_width_height_end_bottom" style="width: 100px; height: 100px;">
+   <div style="width:10px; height: 10px; position: absolute; right-because-end: 1; right: 10px; bottom: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_start_top_end_bottom" style="width: 100px; height: 100px;">
+   <div style="position: absolute; left-because-start: 1;  start: 10px; top: 10px; right-because-end: 1; right: 10px; bottom: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_width_height_start_top_end_bottom" style="width: 100px; height: 100px;">
+   <div style="width:10px; height: 10px; position: absolute; left-because-start: 1; left: 10px; top: 10px; right-because-end: 1; right: 10px; bottom: 10px;"></div>
+ </div>
+
+ <div id="do_not_clamp_height_of_absolute_node_to_height_of_its_overflow_hidden_parent" style="height: 50px; width: 50px; overflow: hidden; flex-direction: row;">
+   <div style="position: absolute; left-because-start: 1; left: 0; top: 0;">
+     <div style="width: 100px; height: 100px;"></div>
+   </div>
+ </div>
+
+ <div id="flex_direction_column_no_height" style="width: 100px">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_row_no_width" style="height: 100px; flex-direction: row;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_column" style="height: 100px; width: 100px;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_row" style="height: 100px; width: 100px; flex-direction: row;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_column_reverse" style="height: 100px; width: 100px; flex-direction: column-reverse;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_row_reverse" style="height: 100px; width: 100px; flex-direction: row-reverse;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="wrap_column" style="height: 100px; width: 60px; flex-wrap: wrap">
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="wrap_row" style="width: 100px; flex-direction: row; flex-wrap: wrap">
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="wrap_row_align_items_flex_end" style="width: 100px; flex-direction: row; flex-wrap: wrap; align-items: flex-end;">
+   <div style="height: 10px; width: 30px;"></div>
+   <div style="height: 20px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="wrap_row_align_items_center" style="width: 100px; flex-direction: row; flex-wrap: wrap; align-items: center;">
+   <div style="height: 10px; width: 30px;"></div>
+   <div style="height: 20px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="margin_start" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="width: 10px; margin-left-because-start: 1;  margin-left: 10px;"></div>
+ </div>
+
+ <div id="margin_end" style="width: 100px; height: 100px; flex-direction: row; justify-content: flex-end;">
+   <div style="width: 10px; margin-right-because-end: 1; margin-right: 10px;"></div>
+ </div>
+
+ <div id="margin_left" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="width: 10px; margin-left: 10px;"></div>
+ </div>
+
+ <div id="margin_top" style="width: 100px; height: 100px;">
+   <div style="height: 10px; margin-top: 10px;"></div>
+ </div>
+
+ <div id="margin_right" style="width: 100px; height: 100px; flex-direction: row; justify-content: flex-end;">
+   <div style="width: 10px; margin-right: 10px;"></div>
+ </div>
+
+ <div id="margin_bottom" style="width: 100px; height: 100px; justify-content: flex-end;">
+   <div style="height: 10px; margin-bottom: 10px;"></div>
+ </div>
+
+ <div id="align_content_flex_start" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: flex-start;">
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+ </div>
+
+ <div id="align_content_flex_end" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: flex-end;">
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+ </div>
+
+ <div id="align_content_center" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: center;">
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+ </div>
+
+ <div id="align_content_stretch" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: stretch;">
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+ </div>
+
+ <div id="justify_content_row_flex_start" style="width: 102px; height: 102px; flex-direction: row; justify-content: flex-start;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_flex_end" style="width: 102px; height: 102px; flex-direction: row; justify-content: flex-end;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_center" style="width: 102px; height: 102px; flex-direction: row; justify-content: center;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_space_between" style="width: 102px; height: 102px; flex-direction: row; justify-content: space-between;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_space_around" style="width: 102px; height: 102px; flex-direction: row; justify-content: space-around;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_flex_start" style="width: 102px; height: 102px; justify-content: flex-start;">
+   <div style="height: 10px;"></div>
+   <div style="heigth: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_flex_end" style="width: 102px; height: 102px; justify-content: flex-end;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_center" style="width: 102px; height: 102px; justify-content: center;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_space_between" style="width: 102px; height: 102px; justify-content: space-between;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_space_around" style="width: 102px; height: 102px; justify-content: space-around;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+   
+ <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
+   <div style="width: 10px; flex-grow:1"></div>
+ </div>
+
+ <div id="min_height" style="width: 100px; height: 100px;">
+   <div style="flex-grow: 1; min-height: 60px;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="min_width" style="width: 100px; height: 100px; flex-direction: row">
+   <div style="flex-grow: 1; min-width: 60px;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+ <div id="padding_flex_child" style="width: 100px; height: 100px; padding: 10px;">
+   <div style="width: 10px; flex-grow:1"></div>
+ </div>
+ <div id="margin_and_flex_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="margin-left-because-start: 1; margin-left: 10px; margin-right-because-end: 1; margin-right: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_and_flex_column" style="width: 100px; height: 100px;">
+   <div style="margin-top: 10px; margin-bottom: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_and_stretch_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="margin-top: 10px; margin-bottom: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_and_stretch_column" style="width: 100px; height: 100px;">
+   <div style="margin-left-because-start: 1; margin-left: 10px; margin-right-because-end: 1; margin-right: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_with_sibling_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="margin-right-because-end: 1; margin-right: 10px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_with_sibling_column" style="width: 100px; height: 100px;">
+   <div style="margin-bottom: 10px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+ <div id="flex_basis_flex_grow_column" style="width: 100px; height: 100px;">
+   <div style="flex-basis: 50px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="flex_basis_flex_grow_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="flex-basis: 50px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="flex_basis_flex_shrink_column" style="width: 100px; height: 100px;">
+   <div style="flex-basis: 100px; flex-shrink: 1;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
+ <div id="flex_basis_flex_shrink_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="flex-basis: 100px; flex-shrink: 1;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
+
+
+ <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-left-width-because-start: 1; border-left-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="jwalke_border_width_only_end" style="width: 100px; height: 100px; border-right-width-because-end: 1; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+      <div id='default'></div>
+    </div>
+    <div id='rtl-container'>
+
+       
+ <div id="align_items_stretch" style="width: 100px; height: 100px;">
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="align_items_center" style="width: 100px; height: 100px; align-items: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="align_items_flex_start" style="width: 100px; height: 100px; align-items: flex-start;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="align_items_flex_end" style="width: 100px; height: 100px; align-items: flex-end;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="align_self_center" style="width:100px; height: 100px;">
+   <div style="height: 10px; width: 10px; align-self: center;"></div>
+ </div>
+
+ <div id="align_self_flex_end" style="width:100px; height: 100px;">
+   <div style="height: 10px; width: 10px; align-self: flex-end;"></div>
+ </div>
+
+ <div id="align_self_flex_start" style="width:100px; height: 100px;">
+   <div style="height: 10px; width: 10px; align-self: flex-start;"></div>
+ </div>
+
+ <div id="align_self_flex_end_override_flex_start" style="width:100px; height: 100px; align-items: flex-start;">
+   <div style="height: 10px; width: 10px; align-self: flex-end;"></div>
+ </div>
+
+ <div id="border_no_size" style="border-width: 10px;">
+ </div>
+
+ <div id="border_container_match_child" style="border-width: 10px;">
+   <div style="width: 10px; height: 10px;"></div>
+ </div>
+
+ <div id="border_stretch_child" style="width: 100px; height: 100px; border-width: 10px;">
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="border_center_child" style="width: 100px; height: 100px; border-right-width-because-start: 1; border-right-width: 10px; border-top-width: 10px; border-left-width-because-end: 1; border-left-width: 20px; border-bottom-width: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="max_width" style="width: 100px; height: 100px;">
+   <div style="height: 10px; max-width: 50px;"></div>
+ </div>
+
+ <div id="max_height" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="width: 10px; max-height: 50px;"></div>
+ </div>
+
+
+ <div id="padding_no_size" style="padding: 10px;">
+ </div>
+
+ <div id="padding_container_match_child" style="padding: 10px;">
+   <div style="width: 10px; height: 10px;"></div>
+ </div>
+
+
+ <div id="padding_stretch_child" style="width: 100px; height: 100px; padding: 10px;">
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="padding_center_child" style="width: 100px; height: 100px; padding-right-because-start: 1; padding-right: 10px; padding-top: 10px; padding-left-because-end: 1;  padding-left: 20px; padding-bottom: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_width_height_start_top" style="width: 100px; height: 100px;">
+   <div style="width:10px; height: 10px; position: absolute; right-because-start: 1; right: 10px; top: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_width_height_end_bottom" style="width: 100px; height: 100px;">
+   <div style="width:10px; height: 10px; position: absolute; left-because-end: 1; left: 10px; bottom: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_start_top_end_bottom" style="width: 100px; height: 100px;">
+   <div style="position: absolute; right-because-start: 1;  start: 10px; top: 10px; left-because-end: 1; left: 10px; bottom: 10px;"></div>
+ </div>
+
+ <div id="absolute_layout_width_height_start_top_end_bottom" style="width: 100px; height: 100px;">
+   <div style="width:10px; height: 10px; position: absolute; right-because-start: 1; right: 10px; top: 10px; left-because-end: 1; left: 10px; bottom: 10px;"></div>
+ </div>
+
+ <div id="do_not_clamp_height_of_absolute_node_to_height_of_its_overflow_hidden_parent" style="height: 50px; width: 50px; overflow: hidden; flex-direction: row;">
+   <div style="position: absolute; right-because-start: 1; right: 0; top: 0;">
+     <div style="width: 100px; height: 100px;"></div>
+   </div>
+ </div>
+
+ <div id="flex_direction_column_no_height" style="width: 100px">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_row_no_width" style="height: 100px; flex-direction: row;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_column" style="height: 100px; width: 100px;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_row" style="height: 100px; width: 100px; flex-direction: row;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_column_reverse" style="height: 100px; width: 100px; flex-direction: column-reverse;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="flex_direction_row_reverse" style="height: 100px; width: 100px; flex-direction: row-reverse;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="wrap_column" style="height: 100px; width: 60px; flex-wrap: wrap">
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="wrap_row" style="width: 100px; flex-direction: row; flex-wrap: wrap">
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="wrap_row_align_items_flex_end" style="width: 100px; flex-direction: row; flex-wrap: wrap; align-items: flex-end;">
+   <div style="height: 10px; width: 30px;"></div>
+   <div style="height: 20px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="wrap_row_align_items_center" style="width: 100px; flex-direction: row; flex-wrap: wrap; align-items: center;">
+   <div style="height: 10px; width: 30px;"></div>
+   <div style="height: 20px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+   <div style="height: 30px; width: 30px;"></div>
+ </div>
+
+ <div id="margin_start" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="width: 10px; margin-right-because-start: 1;  margin-right: 10px;"></div>
+ </div>
+
+ <div id="margin_end" style="width: 100px; height: 100px; flex-direction: row; justify-content: flex-end;">
+   <div style="width: 10px; margin-left-because-end: 1; margin-left: 10px;"></div>
+ </div>
+
+ <div id="margin_left" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="width: 10px; margin-left: 10px;"></div>
+ </div>
+
+ <div id="margin_top" style="width: 100px; height: 100px;">
+   <div style="height: 10px; margin-top: 10px;"></div>
+ </div>
+
+ <div id="margin_right" style="width: 100px; height: 100px; flex-direction: row; justify-content: flex-end;">
+   <div style="width: 10px; margin-right: 10px;"></div>
+ </div>
+
+ <div id="margin_bottom" style="width: 100px; height: 100px; justify-content: flex-end;">
+   <div style="height: 10px; margin-bottom: 10px;"></div>
+ </div>
+
+ <div id="align_content_flex_start" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: flex-start;">
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+ </div>
+
+ <div id="align_content_flex_end" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: flex-end;">
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+ </div>
+
+ <div id="align_content_center" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: center;">
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+   <div style="width: 50px; height: 10px;"></div>
+ </div>
+
+ <div id="align_content_stretch" style="width: 100px; height: 100px; flex-wrap: wrap; flex-direction: column; align-content: stretch;">
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+   <div style="width: 50px;"></div>
+ </div>
+
+ <div id="justify_content_row_flex_start" style="width: 102px; height: 102px; flex-direction: row; justify-content: flex-start;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_flex_end" style="width: 102px; height: 102px; flex-direction: row; justify-content: flex-end;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_center" style="width: 102px; height: 102px; flex-direction: row; justify-content: center;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_space_between" style="width: 102px; height: 102px; flex-direction: row; justify-content: space-between;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_row_space_around" style="width: 102px; height: 102px; flex-direction: row; justify-content: space-around;">
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+   <div style="width: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_flex_start" style="width: 102px; height: 102px; justify-content: flex-start;">
+   <div style="height: 10px;"></div>
+   <div style="heigth: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_flex_end" style="width: 102px; height: 102px; justify-content: flex-end;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_center" style="width: 102px; height: 102px; justify-content: center;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_space_between" style="width: 102px; height: 102px; justify-content: space-between;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+
+ <div id="justify_content_column_space_around" style="width: 102px; height: 102px; justify-content: space-around;">
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+   <div style="height: 10px;"></div>
+ </div>
+   
+ <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
+   <div style="width: 10px; flex-grow:1"></div>
+ </div>
+
+ <div id="min_height" style="width: 100px; height: 100px;">
+   <div style="flex-grow: 1; min-height: 60px;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="min_width" style="width: 100px; height: 100px; flex-direction: row">
+   <div style="flex-grow: 1; min-width: 60px;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+ <div id="padding_flex_child" style="width: 100px; height: 100px; padding: 10px;">
+   <div style="width: 10px; flex-grow:1"></div>
+ </div>
+ <div id="margin_and_flex_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="margin-right-because-start: 1; margin-right: 10px; margin-left-because-end: 1; margin-left: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_and_flex_column" style="width: 100px; height: 100px;">
+   <div style="margin-top: 10px; margin-bottom: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_and_stretch_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="margin-top: 10px; margin-bottom: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_and_stretch_column" style="width: 100px; height: 100px;">
+   <div style="margin-right-because-start: 1; margin-right: 10px; margin-left-because-end: 1; margin-left: 10px; flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_with_sibling_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="margin-left-because-end: 1; margin-left: 10px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="margin_with_sibling_column" style="width: 100px; height: 100px;">
+   <div style="margin-bottom: 10px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+ <div id="flex_basis_flex_grow_column" style="width: 100px; height: 100px;">
+   <div style="flex-basis: 50px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="flex_basis_flex_grow_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="flex-basis: 50px; flex-grow: 1;"></div>
+   <div style="flex-grow: 1;"></div>
+ </div>
+
+ <div id="flex_basis_flex_shrink_column" style="width: 100px; height: 100px;">
+   <div style="flex-basis: 100px; flex-shrink: 1;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
+ <div id="flex_basis_flex_shrink_row" style="width: 100px; height: 100px; flex-direction: row;">
+   <div style="flex-basis: 100px; flex-shrink: 1;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
+
+
+ <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-right-width-because-start: 1; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+ <div id="jwalke_border_width_only_end" style="width: 100px; height: 100px; border-left-width-because-end: 1; border-left-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
+   <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+      <div id='default'></div>
+    </div>
+    <button style="top:20px; left: 100px;" id="fixedBtn">Copy Test to Clipboard (FixedPoint) </button>
+    <button style="top:20px; left: 400px;" id="floatBtn">Copy Test to Clipboard (FloatingPoint) </button>
+    <script type="text/javascript">
+          
+      function copyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.style.position = 'fixed';
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+        textArea.style.background = 'transparent';
+        textArea.style.top = 0;
+        textArea.style.left = 0;
+        // textArea.style.width = '2em';
+        // textArea.style.height = '2em';
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          var res = document.execCommand('copy');
+          console.log('Copied:');
+        } catch (err) {
+          console.log('Error copying');
+        }
+        document.body.removeChild(textArea);
+      }
+
+
+      var copyFixedPointTest = document.querySelector('#fixedBtn');
+      var copyFloatingPointTest = document.querySelector('#floatBtn');
+
+      copyFixedPointTest.addEventListener('click', function(event) {
+        copyTextToClipboard(window.fixedPointTest);
+      });
+
+
+      copyFloatingPointTest.addEventListener('click', function(event) {
+        copyTextToClipboard(window.floatingPointTest);
+      });
+    </script>
+  </body>
+</html>

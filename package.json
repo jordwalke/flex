@@ -1,0 +1,66 @@
+{
+  "name": "re-layout",
+  "version": "1.1.1",
+  "description": "Implementation CSS layout using pure Reason - powered by css-layout project",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jordwalke/re-layout.git"
+  },
+  "keywords": [
+    "css",
+    "flexbox",
+    "layout",
+    "reason"
+  ],
+  "author": "",
+  "license": "BSD",
+  "homepage": "https://github.com/jordwalke/re-layout",
+  "dependencies": {
+    "@opam-alpha/core_bench": "113.33.3",
+    "dependency-env": "https://github.com/npm-ml/dependency-env.git",
+    "js_of_ocaml-bin": "git+https://github.com/reasonml/js_of_ocaml-bin.git",
+    "@opam-alpha/merlin": "2.5.0",
+    "nopam": "https://github.com/reasonml/nopam.git",
+    "ocamlBetterErrors": "0.0.10",
+    "realpath": "*",
+    "reason": "https://github.com/facebook/reason.git",
+    "rebel": "https://github.com/reasonml/rebel.git"
+  },
+  "exportedEnvVars": {
+    "OCAMLRUNPARAM": {
+      "global": true,
+      "globalCollisionBehavior": "fail",
+      "val": "b"
+    }
+  },
+  "scripts": {
+    "postinstall": "npm run build",
+    "reasonBuild": "eval $(dependencyEnv) && nopam && rebuild -I src ./src/LayoutTest.native -cflags -w,-40 2>&1 | refmterr",
+    "reasonbuild": "npm run reasonBuild",
+    "thisFails": "eval $(dependencyEnv) && nopam && rebuild -pkg core_bench -pkg str -I src ./src/LayoutTest.native -cflags -w,-40 2>&1 | refmterr",
+    "regenerateReasonSource": "eval $(dependencyEnv) && cd ../../ && grunt transpile",
+    "start": "eval $(dependencyEnv) && time ./_build/src/LayoutTest.native",
+    "help": "eval $(dependencyEnv) && rebuild -help",
+    "clean": "eval $(dependencyEnv) && nopam && rebuild -clean",
+    "top": "eval $(dependencyEnv) && rtop",
+    "env": "eval $(dependencyEnv) && env",
+    "editor": "eval $(dependencyEnv) && eval $EDITOR",
+    "build": "eval $(dependencyEnv) && nopam && rebel -show-actions-run-verbose -verbose -show-error-dependency-paths -brief-error-summary -show-buildable-discovery",
+    "test": "./_build/default/src/app.native",
+    "bench": "./_build/default/src/app.native -quota 20"
+  },
+  "oldRebelConfig": "'rebel': { 'backend': 'jsoo', 'ocamlfindDependencies': { 'js_of_ocaml': 'github:reasonml/js_of_ocaml-bin' } }",
+  "notes": "The below is a temporary rebel config that only works with the hardcoded rebel used in the run scripts",
+  "rebel": {
+    "targets": [{
+      "target": "default",
+      "engine": "native",
+      "entry": "src/LayoutTestFixedEncoding.re",
+      "unstable_flags": {
+         "compile": "-thread -g -verbose -inline 100 -unsafe -S",
+         "link": "-thread -g -verbose -S"
+      }
+    }],
+    "ocamlfindDependencies": { "core_bench": "113.33.3" }
+  }
+}
