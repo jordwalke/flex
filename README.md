@@ -44,21 +44,12 @@ currently fixed point. You can toggle between the two by doing the following:
 - Run `npm run build`, `npm run test`, `npm run bench`.
 
 ### Adding Tests
-For any changes you make you should ensure that all the tests are passing. In case you make any fixes or additions to the library please also add at least one test to ensure we don't break anything in the future. Tests are located in `tests/CSSLayoutTest.cpp`. Run the tests by executing `buck test //:CSSLayout`.
 
 Instead of manually writing a test which ensures parity with web
 implementations of flexbox you can run `gentest/gentest.sh` to generated a test
 for you. After running `gentest/gentest.sh` a editor window should pop open
 (make sure you have `$EDITOR` env variable exported). Here you can write html
-which you want to verify in CSSLayout, such as the following. It will then open
-a browser window, and provide two buttons for you to click which will copy
-`Reason` test cases to the clipboard.
-
-
-```
-cd src/re-layout/
-./gentest/gentest.sh
-```
+which you want to verify in CSSLayout, such as the following.
 
 Then put something like this in the editor that pops up:
 
@@ -69,51 +60,23 @@ Then put something like this in the editor that pops up:
 ```
 
 Once saving and exiting the editor window the script will open a browser
-window. From here open the developer console and you should see that the web
-page has output a test file. Copy this into a file and save it in the
-`LayoutTest.re` file.  From within `re-layout`, `npm run postinstall` will
-recompile the tests and `npm run start` will run them.
+window. From here open the developer console and you should see two buttons,
+that will copy tests cases to your clipboard. Copy the fixed point test and
+paste it into `./src/LayoutTestFixedEncoding.re`, and copy/paste the floating
+point test into `./src/LayoutTestFloatEncoding.re`. Run `npm run build` and
+`npm run test`.
 
-The ASCII output paints a pseudo-accurate picture of the broken layout.
-
-
-
-## Fixing Things:
-
-[Here](https://github.com/jordwalke/css-layout/blob/master/src/Layout.js) is
-the JS version of the layout algorithm this was ported from. Something may have
-broken in the port/translation and that file can be consulted.
-
-It's also based on an older pull request before the css-layout library was
-rewritten in C, and there might be a good handful of fixes we should manually
-recreate here in the `Reason` port.
-
-If there's any discrepancy [this pull
-request](https://github.com/facebook/css-layout/pull/185) (and the subsequent
-commits after it was accepted) should be considered the authority, not the
-`Layout.js` file included in this fork.
-
-At the time of writing, 35 of the 104 test cases are failing. This is because
-this `Reason` port was created from an older JS based snapshot of `css-layout`,
-but the test cases are based on the `master` branch which added a bunch of more
-features. The failing test cases likely represent features that we need to add
-here in order to play "catch up" with `master` `css-layout`.
-
-
-## Generating the source files
-
-The instructions above merely build the source files, some of which were
-auto-generated.  Auto-generating involves running `grunt transpile` in
-`../../`, but you must have the special branch of `Reason` and `rejs` build in
-directories on your `~/Desktop` (yes, your desktop) for now. Then you will
-have to manually fix a bunch of type errors. Hopefully we won't need to
-regenerate the files ever again and can manually begin taking over the
-`Layout.re` file by hand.
-
+The ASCII output paints a pseudo-accurate picture of any broken layouts.
 
 
 Below is the original README:
 
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 
 css-layout [![Build Status](https://travis-ci.org/facebook/css-layout.svg?branch=master)](https://travis-ci.org/facebook/css-layout)
 ==========
