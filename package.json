@@ -47,20 +47,46 @@
     "editor": "eval $(dependencyEnv) && eval $EDITOR",
     "build": "eval $(dependencyEnv) && nopam && rebel -show-actions-run-verbose -verbose -show-error-dependency-paths -brief-error-summary -show-buildable-discovery",
     "test": "./_build/default/src/app.native",
-    "bench": "./_build/default/src/app.native -quota 20"
+    "bench": "./_build/default/src/app.native -quota 20",
+    "test:byte": "./_build/byteTarget/src/app.byte",
+    "bench:byte": "./_build/byteTarget/src/app.byte -quota 20",
+    "test:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
+    "bench:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/jsTarget/src/app.js",
+    "test:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
+    "bench:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/jsTarget/src/app.js",
+    "test:v8": "node ./_build/jsTarget/src/app.js",
+    "bench:v8": "node ./_build/jsTarget/src/app.js -quota 20"
   },
-  "oldRebelConfig": "'rebel': { 'backend': 'jsoo', 'ocamlfindDependencies': { 'js_of_ocaml': 'github:reasonml/js_of_ocaml-bin' } }",
   "notes": "The below is a temporary rebel config that only works with the hardcoded rebel used in the run scripts",
   "rebel": {
     "targets": [{
       "target": "default",
       "engine": "native",
       "entry": "src/LayoutTestFixedEncoding.re",
+      "note": "We put -pkg core_bench here because we can't include it in the outer rebel config - it only applies to native target",
       "unstable_flags": {
-         "compile": "-thread -g -verbose -inline 100 -unsafe -S",
-         "link": "-thread -g -verbose -S"
+         "compile": "-package core_bench -thread -g -verbose -inline 100 -unsafe -S",
+         "link": "-linkpkg -package core_bench -thread -g -verbose -S"
       }
-    }],
-    "ocamlfindDependencies": { "core_bench": "113.33.3" }
+    },
+    {
+      "target": "byteTarget",
+      "engine": "byte",
+      "entry": "src/LayoutTestFixedEncoding.re",
+      "unstable_flags": {
+         "compile": "-thread -g -verbose -unsafe",
+         "link": "-thread -g -verbose"
+      }
+    },
+    {
+      "target": "jsTarget",
+      "engine": "jsoo",
+      "entry": "src/LayoutTestFixedEncoding.re",
+      "unstable_flags": {
+         "compile": "-thread -g -verbose -unsafe",
+         "link": "-thread -g -verbose",
+         "jsoo": "--opt 3"
+      }
+    }]
   }
 }

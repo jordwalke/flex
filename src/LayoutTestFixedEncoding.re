@@ -355,6 +355,12 @@
  </div>
   *
   */
+let floatMult = ( *. );
+
+let floatDiv = (/.);
+
+let floatSub = (-.);
+
 open LayoutTestUtils;
 
 open LayoutValue;
@@ -497,8 +503,50 @@ let jwalke_border_width_only_start = "jwalke_border_width_only_start";
 
 let jwalke_border_width_only_end = "jwalke_border_width_only_end";
 
-open Core_bench.Std;
 
+/**
+ * Since Core_bench is such a huge dependency and it doesn't compile with byte,
+ * we include a fake shim of it that we enable by default. To use the far
+ * superior Core_bench.
+ *
+ * - Comment out `include FakeCore;` below.
+ * - Uncomment `open Core_bench.Std;`
+ * - Delete the two targets in package.json (byteTarget, jsTarget)
+ * - Run `npm run build`, then `npm run bench`
+ *
+ */
+let module FakeCore = {
+  let module Bench = {
+    let module Test = {
+      let create name::s itm => (s, itm);
+    };
+    let make_command listofCreatedBenchmarks => listofCreatedBenchmarks;
+  };
+  let module Core = {
+    let runCommand (name, func) => {
+      Gc.full_major ();
+      let startSeconds = Sys.time ();
+      for i in 0 to 1000 {
+        func ()
+      };
+      let endSeconds = Sys.time ();
+      print_string (
+        "Average ms for " ^
+        name ^ " " ^ string_of_float (floatDiv (floatMult 1000.0 (floatSub endSeconds startSeconds)) 1000.0)
+      );
+      print_newline ()
+    };
+    let module Std = {
+      let module Command = {
+        let run listOftests => List.iter (fun command => runCommand command) listOftests;
+      };
+    };
+  };
+};
+
+include FakeCore;
+
+/* open Core_bench.Std; */
 if (LayoutTestUtils.runMode === Bench) {
   if LayoutTestUtils.shouldBenchmarkAllAsOne {
     Core.Std.Command.run (
@@ -508,8 +556,8 @@ if (LayoutTestUtils.runMode === Bench) {
           (
             fun () => {
               /* align_items_stretch */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -518,14 +566,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 alignItems: CssAlignCenter,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -535,14 +583,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 alignItems: CssAlignFlexStart,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexStart,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -552,50 +600,50 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 alignItems: CssAlignFlexEnd,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* align_self_center */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* align_self_flex_end */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* align_self_flex_start */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexStart,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -605,14 +653,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 alignItems: CssAlignFlexStart,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -621,10 +669,10 @@ if (LayoutTestUtils.runMode === Bench) {
               /* border_no_size */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                borderTop: 10000,
-                borderBottom: 10000,
-                borderLeft: 10000,
-                borderRight: 10000
+                borderTop: 1000,
+                borderBottom: 1000,
+                borderLeft: 1000,
+                borderRight: 1000
               };
               let root = LayoutSupport.createNode withChildren::[||] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -632,12 +680,12 @@ if (LayoutTestUtils.runMode === Bench) {
               /* border_container_match_child */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                borderTop: 10000,
-                borderBottom: 10000,
-                borderLeft: 10000,
-                borderRight: 10000
+                borderTop: 1000,
+                borderBottom: 1000,
+                borderLeft: 1000,
+                borderRight: 1000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -645,14 +693,14 @@ if (LayoutTestUtils.runMode === Bench) {
               /* border_stretch_child */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                borderTop: 10000,
-                borderBottom: 10000,
-                width: 100000,
-                height: 100000,
-                borderLeft: 10000,
-                borderRight: 10000
+                borderTop: 1000,
+                borderBottom: 1000,
+                width: 10000,
+                height: 10000,
+                borderLeft: 1000,
+                borderRight: 1000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -662,26 +710,26 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifyCenter,
                 alignItems: CssAlignCenter,
-                borderTop: 10000,
-                borderBottom: 20000,
-                width: 100000,
-                height: 100000,
-                borderStart: 10000,
-                borderEnd: 20000
+                borderTop: 1000,
+                borderBottom: 2000,
+                width: 10000,
+                height: 10000,
+                borderStart: 1000,
+                borderEnd: 2000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* max_width */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, maxWidth: 50000, height: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, maxWidth: 5000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -690,10 +738,10 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, maxHeight: 50000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, maxHeight: 5000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -701,10 +749,10 @@ if (LayoutTestUtils.runMode === Bench) {
               /* padding_no_size */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                paddingTop: 10000,
-                paddingBottom: 10000,
-                paddingLeft: 10000,
-                paddingRight: 10000
+                paddingTop: 1000,
+                paddingBottom: 1000,
+                paddingLeft: 1000,
+                paddingRight: 1000
               };
               let root = LayoutSupport.createNode withChildren::[||] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -712,12 +760,12 @@ if (LayoutTestUtils.runMode === Bench) {
               /* padding_container_match_child */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                paddingTop: 10000,
-                paddingBottom: 10000,
-                paddingLeft: 10000,
-                paddingRight: 10000
+                paddingTop: 1000,
+                paddingBottom: 1000,
+                paddingLeft: 1000,
+                paddingRight: 1000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -725,14 +773,14 @@ if (LayoutTestUtils.runMode === Bench) {
               /* padding_stretch_child */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                paddingTop: 10000,
-                paddingBottom: 10000,
-                width: 100000,
-                height: 100000,
-                paddingLeft: 10000,
-                paddingRight: 10000
+                paddingTop: 1000,
+                paddingBottom: 1000,
+                width: 10000,
+                height: 10000,
+                paddingLeft: 1000,
+                paddingRight: 1000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -742,75 +790,75 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifyCenter,
                 alignItems: CssAlignCenter,
-                paddingTop: 10000,
-                paddingBottom: 20000,
-                width: 100000,
-                height: 100000,
-                paddingStart: 10000,
-                paddingEnd: 20000
+                paddingTop: 1000,
+                paddingBottom: 2000,
+                width: 10000,
+                height: 10000,
+                paddingStart: 1000,
+                paddingEnd: 2000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 10000,
-                height: 10000
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* absolute_layout_width_height_start_top */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 positionType: CssPositionAbsolute,
-                top: 10000,
-                start: 10000,
-                width: 10000,
-                height: 10000
+                top: 1000,
+                start: 1000,
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* absolute_layout_width_height_end_bottom */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 positionType: CssPositionAbsolute,
-                bottom: 10000,
-                endd: 10000,
-                width: 10000,
-                height: 10000
+                bottom: 1000,
+                endd: 1000,
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* absolute_layout_start_top_end_bottom */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 positionType: CssPositionAbsolute,
-                top: 10000,
-                bottom: 10000,
-                endd: 10000
+                top: 1000,
+                bottom: 1000,
+                endd: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* absolute_layout_width_height_start_top_end_bottom */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 positionType: CssPositionAbsolute,
-                top: 10000,
-                bottom: 10000,
-                start: 10000,
-                endd: 10000,
-                width: 10000,
-                height: 10000
+                top: 1000,
+                bottom: 1000,
+                start: 1000,
+                endd: 1000,
+                width: 1000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -821,11 +869,11 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 overflow: Hidden,
-                width: 50000,
-                height: 50000
+                width: 5000,
+                height: 5000
               };
               let root_child0_style = {...LayoutSupport.defaultStyle, positionType: CssPositionAbsolute};
-              let root_child0_child0_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_child0_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_child0 =
                 LayoutSupport.createNode withChildren::[||] andStyle::root_child0_child0_style ();
               let root_child0 =
@@ -834,12 +882,12 @@ if (LayoutTestUtils.runMode === Bench) {
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* flex_direction_column_no_height */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -850,13 +898,13 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                height: 100000
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -864,12 +912,12 @@ if (LayoutTestUtils.runMode === Bench) {
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* flex_direction_column */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -880,14 +928,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -898,14 +946,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionColumnReverse,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -916,14 +964,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRowReverse,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -934,16 +982,16 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexWrap: CssWrap,
-                width: 60000,
-                height: 100000
+                width: 6000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-              let root_child3_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child3_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
               let root =
                 LayoutSupport.createNode
@@ -957,15 +1005,15 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 flexWrap: CssWrap,
-                width: 100000
+                width: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-              let root_child3_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+              let root_child3_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
               let root =
                 LayoutSupport.createNode
@@ -980,34 +1028,34 @@ if (LayoutTestUtils.runMode === Bench) {
                 flexDirection: CssFlexDirectionRow,
                 alignItems: CssAlignFlexEnd,
                 flexWrap: CssWrap,
-                width: 100000
+                width: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 30000,
-                height: 10000
+                width: 3000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root_child1_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 30000,
-                height: 20000
+                width: 3000,
+                height: 2000
               };
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root_child2_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 30000,
-                height: 30000
+                width: 3000,
+                height: 3000
               };
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root_child3_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignFlexEnd,
-                width: 30000,
-                height: 30000
+                width: 3000,
+                height: 3000
               };
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
               let root =
@@ -1023,34 +1071,34 @@ if (LayoutTestUtils.runMode === Bench) {
                 flexDirection: CssFlexDirectionRow,
                 alignItems: CssAlignCenter,
                 flexWrap: CssWrap,
-                width: 100000
+                width: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 30000,
-                height: 10000
+                width: 3000,
+                height: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root_child1_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 30000,
-                height: 20000
+                width: 3000,
+                height: 2000
               };
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root_child2_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 30000,
-                height: 30000
+                width: 3000,
+                height: 3000
               };
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root_child3_style = {
                 ...LayoutSupport.defaultStyle,
                 alignSelf: CssAlignCenter,
-                width: 30000,
-                height: 30000
+                width: 3000,
+                height: 3000
               };
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
               let root =
@@ -1064,10 +1112,10 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginStart: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginStart: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1077,10 +1125,10 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 justifyContent: CssJustifyFlexEnd,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginEnd: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginEnd: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1089,17 +1137,17 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginLeft: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginLeft: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* margin_top */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, marginTop: 10000, height: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, marginTop: 1000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1109,10 +1157,10 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 justifyContent: CssJustifyFlexEnd,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginRight: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginRight: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1121,10 +1169,10 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifyFlexEnd,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, marginBottom: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, marginBottom: 1000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1134,18 +1182,18 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 alignContent: CssAlignFlexStart,
                 flexWrap: CssWrap,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-              let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-              let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
               let root =
                 LayoutSupport.createNode
@@ -1159,18 +1207,18 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 alignContent: CssAlignFlexEnd,
                 flexWrap: CssWrap,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-              let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-              let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
               let root =
                 LayoutSupport.createNode
@@ -1184,18 +1232,18 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 alignContent: CssAlignCenter,
                 flexWrap: CssWrap,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-              let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-              let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+              let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
               let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
               let root =
                 LayoutSupport.createNode
@@ -1209,18 +1257,18 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 alignContent: CssAlignStretch,
                 flexWrap: CssWrap,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-              let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000};
+              let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000};
               let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-              let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000};
+              let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000};
               let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
               let root =
                 LayoutSupport.createNode
@@ -1233,14 +1281,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1252,14 +1300,14 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 justifyContent: CssJustifyFlexEnd,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1271,14 +1319,14 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 justifyContent: CssJustifyCenter,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1290,14 +1338,14 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 justifyContent: CssJustifySpaceBetween,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1309,14 +1357,14 @@ if (LayoutTestUtils.runMode === Bench) {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
                 justifyContent: CssJustifySpaceAround,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1324,12 +1372,12 @@ if (LayoutTestUtils.runMode === Bench) {
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* justify_content_column_flex_start */
-              let root_style = {...LayoutSupport.defaultStyle, width: 102000, height: 102000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10200, height: 10200};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root_child1_style = LayoutSupport.defaultStyle;
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1340,14 +1388,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifyFlexEnd,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1358,14 +1406,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifyCenter,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1376,14 +1424,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifySpaceBetween,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1394,14 +1442,14 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 justifyContent: CssJustifySpaceAround,
-                width: 102000,
-                height: 102000
+                width: 10200,
+                height: 10200
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-              let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+              let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
               let root =
                 LayoutSupport.createNode
@@ -1411,23 +1459,23 @@ if (LayoutTestUtils.runMode === Bench) {
               /* border_flex_child */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                borderTop: 10000,
-                borderBottom: 10000,
-                width: 100000,
-                height: 100000,
-                borderLeft: 10000,
-                borderRight: 10000
+                borderTop: 1000,
+                borderBottom: 1000,
+                width: 10000,
+                height: 10000,
+                borderLeft: 1000,
+                borderRight: 1000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* min_height */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, minHeight: 60000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, minHeight: 6000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -1437,12 +1485,12 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, minWidth: 60000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, minWidth: 6000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -1451,14 +1499,14 @@ if (LayoutTestUtils.runMode === Bench) {
               /* padding_flex_child */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                paddingTop: 10000,
-                paddingBottom: 10000,
-                width: 100000,
-                height: 100000,
-                paddingLeft: 10000,
-                paddingRight: 10000
+                paddingTop: 1000,
+                paddingBottom: 1000,
+                width: 10000,
+                height: 10000,
+                paddingLeft: 1000,
+                paddingRight: 1000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, width: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, width: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1467,26 +1515,26 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
-                flexGrow: 1000,
-                marginStart: 10000,
-                marginEnd: 10000
+                flexGrow: 1,
+                marginStart: 1000,
+                marginEnd: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* margin_and_flex_column */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
-                flexGrow: 1000,
-                marginTop: 10000,
-                marginBottom: 10000
+                flexGrow: 1,
+                marginTop: 1000,
+                marginBottom: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1496,26 +1544,26 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
-                flexGrow: 1000,
-                marginTop: 10000,
-                marginBottom: 10000
+                flexGrow: 1,
+                marginTop: 1000,
+                marginBottom: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* margin_and_stretch_column */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
               let root_child0_style = {
                 ...LayoutSupport.defaultStyle,
-                flexGrow: 1000,
-                marginStart: 10000,
-                marginEnd: 10000
+                flexGrow: 1,
+                marginStart: 1000,
+                marginEnd: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1525,32 +1573,32 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, marginEnd: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, marginEnd: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* margin_with_sibling_column */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, marginBottom: 10000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, marginBottom: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* flex_basis_flex_grow_column */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, flexBasis: 50000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -1560,22 +1608,22 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, flexBasis: 50000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
               /* flex_basis_flex_shrink_column */
-              let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1000, flexBasis: 100000};
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1, flexBasis: 10000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 50000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 5000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -1585,25 +1633,67 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {
                 ...LayoutSupport.defaultStyle,
                 flexDirection: CssFlexDirectionRow,
-                width: 100000,
-                height: 100000
+                width: 10000,
+                height: 10000
               };
-              let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1000, flexBasis: 100000};
+              let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1, flexBasis: 10000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 50000};
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 5000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root =
                 LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* jwalke_border_width_only_start */
+              let root_style = {
+                ...LayoutSupport.defaultStyle,
+                justifyContent: CssJustifyCenter,
+                alignItems: CssAlignCenter,
+                borderTop: 1000,
+                borderBottom: 2000,
+                width: 10000,
+                height: 10000,
+                borderStart: 1000
+              };
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                alignSelf: CssAlignCenter,
+                width: 1000,
+                height: 1000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* jwalke_border_width_only_end */
+              let root_style = {
+                ...LayoutSupport.defaultStyle,
+                justifyContent: CssJustifyCenter,
+                alignItems: CssAlignCenter,
+                borderTop: 1000,
+                borderBottom: 2000,
+                width: 10000,
+                height: 10000,
+                borderEnd: 1000
+              };
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                alignSelf: CssAlignCenter,
+                width: 1000,
+                height: 1000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
             }
           )
       ]
     )
   } else {
     let bench_align_items_stretch () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1613,14 +1703,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         alignItems: CssAlignCenter,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1631,14 +1721,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         alignItems: CssAlignFlexStart,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexStart,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1649,14 +1739,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         alignItems: CssAlignFlexEnd,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1664,12 +1754,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_align_self_center () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1677,12 +1767,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_align_self_flex_end () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1690,12 +1780,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_align_self_flex_start () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexStart,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1706,14 +1796,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         alignItems: CssAlignFlexStart,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1723,10 +1813,10 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_border_no_size () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        borderTop: 10000,
-        borderBottom: 10000,
-        borderLeft: 10000,
-        borderRight: 10000
+        borderTop: 1000,
+        borderBottom: 1000,
+        borderLeft: 1000,
+        borderRight: 1000
       };
       let root = LayoutSupport.createNode withChildren::[||] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1735,12 +1825,12 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_border_container_match_child () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        borderTop: 10000,
-        borderBottom: 10000,
-        borderLeft: 10000,
-        borderRight: 10000
+        borderTop: 1000,
+        borderBottom: 1000,
+        borderLeft: 1000,
+        borderRight: 1000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1749,14 +1839,14 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_border_stretch_child () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        borderTop: 10000,
-        borderBottom: 10000,
-        width: 100000,
-        height: 100000,
-        borderLeft: 10000,
-        borderRight: 10000
+        borderTop: 1000,
+        borderBottom: 1000,
+        width: 10000,
+        height: 10000,
+        borderLeft: 1000,
+        borderRight: 1000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1767,18 +1857,18 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyCenter,
         alignItems: CssAlignCenter,
-        borderTop: 10000,
-        borderBottom: 20000,
-        width: 100000,
-        height: 100000,
-        borderStart: 10000,
-        borderEnd: 20000
+        borderTop: 1000,
+        borderBottom: 2000,
+        width: 10000,
+        height: 10000,
+        borderStart: 1000,
+        borderEnd: 2000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1786,8 +1876,8 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_max_width () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, maxWidth: 50000, height: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, maxWidth: 5000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1797,10 +1887,10 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, maxHeight: 50000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, maxHeight: 5000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1809,10 +1899,10 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_padding_no_size () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        paddingTop: 10000,
-        paddingBottom: 10000,
-        paddingLeft: 10000,
-        paddingRight: 10000
+        paddingTop: 1000,
+        paddingBottom: 1000,
+        paddingLeft: 1000,
+        paddingRight: 1000
       };
       let root = LayoutSupport.createNode withChildren::[||] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1821,12 +1911,12 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_padding_container_match_child () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        paddingTop: 10000,
-        paddingBottom: 10000,
-        paddingLeft: 10000,
-        paddingRight: 10000
+        paddingTop: 1000,
+        paddingBottom: 1000,
+        paddingLeft: 1000,
+        paddingRight: 1000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1835,14 +1925,14 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_padding_stretch_child () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        paddingTop: 10000,
-        paddingBottom: 10000,
-        width: 100000,
-        height: 100000,
-        paddingLeft: 10000,
-        paddingRight: 10000
+        paddingTop: 1000,
+        paddingBottom: 1000,
+        width: 10000,
+        height: 10000,
+        paddingLeft: 1000,
+        paddingRight: 1000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -1853,18 +1943,18 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyCenter,
         alignItems: CssAlignCenter,
-        paddingTop: 10000,
-        paddingBottom: 20000,
-        width: 100000,
-        height: 100000,
-        paddingStart: 10000,
-        paddingEnd: 20000
+        paddingTop: 1000,
+        paddingBottom: 2000,
+        width: 10000,
+        height: 10000,
+        paddingStart: 1000,
+        paddingEnd: 2000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1872,14 +1962,14 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_absolute_layout_width_height_start_top () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         positionType: CssPositionAbsolute,
-        top: 10000,
-        start: 10000,
-        width: 10000,
-        height: 10000
+        top: 1000,
+        start: 1000,
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1887,14 +1977,14 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_absolute_layout_width_height_end_bottom () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         positionType: CssPositionAbsolute,
-        bottom: 10000,
-        endd: 10000,
-        width: 10000,
-        height: 10000
+        bottom: 1000,
+        endd: 1000,
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1902,13 +1992,13 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_absolute_layout_start_top_end_bottom () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         positionType: CssPositionAbsolute,
-        top: 10000,
-        bottom: 10000,
-        endd: 10000
+        top: 1000,
+        bottom: 1000,
+        endd: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1916,16 +2006,16 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_absolute_layout_width_height_start_top_end_bottom () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         positionType: CssPositionAbsolute,
-        top: 10000,
-        bottom: 10000,
-        start: 10000,
-        endd: 10000,
-        width: 10000,
-        height: 10000
+        top: 1000,
+        bottom: 1000,
+        start: 1000,
+        endd: 1000,
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -1937,11 +2027,11 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         overflow: Hidden,
-        width: 50000,
-        height: 50000
+        width: 5000,
+        height: 5000
       };
       let root_child0_style = {...LayoutSupport.defaultStyle, positionType: CssPositionAbsolute};
-      let root_child0_child0_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_child0_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_child0 =
         LayoutSupport.createNode withChildren::[||] andStyle::root_child0_child0_style ();
       let root_child0 =
@@ -1951,12 +2041,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_flex_direction_column_no_height () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -1965,12 +2055,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_flex_direction_row_no_width () => {
-      let root_style = {...LayoutSupport.defaultStyle, flexDirection: CssFlexDirectionRow, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, flexDirection: CssFlexDirectionRow, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -1979,12 +2069,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_flex_direction_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -1996,14 +2086,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2015,14 +2105,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionColumnReverse,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2034,14 +2124,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRowReverse,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2050,14 +2140,14 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_wrap_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, flexWrap: CssWrap, width: 60000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_style = {...LayoutSupport.defaultStyle, flexWrap: CssWrap, width: 6000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-      let root_child3_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child3_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
       let root =
         LayoutSupport.createNode
@@ -2070,15 +2160,15 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         flexWrap: CssWrap,
-        width: 100000
+        width: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-      let root_child3_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+      let root_child3_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
       let root =
         LayoutSupport.createNode
@@ -2092,34 +2182,34 @@ if (LayoutTestUtils.runMode === Bench) {
         flexDirection: CssFlexDirectionRow,
         alignItems: CssAlignFlexEnd,
         flexWrap: CssWrap,
-        width: 100000
+        width: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 30000,
-        height: 10000
+        width: 3000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root_child1_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 30000,
-        height: 20000
+        width: 3000,
+        height: 2000
       };
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root_child2_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 30000,
-        height: 30000
+        width: 3000,
+        height: 3000
       };
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root_child3_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignFlexEnd,
-        width: 30000,
-        height: 30000
+        width: 3000,
+        height: 3000
       };
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
       let root =
@@ -2134,34 +2224,34 @@ if (LayoutTestUtils.runMode === Bench) {
         flexDirection: CssFlexDirectionRow,
         alignItems: CssAlignCenter,
         flexWrap: CssWrap,
-        width: 100000
+        width: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 30000,
-        height: 10000
+        width: 3000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root_child1_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 30000,
-        height: 20000
+        width: 3000,
+        height: 2000
       };
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root_child2_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 30000,
-        height: 30000
+        width: 3000,
+        height: 3000
       };
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root_child3_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 30000,
-        height: 30000
+        width: 3000,
+        height: 3000
       };
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
       let root =
@@ -2174,10 +2264,10 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginStart: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginStart: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2188,10 +2278,10 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         justifyContent: CssJustifyFlexEnd,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginEnd: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginEnd: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2201,18 +2291,18 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginLeft: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginLeft: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_margin_top () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, marginTop: 10000, height: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, marginTop: 1000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2223,10 +2313,10 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         justifyContent: CssJustifyFlexEnd,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginRight: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginRight: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2236,10 +2326,10 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyFlexEnd,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, marginBottom: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, marginBottom: 1000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2250,18 +2340,18 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         alignContent: CssAlignFlexStart,
         flexWrap: CssWrap,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-      let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-      let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
       let root =
         LayoutSupport.createNode
@@ -2276,18 +2366,18 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         alignContent: CssAlignFlexEnd,
         flexWrap: CssWrap,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-      let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-      let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
       let root =
         LayoutSupport.createNode
@@ -2302,18 +2392,18 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         alignContent: CssAlignCenter,
         flexWrap: CssWrap,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-      let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-      let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+      let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
       let root =
         LayoutSupport.createNode
@@ -2328,18 +2418,18 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         alignContent: CssAlignStretch,
         flexWrap: CssWrap,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-      let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000};
+      let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000};
       let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-      let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000};
+      let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000};
       let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
       let root =
         LayoutSupport.createNode
@@ -2353,14 +2443,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2373,14 +2463,14 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         justifyContent: CssJustifyFlexEnd,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2393,14 +2483,14 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         justifyContent: CssJustifyCenter,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2413,14 +2503,14 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         justifyContent: CssJustifySpaceBetween,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2433,14 +2523,14 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
         justifyContent: CssJustifySpaceAround,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2449,12 +2539,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_justify_content_column_flex_start () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 102000, height: 102000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10200, height: 10200};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root_child1_style = LayoutSupport.defaultStyle;
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2466,14 +2556,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyFlexEnd,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2485,14 +2575,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyCenter,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2504,14 +2594,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifySpaceBetween,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2523,14 +2613,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifySpaceAround,
-        width: 102000,
-        height: 102000
+        width: 10200,
+        height: 10200
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-      let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+      let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
       let root =
         LayoutSupport.createNode
@@ -2541,24 +2631,24 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_border_flex_child () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        borderTop: 10000,
-        borderBottom: 10000,
-        width: 100000,
-        height: 100000,
-        borderLeft: 10000,
-        borderRight: 10000
+        borderTop: 1000,
+        borderBottom: 1000,
+        width: 10000,
+        height: 10000,
+        borderLeft: 1000,
+        borderRight: 1000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_min_height () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, minHeight: 60000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, minHeight: 6000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2568,12 +2658,12 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, minWidth: 60000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, minWidth: 6000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2582,14 +2672,14 @@ if (LayoutTestUtils.runMode === Bench) {
     let bench_padding_flex_child () => {
       let root_style = {
         ...LayoutSupport.defaultStyle,
-        paddingTop: 10000,
-        paddingBottom: 10000,
-        width: 100000,
-        height: 100000,
-        paddingLeft: 10000,
-        paddingRight: 10000
+        paddingTop: 1000,
+        paddingBottom: 1000,
+        width: 10000,
+        height: 10000,
+        paddingLeft: 1000,
+        paddingRight: 1000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, width: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, width: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2599,14 +2689,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
-        flexGrow: 1000,
-        marginStart: 10000,
-        marginEnd: 10000
+        flexGrow: 1,
+        marginStart: 1000,
+        marginEnd: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -2614,12 +2704,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_margin_and_flex_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
-        flexGrow: 1000,
-        marginTop: 10000,
-        marginBottom: 10000
+        flexGrow: 1,
+        marginTop: 1000,
+        marginBottom: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -2630,14 +2720,14 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
-        flexGrow: 1000,
-        marginTop: 10000,
-        marginBottom: 10000
+        flexGrow: 1,
+        marginTop: 1000,
+        marginBottom: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -2645,12 +2735,12 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_margin_and_stretch_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
-        flexGrow: 1000,
-        marginStart: 10000,
-        marginEnd: 10000
+        flexGrow: 1,
+        marginStart: 1000,
+        marginEnd: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -2661,32 +2751,32 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, marginEnd: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, marginEnd: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_margin_with_sibling_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, marginBottom: 10000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, marginBottom: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_flex_basis_flex_grow_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, flexBasis: 50000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2696,22 +2786,22 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, flexBasis: 50000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_flex_basis_flex_shrink_column () => {
-      let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1000, flexBasis: 100000};
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1, flexBasis: 10000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 50000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 5000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2721,12 +2811,12 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {
         ...LayoutSupport.defaultStyle,
         flexDirection: CssFlexDirectionRow,
-        width: 100000,
-        height: 100000
+        width: 10000,
+        height: 10000
       };
-      let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1000, flexBasis: 100000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1, flexBasis: 10000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 50000};
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 5000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
@@ -2737,17 +2827,17 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyCenter,
         alignItems: CssAlignCenter,
-        borderTop: 10000,
-        borderBottom: 20000,
-        width: 100000,
-        height: 100000,
-        borderStart: 10000
+        borderTop: 1000,
+        borderBottom: 2000,
+        width: 10000,
+        height: 10000,
+        borderStart: 1000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -2759,17 +2849,17 @@ if (LayoutTestUtils.runMode === Bench) {
         ...LayoutSupport.defaultStyle,
         justifyContent: CssJustifyCenter,
         alignItems: CssAlignCenter,
-        borderTop: 10000,
-        borderBottom: 20000,
-        width: 100000,
-        height: 100000,
-        borderEnd: 10000
+        borderTop: 1000,
+        borderBottom: 2000,
+        width: 10000,
+        height: 10000,
+        borderEnd: 1000
       };
       let root_child0_style = {
         ...LayoutSupport.defaultStyle,
         alignSelf: CssAlignCenter,
-        width: 10000,
-        height: 10000
+        width: 1000,
+        height: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3133,39 +3223,39 @@ if (LayoutTestUtils.runMode === Bench) {
     align_items_stretch
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             0
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 100000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             1
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 100000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3176,14 +3266,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           alignItems: CssAlignCenter,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3191,31 +3281,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 45000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 4500 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             2
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 45000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 4500, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 45000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 4500 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             3
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 45000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 4500, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3226,14 +3316,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           alignItems: CssAlignFlexStart,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexStart,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3241,31 +3331,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             4
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             5
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3276,14 +3366,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           alignItems: CssAlignFlexEnd,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3291,31 +3381,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             6
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             7
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3323,12 +3413,12 @@ if (LayoutTestUtils.runMode === Bench) {
     align_self_center
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3336,31 +3426,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 45000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 4500 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             8
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 45000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 4500, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 45000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 4500 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             9
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 45000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 4500, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3368,12 +3458,12 @@ if (LayoutTestUtils.runMode === Bench) {
     align_self_flex_end
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3381,31 +3471,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             10
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             11
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3413,12 +3503,12 @@ if (LayoutTestUtils.runMode === Bench) {
     align_self_flex_start
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexStart,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3426,31 +3516,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             12
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             13
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3461,14 +3551,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           alignItems: CssAlignFlexStart,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3476,31 +3566,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             14
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             15
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3510,25 +3600,25 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          borderTop: 10000,
-          borderBottom: 10000,
-          borderLeft: 10000,
-          borderRight: 10000
+          borderTop: 1000,
+          borderBottom: 1000,
+          borderLeft: 1000,
+          borderRight: 1000
         };
         let root = LayoutSupport.createNode withChildren::[||] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
-          root.layout.left != 0 || root.layout.width != 20000 || root.layout.height != 20000
+          root.layout.left != 0 || root.layout.width != 2000 || root.layout.height != 2000
         ) {
-          assertLayouts 16 ({...root.layout, top: 0, left: 0, width: 20000, height: 20000}, root.layout) []
+          assertLayouts 16 ({...root.layout, top: 0, left: 0, width: 2000, height: 2000}, root.layout) []
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
-          root.layout.left != 0 || root.layout.width != 20000 || root.layout.height != 20000
+          root.layout.left != 0 || root.layout.width != 2000 || root.layout.height != 2000
         ) {
-          assertLayouts 17 ({...root.layout, top: 0, left: 0, width: 20000, height: 20000}, root.layout) []
+          assertLayouts 17 ({...root.layout, top: 0, left: 0, width: 2000, height: 2000}, root.layout) []
         }
       }
     );
@@ -3538,53 +3628,43 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          borderTop: 10000,
-          borderBottom: 10000,
-          borderLeft: 10000,
-          borderRight: 10000
+          borderTop: 1000,
+          borderBottom: 1000,
+          borderLeft: 1000,
+          borderRight: 1000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 30000 ||
-          root.layout.height != 30000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 3000 ||
+          root.layout.height != 3000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             18
-            ({...root.layout, top: 0, left: 0, width: 30000, height: 30000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 3000, height: 3000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 30000 ||
-          root.layout.height != 30000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 3000 ||
+          root.layout.height != 3000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             19
-            ({...root.layout, top: 0, left: 0, width: 30000, height: 30000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 3000, height: 3000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3594,55 +3674,45 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          borderTop: 10000,
-          borderBottom: 10000,
-          width: 100000,
-          height: 100000,
-          borderLeft: 10000,
-          borderRight: 10000
+          borderTop: 1000,
+          borderBottom: 1000,
+          width: 10000,
+          height: 10000,
+          borderLeft: 1000,
+          borderRight: 1000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             20
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 80000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 8000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             21
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 80000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 8000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3654,18 +3724,18 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyCenter,
           alignItems: CssAlignCenter,
-          borderTop: 10000,
-          borderBottom: 20000,
-          width: 100000,
-          height: 100000,
-          borderStart: 10000,
-          borderEnd: 20000
+          borderTop: 1000,
+          borderBottom: 2000,
+          width: 10000,
+          height: 10000,
+          borderStart: 1000,
+          borderEnd: 2000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3673,41 +3743,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 40000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 4000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             22
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 40000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 4000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             23
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 50000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 5000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3715,39 +3775,39 @@ if (LayoutTestUtils.runMode === Bench) {
     max_width
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, maxWidth: 50000, height: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, maxWidth: 5000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 50000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 5000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             24
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 50000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 5000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 50000 || root_child0.layout.height != 10000
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 5000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             25
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 50000, width: 50000, height: 10000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 5000, width: 5000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3758,41 +3818,41 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, maxHeight: 50000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, maxHeight: 5000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 50000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 5000
         ) {
           assertLayouts
             26
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 50000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 5000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 50000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 5000
         ) {
           assertLayouts
             27
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 50000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 5000}, root_child0.layout)]
         }
       }
     );
@@ -3802,25 +3862,25 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          paddingTop: 10000,
-          paddingBottom: 10000,
-          paddingLeft: 10000,
-          paddingRight: 10000
+          paddingTop: 1000,
+          paddingBottom: 1000,
+          paddingLeft: 1000,
+          paddingRight: 1000
         };
         let root = LayoutSupport.createNode withChildren::[||] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
-          root.layout.left != 0 || root.layout.width != 20000 || root.layout.height != 20000
+          root.layout.left != 0 || root.layout.width != 2000 || root.layout.height != 2000
         ) {
-          assertLayouts 28 ({...root.layout, top: 0, left: 0, width: 20000, height: 20000}, root.layout) []
+          assertLayouts 28 ({...root.layout, top: 0, left: 0, width: 2000, height: 2000}, root.layout) []
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
-          root.layout.left != 0 || root.layout.width != 20000 || root.layout.height != 20000
+          root.layout.left != 0 || root.layout.width != 2000 || root.layout.height != 2000
         ) {
-          assertLayouts 29 ({...root.layout, top: 0, left: 0, width: 20000, height: 20000}, root.layout) []
+          assertLayouts 29 ({...root.layout, top: 0, left: 0, width: 2000, height: 2000}, root.layout) []
         }
       }
     );
@@ -3830,53 +3890,43 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          paddingTop: 10000,
-          paddingBottom: 10000,
-          paddingLeft: 10000,
-          paddingRight: 10000
+          paddingTop: 1000,
+          paddingBottom: 1000,
+          paddingLeft: 1000,
+          paddingRight: 1000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 30000 ||
-          root.layout.height != 30000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 3000 ||
+          root.layout.height != 3000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             30
-            ({...root.layout, top: 0, left: 0, width: 30000, height: 30000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 3000, height: 3000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 30000 ||
-          root.layout.height != 30000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 3000 ||
+          root.layout.height != 3000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             31
-            ({...root.layout, top: 0, left: 0, width: 30000, height: 30000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 3000, height: 3000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3886,55 +3936,45 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          paddingTop: 10000,
-          paddingBottom: 10000,
-          width: 100000,
-          height: 100000,
-          paddingLeft: 10000,
-          paddingRight: 10000
+          paddingTop: 1000,
+          paddingBottom: 1000,
+          width: 10000,
+          height: 10000,
+          paddingLeft: 1000,
+          paddingRight: 1000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             32
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 80000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 8000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             33
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 80000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 8000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -3946,18 +3986,18 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyCenter,
           alignItems: CssAlignCenter,
-          paddingTop: 10000,
-          paddingBottom: 20000,
-          width: 100000,
-          height: 100000,
-          paddingStart: 10000,
-          paddingEnd: 20000
+          paddingTop: 1000,
+          paddingBottom: 2000,
+          width: 10000,
+          height: 10000,
+          paddingStart: 1000,
+          paddingEnd: 2000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -3965,41 +4005,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 40000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 4000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             34
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 40000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 4000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             35
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 50000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 5000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -4007,14 +4037,14 @@ if (LayoutTestUtils.runMode === Bench) {
     absolute_layout_width_height_start_top
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           positionType: CssPositionAbsolute,
-          top: 10000,
-          start: 10000,
-          width: 10000,
-          height: 10000
+          top: 1000,
+          start: 1000,
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -4022,41 +4052,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             36
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             37
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 80000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 8000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -4064,14 +4084,14 @@ if (LayoutTestUtils.runMode === Bench) {
     absolute_layout_width_height_end_bottom
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           positionType: CssPositionAbsolute,
-          bottom: 10000,
-          endd: 10000,
-          width: 10000,
-          height: 10000
+          bottom: 1000,
+          endd: 1000,
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -4079,41 +4099,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 80000 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 8000 ||
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             38
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 80000, left: 80000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 8000, left: 8000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 80000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 8000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             39
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 80000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 8000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -4121,13 +4131,13 @@ if (LayoutTestUtils.runMode === Bench) {
     absolute_layout_start_top_end_bottom
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           positionType: CssPositionAbsolute,
-          top: 10000,
-          bottom: 10000,
-          endd: 10000
+          top: 1000,
+          bottom: 1000,
+          endd: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -4135,31 +4145,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 0 || root_child0.layout.height != 80000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 0 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             40
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 10000, left: 90000, width: 0, height: 80000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 9000, width: 0, height: 8000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 0 || root_child0.layout.height != 80000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 0 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             41
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 10000, left: 10000, width: 0, height: 80000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 0, height: 8000}, root_child0.layout)]
         }
       }
     );
@@ -4167,16 +4177,16 @@ if (LayoutTestUtils.runMode === Bench) {
     absolute_layout_width_height_start_top_end_bottom
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           positionType: CssPositionAbsolute,
-          top: 10000,
-          bottom: 10000,
-          start: 10000,
-          endd: 10000,
-          width: 10000,
-          height: 10000
+          top: 1000,
+          bottom: 1000,
+          start: 1000,
+          endd: 1000,
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -4184,41 +4194,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             42
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             43
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 80000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 8000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -4230,11 +4230,11 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           overflow: Hidden,
-          width: 50000,
-          height: 50000
+          width: 5000,
+          height: 5000
         };
         let root_child0_style = {...LayoutSupport.defaultStyle, positionType: CssPositionAbsolute};
-        let root_child0_child0_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_child0_child0_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_child0 =
           LayoutSupport.createNode withChildren::[||] andStyle::root_child0_child0_style ();
         let root_child0 =
@@ -4244,26 +4244,26 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 50000 ||
-          root.layout.height != 50000 ||
+          root.layout.width != 5000 ||
+          root.layout.height != 5000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 10000 ||
           root_child0_child0.layout.top != 0 ||
           root_child0_child0.layout.left != 0 ||
-          root_child0_child0.layout.width != 100000 || root_child0_child0.layout.height != 100000
+          root_child0_child0.layout.width != 10000 || root_child0_child0.layout.height != 10000
         ) {
           assertLayouts
             44
-            ({...root.layout, top: 0, left: 0, width: 50000, height: 50000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 100000, height: 100000}, root_child0.layout)];
+            ({...root.layout, top: 0, left: 0, width: 5000, height: 5000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)];
           assertLayouts
             45
-            ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 100000}, root_child0.layout)
+            ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)
             [
               (
-                {...root_child0_child0.layout, top: 0, left: 0, width: 100000, height: 100000},
+                {...root_child0_child0.layout, top: 0, left: 0, width: 10000, height: 10000},
                 root_child0_child0.layout
               )
             ]
@@ -4272,34 +4272,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 50000 ||
-          root.layout.height != 50000 ||
+          root.layout.width != 5000 ||
+          root.layout.height != 5000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != (-50000) ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != (-5000) ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 10000 ||
           root_child0_child0.layout.top != 0 ||
           root_child0_child0.layout.left != 0 ||
-          root_child0_child0.layout.width != 100000 || root_child0_child0.layout.height != 100000
+          root_child0_child0.layout.width != 10000 || root_child0_child0.layout.height != 10000
         ) {
           assertLayouts
             46
-            ({...root.layout, top: 0, left: 0, width: 50000, height: 50000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 5000, height: 5000}, root.layout)
             [
               (
-                {...root_child0.layout, top: 0, left: (-50000), width: 100000, height: 100000},
+                {...root_child0.layout, top: 0, left: (-5000), width: 10000, height: 10000},
                 root_child0.layout
               )
             ];
           assertLayouts
             47
-            (
-              {...root_child0.layout, top: 0, left: (-50000), width: 100000, height: 100000},
-              root_child0.layout
-            )
+            ({...root_child0.layout, top: 0, left: (-5000), width: 10000, height: 10000}, root_child0.layout)
             [
               (
-                {...root_child0_child0.layout, top: 0, left: 0, width: 100000, height: 100000},
+                {...root_child0_child0.layout, top: 0, left: 0, width: 10000, height: 10000},
                 root_child0_child0.layout
               )
             ]
@@ -4310,12 +4307,12 @@ if (LayoutTestUtils.runMode === Bench) {
     flex_direction_column_no_height
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -4324,66 +4321,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 30000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 3000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 100000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10000 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             48
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 30000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 3000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 100000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 100000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 10000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 10000, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 30000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 3000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 100000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10000 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             49
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 30000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 3000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 100000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 100000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 10000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 10000, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -4392,12 +4377,12 @@ if (LayoutTestUtils.runMode === Bench) {
     flex_direction_row_no_width
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, flexDirection: CssFlexDirectionRow, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, flexDirection: CssFlexDirectionRow, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -4406,66 +4391,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 30000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 3000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 10000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 100000 ||
+          root_child1.layout.left != 1000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 20000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 100000
+          root_child2.layout.left != 2000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10000
         ) {
           assertLayouts
             50
-            ({...root.layout, top: 0, left: 0, width: 30000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 3000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 10000, width: 10000, height: 100000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 20000, width: 10000, height: 100000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 1000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 2000, width: 1000, height: 10000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 30000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 3000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 20000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 10000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 100000 ||
+          root_child1.layout.left != 1000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10000 ||
           root_child2.layout.top != 0 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 100000
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10000
         ) {
           assertLayouts
             51
-            ({...root.layout, top: 0, left: 0, width: 30000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 3000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 20000, width: 10000, height: 100000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 10000, width: 10000, height: 100000},
-                root_child1.layout
-              ),
-              ({...root_child2.layout, top: 0, left: 0, width: 10000, height: 100000}, root_child2.layout)
+              ({...root_child0.layout, top: 0, left: 2000, width: 1000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 0, width: 1000, height: 10000}, root_child2.layout)
             ]
         }
       }
@@ -4474,12 +4447,12 @@ if (LayoutTestUtils.runMode === Bench) {
     flex_direction_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -4488,66 +4461,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 100000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10000 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             52
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 100000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 100000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 10000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 10000, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 100000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10000 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             53
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 100000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 100000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 10000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 10000, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -4559,14 +4520,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -4575,69 +4536,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 10000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 100000 ||
+          root_child1.layout.left != 1000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 20000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 100000
+          root_child2.layout.left != 2000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10000
         ) {
           assertLayouts
             54
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 10000, width: 10000, height: 100000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 20000, width: 10000, height: 100000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 1000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 2000, width: 1000, height: 10000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 80000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 100000 ||
+          root_child1.layout.left != 8000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 70000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 100000
+          root_child2.layout.left != 7000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10000
         ) {
           assertLayouts
             55
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 90000, width: 10000, height: 100000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 80000, width: 10000, height: 100000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 70000, width: 10000, height: 100000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 8000, width: 1000, height: 10000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 7000, width: 1000, height: 10000}, root_child2.layout)
             ]
         }
       }
@@ -4649,14 +4595,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionColumnReverse,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -4665,72 +4611,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 90000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 9000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 80000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 8000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 70000 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 7000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 100000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10000 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             56
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 90000, left: 0, width: 100000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 80000, left: 0, width: 100000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 70000, left: 0, width: 100000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 9000, left: 0, width: 10000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 8000, left: 0, width: 10000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 7000, left: 0, width: 10000, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 90000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 9000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 80000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 8000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 70000 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 7000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 100000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10000 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             57
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 90000, left: 0, width: 100000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 80000, left: 0, width: 100000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 70000, left: 0, width: 100000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 9000, left: 0, width: 10000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 8000, left: 0, width: 10000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 7000, left: 0, width: 10000, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -4742,14 +4670,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRowReverse,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -4758,69 +4686,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 80000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 100000 ||
+          root_child1.layout.left != 8000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 70000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 100000
+          root_child2.layout.left != 7000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10000
         ) {
           assertLayouts
             58
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 90000, width: 10000, height: 100000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 80000, width: 10000, height: 100000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 70000, width: 10000, height: 100000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 8000, width: 1000, height: 10000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 7000, width: 1000, height: 10000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 10000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 100000 ||
+          root_child1.layout.left != 1000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 20000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 100000
+          root_child2.layout.left != 2000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10000
         ) {
           assertLayouts
             59
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 10000, width: 10000, height: 100000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 20000, width: 10000, height: 100000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 1000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 2000, width: 1000, height: 10000}, root_child2.layout)
             ]
         }
       }
@@ -4829,14 +4742,14 @@ if (LayoutTestUtils.runMode === Bench) {
     wrap_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, flexWrap: CssWrap, width: 60000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_style = {...LayoutSupport.defaultStyle, flexWrap: CssWrap, width: 6000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-        let root_child3_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child3_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
         let root =
           LayoutSupport.createNode
@@ -4845,76 +4758,70 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 60000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 6000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 30000 ||
-          root_child1.layout.top != 30000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 3000 ||
+          root_child1.layout.top != 3000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 30000 ||
-          root_child2.layout.top != 60000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 3000 ||
+          root_child2.layout.top != 6000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
           root_child3.layout.top != 0 ||
-          root_child3.layout.left != 30000 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child3.layout.left != 3000 ||
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             60
-            ({...root.layout, top: 0, left: 0, width: 60000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 6000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 30000, height: 30000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 30000, left: 0, width: 30000, height: 30000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 60000, left: 0, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              ({...root_child3.layout, top: 0, left: 30000, width: 30000, height: 30000}, root_child3.layout)
+              ({...root_child0.layout, top: 0, left: 0, width: 3000, height: 3000}, root_child0.layout),
+              ({...root_child1.layout, top: 3000, left: 0, width: 3000, height: 3000}, root_child1.layout),
+              ({...root_child2.layout, top: 6000, left: 0, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 0, left: 3000, width: 3000, height: 3000}, root_child3.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 60000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 6000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 30000 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 30000 ||
-          root_child1.layout.top != 30000 ||
-          root_child1.layout.left != 30000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 30000 ||
-          root_child2.layout.top != 60000 ||
-          root_child2.layout.left != 30000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
+          root_child0.layout.left != 3000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 3000 ||
+          root_child1.layout.top != 3000 ||
+          root_child1.layout.left != 3000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 3000 ||
+          root_child2.layout.top != 6000 ||
+          root_child2.layout.left != 3000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
           root_child3.layout.top != 0 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             61
-            ({...root.layout, top: 0, left: 0, width: 60000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 6000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 30000, width: 30000, height: 30000}, root_child0.layout),
+              ({...root_child0.layout, top: 0, left: 3000, width: 3000, height: 3000}, root_child0.layout),
               (
-                {...root_child1.layout, top: 30000, left: 30000, width: 30000, height: 30000},
+                {...root_child1.layout, top: 3000, left: 3000, width: 3000, height: 3000},
                 root_child1.layout
               ),
               (
-                {...root_child2.layout, top: 60000, left: 30000, width: 30000, height: 30000},
+                {...root_child2.layout, top: 6000, left: 3000, width: 3000, height: 3000},
                 root_child2.layout
               ),
-              ({...root_child3.layout, top: 0, left: 0, width: 30000, height: 30000}, root_child3.layout)
+              ({...root_child3.layout, top: 0, left: 0, width: 3000, height: 3000}, root_child3.layout)
             ]
         }
       }
@@ -4927,15 +4834,15 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           flexWrap: CssWrap,
-          width: 100000
+          width: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-        let root_child3_style = {...LayoutSupport.defaultStyle, width: 30000, height: 30000};
+        let root_child3_style = {...LayoutSupport.defaultStyle, width: 3000, height: 3000};
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
         let root =
           LayoutSupport.createNode
@@ -4944,79 +4851,64 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 60000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 6000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 30000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 3000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 30000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 30000 ||
+          root_child1.layout.left != 3000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 3000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 60000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
-          root_child3.layout.top != 30000 ||
+          root_child2.layout.left != 6000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
+          root_child3.layout.top != 3000 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             62
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 60000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 6000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 30000, height: 30000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 30000, width: 30000, height: 30000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 60000, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              ({...root_child3.layout, top: 30000, left: 0, width: 30000, height: 30000}, root_child3.layout)
+              ({...root_child0.layout, top: 0, left: 0, width: 3000, height: 3000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 3000, width: 3000, height: 3000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 6000, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 0, width: 3000, height: 3000}, root_child3.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 60000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 6000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 70000 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 30000 ||
+          root_child0.layout.left != 7000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 3000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 40000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 30000 ||
+          root_child1.layout.left != 4000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 3000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 10000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
-          root_child3.layout.top != 30000 ||
-          root_child3.layout.left != 70000 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child2.layout.left != 1000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
+          root_child3.layout.top != 3000 ||
+          root_child3.layout.left != 7000 ||
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             63
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 60000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 6000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 70000, width: 30000, height: 30000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 40000, width: 30000, height: 30000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 10000, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              (
-                {...root_child3.layout, top: 30000, left: 70000, width: 30000, height: 30000},
-                root_child3.layout
-              )
+              ({...root_child0.layout, top: 0, left: 7000, width: 3000, height: 3000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4000, width: 3000, height: 3000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 1000, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 7000, width: 3000, height: 3000}, root_child3.layout)
             ]
         }
       }
@@ -5030,34 +4922,34 @@ if (LayoutTestUtils.runMode === Bench) {
           flexDirection: CssFlexDirectionRow,
           alignItems: CssAlignFlexEnd,
           flexWrap: CssWrap,
-          width: 100000
+          width: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 30000,
-          height: 10000
+          width: 3000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root_child1_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 30000,
-          height: 20000
+          width: 3000,
+          height: 2000
         };
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root_child2_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 30000,
-          height: 30000
+          width: 3000,
+          height: 3000
         };
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root_child3_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignFlexEnd,
-          width: 30000,
-          height: 30000
+          width: 3000,
+          height: 3000
         };
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
         let root =
@@ -5067,82 +4959,70 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 60000 ||
-          root_child0.layout.top != 20000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 6000 ||
+          root_child0.layout.top != 2000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
-          root_child1.layout.left != 30000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 20000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
+          root_child1.layout.left != 3000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 2000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 60000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
-          root_child3.layout.top != 30000 ||
+          root_child2.layout.left != 6000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
+          root_child3.layout.top != 3000 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             64
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 60000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 6000}, root.layout)
             [
-              ({...root_child0.layout, top: 20000, left: 0, width: 30000, height: 10000}, root_child0.layout),
+              ({...root_child0.layout, top: 2000, left: 0, width: 3000, height: 1000}, root_child0.layout),
               (
-                {...root_child1.layout, top: 10000, left: 30000, width: 30000, height: 20000},
+                {...root_child1.layout, top: 1000, left: 3000, width: 3000, height: 2000},
                 root_child1.layout
               ),
-              (
-                {...root_child2.layout, top: 0, left: 60000, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              ({...root_child3.layout, top: 30000, left: 0, width: 30000, height: 30000}, root_child3.layout)
+              ({...root_child2.layout, top: 0, left: 6000, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 0, width: 3000, height: 3000}, root_child3.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 60000 ||
-          root_child0.layout.top != 20000 ||
-          root_child0.layout.left != 70000 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
-          root_child1.layout.left != 40000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 20000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 6000 ||
+          root_child0.layout.top != 2000 ||
+          root_child0.layout.left != 7000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
+          root_child1.layout.left != 4000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 2000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 10000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
-          root_child3.layout.top != 30000 ||
-          root_child3.layout.left != 70000 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child2.layout.left != 1000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
+          root_child3.layout.top != 3000 ||
+          root_child3.layout.left != 7000 ||
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             65
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 60000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 6000}, root.layout)
             [
+              ({...root_child0.layout, top: 2000, left: 7000, width: 3000, height: 1000}, root_child0.layout),
               (
-                {...root_child0.layout, top: 20000, left: 70000, width: 30000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 10000, left: 40000, width: 30000, height: 20000},
+                {...root_child1.layout, top: 1000, left: 4000, width: 3000, height: 2000},
                 root_child1.layout
               ),
-              (
-                {...root_child2.layout, top: 0, left: 10000, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              (
-                {...root_child3.layout, top: 30000, left: 70000, width: 30000, height: 30000},
-                root_child3.layout
-              )
+              ({...root_child2.layout, top: 0, left: 1000, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 7000, width: 3000, height: 3000}, root_child3.layout)
             ]
         }
       }
@@ -5156,34 +5036,34 @@ if (LayoutTestUtils.runMode === Bench) {
           flexDirection: CssFlexDirectionRow,
           alignItems: CssAlignCenter,
           flexWrap: CssWrap,
-          width: 100000
+          width: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 30000,
-          height: 10000
+          width: 3000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root_child1_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 30000,
-          height: 20000
+          width: 3000,
+          height: 2000
         };
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root_child2_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 30000,
-          height: 30000
+          width: 3000,
+          height: 3000
         };
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root_child3_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 30000,
-          height: 30000
+          width: 3000,
+          height: 3000
         };
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
         let root =
@@ -5193,82 +5073,64 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 60000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 6000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 5000 ||
-          root_child1.layout.left != 30000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 20000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 500 ||
+          root_child1.layout.left != 3000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 2000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 60000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
-          root_child3.layout.top != 30000 ||
+          root_child2.layout.left != 6000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
+          root_child3.layout.top != 3000 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             66
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 60000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 6000}, root.layout)
             [
-              ({...root_child0.layout, top: 10000, left: 0, width: 30000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 5000, left: 30000, width: 30000, height: 20000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 60000, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              ({...root_child3.layout, top: 30000, left: 0, width: 30000, height: 30000}, root_child3.layout)
+              ({...root_child0.layout, top: 1000, left: 0, width: 3000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 500, left: 3000, width: 3000, height: 2000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 6000, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 0, width: 3000, height: 3000}, root_child3.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 60000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 70000 ||
-          root_child0.layout.width != 30000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 5000 ||
-          root_child1.layout.left != 40000 ||
-          root_child1.layout.width != 30000 ||
-          root_child1.layout.height != 20000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 6000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 7000 ||
+          root_child0.layout.width != 3000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 500 ||
+          root_child1.layout.left != 4000 ||
+          root_child1.layout.width != 3000 ||
+          root_child1.layout.height != 2000 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 10000 ||
-          root_child2.layout.width != 30000 ||
-          root_child2.layout.height != 30000 ||
-          root_child3.layout.top != 30000 ||
-          root_child3.layout.left != 70000 ||
-          root_child3.layout.width != 30000 || root_child3.layout.height != 30000
+          root_child2.layout.left != 1000 ||
+          root_child2.layout.width != 3000 ||
+          root_child2.layout.height != 3000 ||
+          root_child3.layout.top != 3000 ||
+          root_child3.layout.left != 7000 ||
+          root_child3.layout.width != 3000 || root_child3.layout.height != 3000
         ) {
           assertLayouts
             67
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 60000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 6000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 10000, left: 70000, width: 30000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 5000, left: 40000, width: 30000, height: 20000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 10000, width: 30000, height: 30000},
-                root_child2.layout
-              ),
-              (
-                {...root_child3.layout, top: 30000, left: 70000, width: 30000, height: 30000},
-                root_child3.layout
-              )
+              ({...root_child0.layout, top: 1000, left: 7000, width: 3000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 500, left: 4000, width: 3000, height: 2000}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 1000, width: 3000, height: 3000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 7000, width: 3000, height: 3000}, root_child3.layout)
             ]
         }
       }
@@ -5280,45 +5142,41 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginStart: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginStart: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             68
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             69
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 80000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 8000, width: 1000, height: 10000}, root_child0.layout)]
         }
       }
     );
@@ -5330,45 +5188,41 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           justifyContent: CssJustifyFlexEnd,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginEnd: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginEnd: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             70
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 80000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 8000, width: 1000, height: 10000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             71
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child0.layout)]
         }
       }
     );
@@ -5379,45 +5233,41 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginLeft: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginLeft: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             72
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 1000, height: 10000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 90000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 9000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             73
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 90000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 9000, width: 1000, height: 10000}, root_child0.layout)]
         }
       }
     );
@@ -5425,43 +5275,39 @@ if (LayoutTestUtils.runMode === Bench) {
     margin_top
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, marginTop: 10000, height: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, marginTop: 1000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             74
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 10000, left: 0, width: 100000, height: 10000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 0, width: 10000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             75
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 10000, left: 0, width: 100000, height: 10000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 0, width: 10000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -5473,43 +5319,41 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           justifyContent: CssJustifyFlexEnd,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000, marginRight: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000, marginRight: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             76
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 80000, width: 10000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 8000, width: 1000, height: 10000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 100000
+          root_child0.layout.width != 1000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             77
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 100000}, root_child0.layout)]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 1000, height: 10000}, root_child0.layout)]
         }
       }
     );
@@ -5520,45 +5364,41 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyFlexEnd,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, marginBottom: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, marginBottom: 1000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 80000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 8000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             78
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 80000, left: 0, width: 100000, height: 10000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 8000, left: 0, width: 10000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 80000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 8000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 10000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             79
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 80000, left: 0, width: 100000, height: 10000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 8000, left: 0, width: 10000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -5570,18 +5410,18 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           alignContent: CssAlignFlexStart,
           flexWrap: CssWrap,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-        let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-        let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
         let root =
           LayoutSupport.createNode
@@ -5592,95 +5432,83 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 50000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 5000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 50000 ||
-          root_child2.layout.height != 10000 ||
-          root_child3.layout.top != 30000 ||
+          root_child2.layout.width != 5000 ||
+          root_child2.layout.height != 1000 ||
+          root_child3.layout.top != 3000 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 50000 ||
-          root_child3.layout.height != 10000 ||
-          root_child4.layout.top != 40000 ||
+          root_child3.layout.width != 5000 ||
+          root_child3.layout.height != 1000 ||
+          root_child4.layout.top != 4000 ||
           root_child4.layout.left != 0 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 10000
+          root_child4.layout.width != 5000 || root_child4.layout.height != 1000
         ) {
           assertLayouts
             80
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 50000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 50000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 50000, height: 10000},
-                root_child2.layout
-              ),
-              (
-                {...root_child3.layout, top: 30000, left: 0, width: 50000, height: 10000},
-                root_child3.layout
-              ),
-              ({...root_child4.layout, top: 40000, left: 0, width: 50000, height: 10000}, root_child4.layout)
+              ({...root_child0.layout, top: 0, left: 0, width: 5000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 5000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 5000, height: 1000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 0, width: 5000, height: 1000}, root_child3.layout),
+              ({...root_child4.layout, top: 4000, left: 0, width: 5000, height: 1000}, root_child4.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
-          root_child1.layout.left != 50000 ||
-          root_child1.layout.width != 50000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
-          root_child2.layout.left != 50000 ||
-          root_child2.layout.width != 50000 ||
-          root_child2.layout.height != 10000 ||
-          root_child3.layout.top != 30000 ||
-          root_child3.layout.left != 50000 ||
-          root_child3.layout.width != 50000 ||
-          root_child3.layout.height != 10000 ||
-          root_child4.layout.top != 40000 ||
-          root_child4.layout.left != 50000 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 10000
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
+          root_child1.layout.left != 5000 ||
+          root_child1.layout.width != 5000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
+          root_child2.layout.left != 5000 ||
+          root_child2.layout.width != 5000 ||
+          root_child2.layout.height != 1000 ||
+          root_child3.layout.top != 3000 ||
+          root_child3.layout.left != 5000 ||
+          root_child3.layout.width != 5000 ||
+          root_child3.layout.height != 1000 ||
+          root_child4.layout.top != 4000 ||
+          root_child4.layout.left != 5000 ||
+          root_child4.layout.width != 5000 || root_child4.layout.height != 1000
         ) {
           assertLayouts
             81
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 50000, width: 50000, height: 10000}, root_child0.layout),
+              ({...root_child0.layout, top: 0, left: 5000, width: 5000, height: 1000}, root_child0.layout),
               (
-                {...root_child1.layout, top: 10000, left: 50000, width: 50000, height: 10000},
+                {...root_child1.layout, top: 1000, left: 5000, width: 5000, height: 1000},
                 root_child1.layout
               ),
               (
-                {...root_child2.layout, top: 20000, left: 50000, width: 50000, height: 10000},
+                {...root_child2.layout, top: 2000, left: 5000, width: 5000, height: 1000},
                 root_child2.layout
               ),
               (
-                {...root_child3.layout, top: 30000, left: 50000, width: 50000, height: 10000},
+                {...root_child3.layout, top: 3000, left: 5000, width: 5000, height: 1000},
                 root_child3.layout
               ),
-              (
-                {...root_child4.layout, top: 40000, left: 50000, width: 50000, height: 10000},
-                root_child4.layout
-              )
+              ({...root_child4.layout, top: 4000, left: 5000, width: 5000, height: 1000}, root_child4.layout)
             ]
         }
       }
@@ -5693,18 +5521,18 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           alignContent: CssAlignFlexEnd,
           flexWrap: CssWrap,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-        let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-        let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
         let root =
           LayoutSupport.createNode
@@ -5715,95 +5543,83 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 50000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 5000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 50000 ||
-          root_child2.layout.height != 10000 ||
-          root_child3.layout.top != 30000 ||
+          root_child2.layout.width != 5000 ||
+          root_child2.layout.height != 1000 ||
+          root_child3.layout.top != 3000 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 50000 ||
-          root_child3.layout.height != 10000 ||
-          root_child4.layout.top != 40000 ||
+          root_child3.layout.width != 5000 ||
+          root_child3.layout.height != 1000 ||
+          root_child4.layout.top != 4000 ||
           root_child4.layout.left != 0 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 10000
+          root_child4.layout.width != 5000 || root_child4.layout.height != 1000
         ) {
           assertLayouts
             82
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 50000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 50000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 50000, height: 10000},
-                root_child2.layout
-              ),
-              (
-                {...root_child3.layout, top: 30000, left: 0, width: 50000, height: 10000},
-                root_child3.layout
-              ),
-              ({...root_child4.layout, top: 40000, left: 0, width: 50000, height: 10000}, root_child4.layout)
+              ({...root_child0.layout, top: 0, left: 0, width: 5000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 5000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 5000, height: 1000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 0, width: 5000, height: 1000}, root_child3.layout),
+              ({...root_child4.layout, top: 4000, left: 0, width: 5000, height: 1000}, root_child4.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
-          root_child1.layout.left != 50000 ||
-          root_child1.layout.width != 50000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
-          root_child2.layout.left != 50000 ||
-          root_child2.layout.width != 50000 ||
-          root_child2.layout.height != 10000 ||
-          root_child3.layout.top != 30000 ||
-          root_child3.layout.left != 50000 ||
-          root_child3.layout.width != 50000 ||
-          root_child3.layout.height != 10000 ||
-          root_child4.layout.top != 40000 ||
-          root_child4.layout.left != 50000 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 10000
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
+          root_child1.layout.left != 5000 ||
+          root_child1.layout.width != 5000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
+          root_child2.layout.left != 5000 ||
+          root_child2.layout.width != 5000 ||
+          root_child2.layout.height != 1000 ||
+          root_child3.layout.top != 3000 ||
+          root_child3.layout.left != 5000 ||
+          root_child3.layout.width != 5000 ||
+          root_child3.layout.height != 1000 ||
+          root_child4.layout.top != 4000 ||
+          root_child4.layout.left != 5000 ||
+          root_child4.layout.width != 5000 || root_child4.layout.height != 1000
         ) {
           assertLayouts
             83
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 50000, width: 50000, height: 10000}, root_child0.layout),
+              ({...root_child0.layout, top: 0, left: 5000, width: 5000, height: 1000}, root_child0.layout),
               (
-                {...root_child1.layout, top: 10000, left: 50000, width: 50000, height: 10000},
+                {...root_child1.layout, top: 1000, left: 5000, width: 5000, height: 1000},
                 root_child1.layout
               ),
               (
-                {...root_child2.layout, top: 20000, left: 50000, width: 50000, height: 10000},
+                {...root_child2.layout, top: 2000, left: 5000, width: 5000, height: 1000},
                 root_child2.layout
               ),
               (
-                {...root_child3.layout, top: 30000, left: 50000, width: 50000, height: 10000},
+                {...root_child3.layout, top: 3000, left: 5000, width: 5000, height: 1000},
                 root_child3.layout
               ),
-              (
-                {...root_child4.layout, top: 40000, left: 50000, width: 50000, height: 10000},
-                root_child4.layout
-              )
+              ({...root_child4.layout, top: 4000, left: 5000, width: 5000, height: 1000}, root_child4.layout)
             ]
         }
       }
@@ -5816,18 +5632,18 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           alignContent: CssAlignCenter,
           flexWrap: CssWrap,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-        let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-        let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000, height: 10000};
+        let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
         let root =
           LayoutSupport.createNode
@@ -5838,95 +5654,83 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 50000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
+          root_child1.layout.width != 5000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 50000 ||
-          root_child2.layout.height != 10000 ||
-          root_child3.layout.top != 30000 ||
+          root_child2.layout.width != 5000 ||
+          root_child2.layout.height != 1000 ||
+          root_child3.layout.top != 3000 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 50000 ||
-          root_child3.layout.height != 10000 ||
-          root_child4.layout.top != 40000 ||
+          root_child3.layout.width != 5000 ||
+          root_child3.layout.height != 1000 ||
+          root_child4.layout.top != 4000 ||
           root_child4.layout.left != 0 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 10000
+          root_child4.layout.width != 5000 || root_child4.layout.height != 1000
         ) {
           assertLayouts
             84
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 50000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 10000, left: 0, width: 50000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 20000, left: 0, width: 50000, height: 10000},
-                root_child2.layout
-              ),
-              (
-                {...root_child3.layout, top: 30000, left: 0, width: 50000, height: 10000},
-                root_child3.layout
-              ),
-              ({...root_child4.layout, top: 40000, left: 0, width: 50000, height: 10000}, root_child4.layout)
+              ({...root_child0.layout, top: 0, left: 0, width: 5000, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 5000, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 5000, height: 1000}, root_child2.layout),
+              ({...root_child3.layout, top: 3000, left: 0, width: 5000, height: 1000}, root_child3.layout),
+              ({...root_child4.layout, top: 4000, left: 0, width: 5000, height: 1000}, root_child4.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
-          root_child1.layout.left != 50000 ||
-          root_child1.layout.width != 50000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 20000 ||
-          root_child2.layout.left != 50000 ||
-          root_child2.layout.width != 50000 ||
-          root_child2.layout.height != 10000 ||
-          root_child3.layout.top != 30000 ||
-          root_child3.layout.left != 50000 ||
-          root_child3.layout.width != 50000 ||
-          root_child3.layout.height != 10000 ||
-          root_child4.layout.top != 40000 ||
-          root_child4.layout.left != 50000 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 10000
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
+          root_child1.layout.left != 5000 ||
+          root_child1.layout.width != 5000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
+          root_child2.layout.left != 5000 ||
+          root_child2.layout.width != 5000 ||
+          root_child2.layout.height != 1000 ||
+          root_child3.layout.top != 3000 ||
+          root_child3.layout.left != 5000 ||
+          root_child3.layout.width != 5000 ||
+          root_child3.layout.height != 1000 ||
+          root_child4.layout.top != 4000 ||
+          root_child4.layout.left != 5000 ||
+          root_child4.layout.width != 5000 || root_child4.layout.height != 1000
         ) {
           assertLayouts
             85
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 50000, width: 50000, height: 10000}, root_child0.layout),
+              ({...root_child0.layout, top: 0, left: 5000, width: 5000, height: 1000}, root_child0.layout),
               (
-                {...root_child1.layout, top: 10000, left: 50000, width: 50000, height: 10000},
+                {...root_child1.layout, top: 1000, left: 5000, width: 5000, height: 1000},
                 root_child1.layout
               ),
               (
-                {...root_child2.layout, top: 20000, left: 50000, width: 50000, height: 10000},
+                {...root_child2.layout, top: 2000, left: 5000, width: 5000, height: 1000},
                 root_child2.layout
               ),
               (
-                {...root_child3.layout, top: 30000, left: 50000, width: 50000, height: 10000},
+                {...root_child3.layout, top: 3000, left: 5000, width: 5000, height: 1000},
                 root_child3.layout
               ),
-              (
-                {...root_child4.layout, top: 40000, left: 50000, width: 50000, height: 10000},
-                root_child4.layout
-              )
+              ({...root_child4.layout, top: 4000, left: 5000, width: 5000, height: 1000}, root_child4.layout)
             ]
         }
       }
@@ -5939,18 +5743,18 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           alignContent: CssAlignStretch,
           flexWrap: CssWrap,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 50000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 50000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 50000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 5000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
-        let root_child3_style = {...LayoutSupport.defaultStyle, width: 50000};
+        let root_child3_style = {...LayoutSupport.defaultStyle, width: 5000};
         let root_child3 = LayoutSupport.createNode withChildren::[||] andStyle::root_child3_style ();
-        let root_child4_style = {...LayoutSupport.defaultStyle, width: 50000};
+        let root_child4_style = {...LayoutSupport.defaultStyle, width: 5000};
         let root_child4 = LayoutSupport.createNode withChildren::[||] andStyle::root_child4_style ();
         let root =
           LayoutSupport.createNode
@@ -5961,73 +5765,73 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 50000 ||
+          root_child0.layout.width != 5000 ||
           root_child0.layout.height != 0 ||
           root_child1.layout.top != 0 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 50000 ||
+          root_child1.layout.width != 5000 ||
           root_child1.layout.height != 0 ||
           root_child2.layout.top != 0 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 50000 ||
+          root_child2.layout.width != 5000 ||
           root_child2.layout.height != 0 ||
           root_child3.layout.top != 0 ||
           root_child3.layout.left != 0 ||
-          root_child3.layout.width != 50000 ||
+          root_child3.layout.width != 5000 ||
           root_child3.layout.height != 0 ||
           root_child4.layout.top != 0 ||
-          root_child4.layout.left != 0 || root_child4.layout.width != 50000 || root_child4.layout.height != 0
+          root_child4.layout.left != 0 || root_child4.layout.width != 5000 || root_child4.layout.height != 0
         ) {
           assertLayouts
             86
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 50000, height: 0}, root_child0.layout),
-              ({...root_child1.layout, top: 0, left: 0, width: 50000, height: 0}, root_child1.layout),
-              ({...root_child2.layout, top: 0, left: 0, width: 50000, height: 0}, root_child2.layout),
-              ({...root_child3.layout, top: 0, left: 0, width: 50000, height: 0}, root_child3.layout),
-              ({...root_child4.layout, top: 0, left: 0, width: 50000, height: 0}, root_child4.layout)
+              ({...root_child0.layout, top: 0, left: 0, width: 5000, height: 0}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 0, width: 5000, height: 0}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 0, width: 5000, height: 0}, root_child2.layout),
+              ({...root_child3.layout, top: 0, left: 0, width: 5000, height: 0}, root_child3.layout),
+              ({...root_child4.layout, top: 0, left: 0, width: 5000, height: 0}, root_child4.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 50000 ||
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 5000 ||
           root_child0.layout.height != 0 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 50000 ||
-          root_child1.layout.width != 50000 ||
+          root_child1.layout.left != 5000 ||
+          root_child1.layout.width != 5000 ||
           root_child1.layout.height != 0 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 50000 ||
-          root_child2.layout.width != 50000 ||
+          root_child2.layout.left != 5000 ||
+          root_child2.layout.width != 5000 ||
           root_child2.layout.height != 0 ||
           root_child3.layout.top != 0 ||
-          root_child3.layout.left != 50000 ||
-          root_child3.layout.width != 50000 ||
+          root_child3.layout.left != 5000 ||
+          root_child3.layout.width != 5000 ||
           root_child3.layout.height != 0 ||
           root_child4.layout.top != 0 ||
-          root_child4.layout.left != 50000 ||
-          root_child4.layout.width != 50000 || root_child4.layout.height != 0
+          root_child4.layout.left != 5000 ||
+          root_child4.layout.width != 5000 || root_child4.layout.height != 0
         ) {
           assertLayouts
             87
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 50000, width: 50000, height: 0}, root_child0.layout),
-              ({...root_child1.layout, top: 0, left: 50000, width: 50000, height: 0}, root_child1.layout),
-              ({...root_child2.layout, top: 0, left: 50000, width: 50000, height: 0}, root_child2.layout),
-              ({...root_child3.layout, top: 0, left: 50000, width: 50000, height: 0}, root_child3.layout),
-              ({...root_child4.layout, top: 0, left: 50000, width: 50000, height: 0}, root_child4.layout)
+              ({...root_child0.layout, top: 0, left: 5000, width: 5000, height: 0}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 5000, width: 5000, height: 0}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 5000, width: 5000, height: 0}, root_child2.layout),
+              ({...root_child3.layout, top: 0, left: 5000, width: 5000, height: 0}, root_child3.layout),
+              ({...root_child4.layout, top: 0, left: 5000, width: 5000, height: 0}, root_child4.layout)
             ]
         }
       }
@@ -6039,14 +5843,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6055,69 +5859,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 10000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 1000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 20000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 2000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             88
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 102000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 10000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 20000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 1000, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 2000, width: 1000, height: 10200}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 92000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 9200 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 82000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 8200 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 72000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 7200 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             89
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 92000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 82000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 72000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 9200, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 8200, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 7200, width: 1000, height: 10200}, root_child2.layout)
             ]
         }
       }
@@ -6130,14 +5919,14 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           justifyContent: CssJustifyFlexEnd,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6146,69 +5935,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 72000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 7200 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 82000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 8200 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 92000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 9200 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             90
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 72000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 82000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 92000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 7200, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 8200, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 9200, width: 1000, height: 10200}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 20000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 10000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 1000 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             91
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 20000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 10000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              ({...root_child2.layout, top: 0, left: 0, width: 10000, height: 102000}, root_child2.layout)
+              ({...root_child0.layout, top: 0, left: 2000, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 1000, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 0, width: 1000, height: 10200}, root_child2.layout)
             ]
         }
       }
@@ -6221,14 +5995,14 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           justifyContent: CssJustifyCenter,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6237,72 +6011,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 36000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 3600 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 46000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 4600 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 56000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 5600 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             92
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 36000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 46000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 56000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 3600, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4600, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 5600, width: 1000, height: 10200}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 56000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 5600 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 46000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 4600 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 36000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 3600 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             93
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 56000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 46000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 36000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 5600, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4600, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 3600, width: 1000, height: 10200}, root_child2.layout)
             ]
         }
       }
@@ -6315,14 +6071,14 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           justifyContent: CssJustifySpaceBetween,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6331,66 +6087,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 46000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 4600 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 92000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 9200 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             94
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 102000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 46000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 92000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4600, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 9200, width: 1000, height: 10200}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 92000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 9200 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 46000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 4600 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             95
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 92000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 46000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              ({...root_child2.layout, top: 0, left: 0, width: 10000, height: 102000}, root_child2.layout)
+              ({...root_child0.layout, top: 0, left: 9200, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4600, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 0, width: 1000, height: 10200}, root_child2.layout)
             ]
         }
       }
@@ -6403,14 +6147,14 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
           justifyContent: CssJustifySpaceAround,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, width: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, width: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6419,72 +6163,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 12000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 1200 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 46000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 4600 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 80000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 8000 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             96
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 12000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 46000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 80000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 1200, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4600, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 8000, width: 1000, height: 10200}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 ||
-          root_child0.layout.height != 102000 ||
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 ||
+          root_child0.layout.height != 10200 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 46000 ||
-          root_child1.layout.width != 10000 ||
-          root_child1.layout.height != 102000 ||
+          root_child1.layout.left != 4600 ||
+          root_child1.layout.width != 1000 ||
+          root_child1.layout.height != 10200 ||
           root_child2.layout.top != 0 ||
-          root_child2.layout.left != 12000 ||
-          root_child2.layout.width != 10000 || root_child2.layout.height != 102000
+          root_child2.layout.left != 1200 ||
+          root_child2.layout.width != 1000 || root_child2.layout.height != 10200
         ) {
           assertLayouts
             97
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 80000, width: 10000, height: 102000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 0, left: 46000, width: 10000, height: 102000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 0, left: 12000, width: 10000, height: 102000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 8000, width: 1000, height: 10200}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 4600, width: 1000, height: 10200}, root_child1.layout),
+              ({...root_child2.layout, top: 0, left: 1200, width: 1000, height: 10200}, root_child2.layout)
             ]
         }
       }
@@ -6493,12 +6219,12 @@ if (LayoutTestUtils.runMode === Bench) {
     justify_content_column_flex_start
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 102000, height: 102000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10200, height: 10200};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root_child1_style = LayoutSupport.defaultStyle;
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6507,60 +6233,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
+          root_child1.layout.width != 10200 ||
           root_child1.layout.height != 0 ||
-          root_child2.layout.top != 10000 ||
+          root_child2.layout.top != 1000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             98
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 102000, height: 10000}, root_child0.layout),
-              ({...root_child1.layout, top: 10000, left: 0, width: 102000, height: 0}, root_child1.layout),
-              (
-                {...root_child2.layout, top: 10000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 10200, height: 0}, root_child1.layout),
+              ({...root_child2.layout, top: 1000, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 10000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
+          root_child1.layout.width != 10200 ||
           root_child1.layout.height != 0 ||
-          root_child2.layout.top != 10000 ||
+          root_child2.layout.top != 1000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             99
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 102000, height: 10000}, root_child0.layout),
-              ({...root_child1.layout, top: 10000, left: 0, width: 102000, height: 0}, root_child1.layout),
-              (
-                {...root_child2.layout, top: 10000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 1000, left: 0, width: 10200, height: 0}, root_child1.layout),
+              ({...root_child2.layout, top: 1000, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -6572,14 +6292,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyFlexEnd,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6588,72 +6308,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
-          root_child0.layout.top != 72000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
+          root_child0.layout.top != 7200 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 82000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 8200 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 92000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 9200 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             100
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 72000, left: 0, width: 102000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 82000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 92000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 7200, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 8200, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 9200, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
-          root_child0.layout.top != 72000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
+          root_child0.layout.top != 7200 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 82000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 8200 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 92000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 9200 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             101
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 72000, left: 0, width: 102000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 82000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 92000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 7200, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 8200, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 9200, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -6665,14 +6367,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyCenter,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6681,72 +6383,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
-          root_child0.layout.top != 36000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
+          root_child0.layout.top != 3600 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 46000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 4600 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 56000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 5600 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             102
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 36000, left: 0, width: 102000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 46000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 56000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 3600, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 4600, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 5600, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
-          root_child0.layout.top != 36000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
+          root_child0.layout.top != 3600 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 46000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 4600 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 56000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 5600 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             103
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 36000, left: 0, width: 102000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 46000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 56000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 3600, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 4600, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 5600, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -6758,14 +6442,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifySpaceBetween,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6774,66 +6458,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 46000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 4600 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 92000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 9200 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             104
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 102000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 46000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 92000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 4600, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 9200, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 46000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 4600 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 92000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 9200 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             105
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 102000, height: 10000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 46000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 92000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 4600, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 9200, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -6845,14 +6517,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifySpaceAround,
-          width: 102000,
-          height: 102000
+          width: 10200,
+          height: 10200
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
-        let root_child2_style = {...LayoutSupport.defaultStyle, height: 10000};
+        let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
         let root =
           LayoutSupport.createNode
@@ -6861,72 +6533,54 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
-          root_child0.layout.top != 12000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
+          root_child0.layout.top != 1200 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 46000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 4600 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 80000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 8000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             106
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 12000, left: 0, width: 102000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 46000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 80000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 1200, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 4600, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 8000, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 102000 ||
-          root.layout.height != 102000 ||
-          root_child0.layout.top != 12000 ||
+          root.layout.width != 10200 ||
+          root.layout.height != 10200 ||
+          root_child0.layout.top != 1200 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 102000 ||
-          root_child0.layout.height != 10000 ||
-          root_child1.layout.top != 46000 ||
+          root_child0.layout.width != 10200 ||
+          root_child0.layout.height != 1000 ||
+          root_child1.layout.top != 4600 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 102000 ||
-          root_child1.layout.height != 10000 ||
-          root_child2.layout.top != 80000 ||
+          root_child1.layout.width != 10200 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 8000 ||
           root_child2.layout.left != 0 ||
-          root_child2.layout.width != 102000 || root_child2.layout.height != 10000
+          root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
           assertLayouts
             107
-            ({...root.layout, top: 0, left: 0, width: 102000, height: 102000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 12000, left: 0, width: 102000, height: 10000},
-                root_child0.layout
-              ),
-              (
-                {...root_child1.layout, top: 46000, left: 0, width: 102000, height: 10000},
-                root_child1.layout
-              ),
-              (
-                {...root_child2.layout, top: 80000, left: 0, width: 102000, height: 10000},
-                root_child2.layout
-              )
+              ({...root_child0.layout, top: 1200, left: 0, width: 10200, height: 1000}, root_child0.layout),
+              ({...root_child1.layout, top: 4600, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 8000, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         }
       }
@@ -6937,55 +6591,45 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          borderTop: 10000,
-          borderBottom: 10000,
-          width: 100000,
-          height: 100000,
-          borderLeft: 10000,
-          borderRight: 10000
+          borderTop: 1000,
+          borderBottom: 1000,
+          width: 10000,
+          height: 10000,
+          borderLeft: 1000,
+          borderRight: 1000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 80000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             108
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 80000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 8000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 80000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             109
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 80000, width: 10000, height: 80000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 8000, width: 1000, height: 8000}, root_child0.layout)]
         }
       }
     );
@@ -6993,10 +6637,10 @@ if (LayoutTestUtils.runMode === Bench) {
     min_height
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, minHeight: 60000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, minHeight: 6000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7004,50 +6648,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 80000 ||
-          root_child1.layout.top != 80000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 8000 ||
+          root_child1.layout.top != 8000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 20000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 2000
         ) {
           assertLayouts
             110
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 80000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 80000, left: 0, width: 100000, height: 20000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 8000}, root_child0.layout),
+              ({...root_child1.layout, top: 8000, left: 0, width: 10000, height: 2000}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 80000 ||
-          root_child1.layout.top != 80000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 8000 ||
+          root_child1.layout.top != 8000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 20000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 2000
         ) {
           assertLayouts
             111
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 80000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 80000, left: 0, width: 100000, height: 20000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 8000}, root_child0.layout),
+              ({...root_child1.layout, top: 8000, left: 0, width: 10000, height: 2000}, root_child1.layout)
             ]
         }
       }
@@ -7059,12 +6697,12 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, minWidth: 60000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, minWidth: 6000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7072,50 +6710,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 80000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 8000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 80000 ||
-          root_child1.layout.width != 20000 || root_child1.layout.height != 100000
+          root_child1.layout.left != 8000 ||
+          root_child1.layout.width != 2000 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             112
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 80000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 80000, width: 20000, height: 100000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 8000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 8000, width: 2000, height: 10000}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 20000 ||
-          root_child0.layout.width != 80000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 8000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 20000 || root_child1.layout.height != 100000
+          root_child1.layout.width != 2000 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             113
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 20000, width: 80000, height: 100000},
-                root_child0.layout
-              ),
-              ({...root_child1.layout, top: 0, left: 0, width: 20000, height: 100000}, root_child1.layout)
+              ({...root_child0.layout, top: 0, left: 2000, width: 8000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 0, width: 2000, height: 10000}, root_child1.layout)
             ]
         }
       }
@@ -7126,55 +6758,45 @@ if (LayoutTestUtils.runMode === Bench) {
       fun () => {
         let root_style = {
           ...LayoutSupport.defaultStyle,
-          paddingTop: 10000,
-          paddingBottom: 10000,
-          width: 100000,
-          height: 100000,
-          paddingLeft: 10000,
-          paddingRight: 10000
+          paddingTop: 1000,
+          paddingBottom: 1000,
+          width: 10000,
+          height: 10000,
+          paddingLeft: 1000,
+          paddingRight: 1000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, width: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, width: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 80000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             114
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 10000, width: 10000, height: 80000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 1000, width: 1000, height: 8000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
-          root_child0.layout.left != 80000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 80000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
+          root_child0.layout.left != 8000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             115
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 10000, left: 80000, width: 10000, height: 80000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 8000, width: 1000, height: 8000}, root_child0.layout)]
         }
       }
     );
@@ -7185,14 +6807,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
-          flexGrow: 1000,
-          marginStart: 10000,
-          marginEnd: 10000
+          flexGrow: 1,
+          marginStart: 1000,
+          marginEnd: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -7200,35 +6822,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             116
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 80000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 8000, height: 10000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             117
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 80000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 8000, height: 10000}, root_child0.layout)]
         }
       }
     );
@@ -7236,12 +6854,12 @@ if (LayoutTestUtils.runMode === Bench) {
     margin_and_flex_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
-          flexGrow: 1000,
-          marginTop: 10000,
-          marginBottom: 10000
+          flexGrow: 1,
+          marginTop: 1000,
+          marginBottom: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -7249,35 +6867,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 80000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             118
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 10000, left: 0, width: 100000, height: 80000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 0, width: 10000, height: 8000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 80000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             119
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 10000, left: 0, width: 100000, height: 80000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 0, width: 10000, height: 8000}, root_child0.layout)]
         }
       }
     );
@@ -7288,14 +6902,14 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
-          flexGrow: 1000,
-          marginTop: 10000,
-          marginBottom: 10000
+          flexGrow: 1,
+          marginTop: 1000,
+          marginBottom: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -7303,35 +6917,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 80000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             120
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 10000, left: 0, width: 100000, height: 80000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 0, width: 10000, height: 8000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 10000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 1000 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 || root_child0.layout.height != 80000
+          root_child0.layout.width != 10000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             121
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 10000, left: 0, width: 100000, height: 80000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 1000, left: 0, width: 10000, height: 8000}, root_child0.layout)]
         }
       }
     );
@@ -7339,12 +6949,12 @@ if (LayoutTestUtils.runMode === Bench) {
     margin_and_stretch_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
-          flexGrow: 1000,
-          marginStart: 10000,
-          marginEnd: 10000
+          flexGrow: 1,
+          marginStart: 1000,
+          marginEnd: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -7352,35 +6962,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             122
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 80000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 8000, height: 10000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 10000 ||
-          root_child0.layout.width != 80000 || root_child0.layout.height != 100000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 10000
         ) {
           assertLayouts
             123
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              ({...root_child0.layout, top: 0, left: 10000, width: 80000, height: 100000}, root_child0.layout)
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 8000, height: 10000}, root_child0.layout)]
         }
       }
     );
@@ -7391,12 +6997,12 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, marginEnd: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, marginEnd: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7404,50 +7010,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 45000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 4500 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 55000 ||
-          root_child1.layout.width != 45000 || root_child1.layout.height != 100000
+          root_child1.layout.left != 5500 ||
+          root_child1.layout.width != 4500 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             124
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 45000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 55000, width: 45000, height: 100000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 4500, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 5500, width: 4500, height: 10000}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 55000 ||
-          root_child0.layout.width != 45000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 5500 ||
+          root_child0.layout.width != 4500 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 45000 || root_child1.layout.height != 100000
+          root_child1.layout.width != 4500 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             125
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 55000, width: 45000, height: 100000},
-                root_child0.layout
-              ),
-              ({...root_child1.layout, top: 0, left: 0, width: 45000, height: 100000}, root_child1.layout)
+              ({...root_child0.layout, top: 0, left: 5500, width: 4500, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 0, width: 4500, height: 10000}, root_child1.layout)
             ]
         }
       }
@@ -7456,10 +7056,10 @@ if (LayoutTestUtils.runMode === Bench) {
     margin_with_sibling_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, marginBottom: 10000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, marginBottom: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7467,50 +7067,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 45000 ||
-          root_child1.layout.top != 55000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 4500 ||
+          root_child1.layout.top != 5500 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 45000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 4500
         ) {
           assertLayouts
             126
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 45000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 55000, left: 0, width: 100000, height: 45000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 4500}, root_child0.layout),
+              ({...root_child1.layout, top: 5500, left: 0, width: 10000, height: 4500}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 45000 ||
-          root_child1.layout.top != 55000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 4500 ||
+          root_child1.layout.top != 5500 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 45000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 4500
         ) {
           assertLayouts
             127
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 45000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 55000, left: 0, width: 100000, height: 45000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 4500}, root_child0.layout),
+              ({...root_child1.layout, top: 5500, left: 0, width: 10000, height: 4500}, root_child1.layout)
             ]
         }
       }
@@ -7519,10 +7113,10 @@ if (LayoutTestUtils.runMode === Bench) {
     flex_basis_flex_grow_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, flexBasis: 50000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7530,50 +7124,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 75000 ||
-          root_child1.layout.top != 75000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 7500 ||
+          root_child1.layout.top != 7500 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 25000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 2500
         ) {
           assertLayouts
             128
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 75000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 75000, left: 0, width: 100000, height: 25000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 7500}, root_child0.layout),
+              ({...root_child1.layout, top: 7500, left: 0, width: 10000, height: 2500}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 75000 ||
-          root_child1.layout.top != 75000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 7500 ||
+          root_child1.layout.top != 7500 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 25000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 2500
         ) {
           assertLayouts
             129
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 75000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 75000, left: 0, width: 100000, height: 25000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 7500}, root_child0.layout),
+              ({...root_child1.layout, top: 7500, left: 0, width: 10000, height: 2500}, root_child1.layout)
             ]
         }
       }
@@ -7585,12 +7173,12 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1000, flexBasis: 50000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7598,50 +7186,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 75000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 7500 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 75000 ||
-          root_child1.layout.width != 25000 || root_child1.layout.height != 100000
+          root_child1.layout.left != 7500 ||
+          root_child1.layout.width != 2500 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             130
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 75000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 75000, width: 25000, height: 100000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 7500, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 7500, width: 2500, height: 10000}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 25000 ||
-          root_child0.layout.width != 75000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 2500 ||
+          root_child0.layout.width != 7500 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 25000 || root_child1.layout.height != 100000
+          root_child1.layout.width != 2500 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             131
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 25000, width: 75000, height: 100000},
-                root_child0.layout
-              ),
-              ({...root_child1.layout, top: 0, left: 0, width: 25000, height: 100000}, root_child1.layout)
+              ({...root_child0.layout, top: 0, left: 2500, width: 7500, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 0, width: 2500, height: 10000}, root_child1.layout)
             ]
         }
       }
@@ -7650,10 +7232,10 @@ if (LayoutTestUtils.runMode === Bench) {
     flex_basis_flex_shrink_column
     (
       fun () => {
-        let root_style = {...LayoutSupport.defaultStyle, width: 100000, height: 100000};
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1000, flexBasis: 100000};
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1, flexBasis: 10000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 50000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 5000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7661,50 +7243,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 50000 ||
-          root_child1.layout.top != 50000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 5000 ||
+          root_child1.layout.top != 5000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 50000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 5000
         ) {
           assertLayouts
             132
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 50000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 50000, left: 0, width: 100000, height: 50000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 5000}, root_child0.layout),
+              ({...root_child1.layout, top: 5000, left: 0, width: 10000, height: 5000}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 100000 ||
-          root_child0.layout.height != 50000 ||
-          root_child1.layout.top != 50000 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 5000 ||
+          root_child1.layout.top != 5000 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 100000 || root_child1.layout.height != 50000
+          root_child1.layout.width != 10000 || root_child1.layout.height != 5000
         ) {
           assertLayouts
             133
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 100000, height: 50000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 50000, left: 0, width: 100000, height: 50000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 5000}, root_child0.layout),
+              ({...root_child1.layout, top: 5000, left: 0, width: 10000, height: 5000}, root_child1.layout)
             ]
         }
       }
@@ -7716,12 +7292,12 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {
           ...LayoutSupport.defaultStyle,
           flexDirection: CssFlexDirectionRow,
-          width: 100000,
-          height: 100000
+          width: 10000,
+          height: 10000
         };
-        let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1000, flexBasis: 100000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexShrink: 1, flexBasis: 10000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 50000};
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexBasis: 5000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root =
           LayoutSupport.createNode withChildren::[|root_child0, root_child1|] andStyle::root_style ();
@@ -7729,50 +7305,44 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
           root_child0.layout.left != 0 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
-          root_child1.layout.left != 50000 ||
-          root_child1.layout.width != 50000 || root_child1.layout.height != 100000
+          root_child1.layout.left != 5000 ||
+          root_child1.layout.width != 5000 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             134
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              ({...root_child0.layout, top: 0, left: 0, width: 50000, height: 100000}, root_child0.layout),
-              (
-                {...root_child1.layout, top: 0, left: 50000, width: 50000, height: 100000},
-                root_child1.layout
-              )
+              ({...root_child0.layout, top: 0, left: 0, width: 5000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 5000, width: 5000, height: 10000}, root_child1.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
           root_child0.layout.top != 0 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 50000 ||
-          root_child0.layout.height != 100000 ||
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 5000 ||
+          root_child0.layout.height != 10000 ||
           root_child1.layout.top != 0 ||
           root_child1.layout.left != 0 ||
-          root_child1.layout.width != 50000 || root_child1.layout.height != 100000
+          root_child1.layout.width != 5000 || root_child1.layout.height != 10000
         ) {
           assertLayouts
             135
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [
-              (
-                {...root_child0.layout, top: 0, left: 50000, width: 50000, height: 100000},
-                root_child0.layout
-              ),
-              ({...root_child1.layout, top: 0, left: 0, width: 50000, height: 100000}, root_child1.layout)
+              ({...root_child0.layout, top: 0, left: 5000, width: 5000, height: 10000}, root_child0.layout),
+              ({...root_child1.layout, top: 0, left: 0, width: 5000, height: 10000}, root_child1.layout)
             ]
         }
       }
@@ -7785,17 +7355,17 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyCenter,
           alignItems: CssAlignCenter,
-          borderTop: 10000,
-          borderBottom: 20000,
-          width: 100000,
-          height: 100000,
-          borderStart: 10000
+          borderTop: 1000,
+          borderBottom: 2000,
+          width: 10000,
+          height: 10000,
+          borderStart: 1000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -7803,41 +7373,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             136
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 50000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 5000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 40000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 4000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             137
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 40000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 4000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );
@@ -7849,17 +7409,17 @@ if (LayoutTestUtils.runMode === Bench) {
           ...LayoutSupport.defaultStyle,
           justifyContent: CssJustifyCenter,
           alignItems: CssAlignCenter,
-          borderTop: 10000,
-          borderBottom: 20000,
-          width: 100000,
-          height: 100000,
-          borderEnd: 10000
+          borderTop: 1000,
+          borderBottom: 2000,
+          width: 10000,
+          height: 10000,
+          borderEnd: 1000
         };
         let root_child0_style = {
           ...LayoutSupport.defaultStyle,
           alignSelf: CssAlignCenter,
-          width: 10000,
-          height: 10000
+          width: 1000,
+          height: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
@@ -7867,41 +7427,31 @@ if (LayoutTestUtils.runMode === Bench) {
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 40000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 4000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             138
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 40000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 4000, width: 1000, height: 1000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
           root.layout.top != 0 ||
           root.layout.left != 0 ||
-          root.layout.width != 100000 ||
-          root.layout.height != 100000 ||
-          root_child0.layout.top != 40000 ||
-          root_child0.layout.left != 50000 ||
-          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 4000 ||
+          root_child0.layout.left != 5000 ||
+          root_child0.layout.width != 1000 || root_child0.layout.height != 1000
         ) {
           assertLayouts
             139
-            ({...root.layout, top: 0, left: 0, width: 100000, height: 100000}, root.layout)
-            [
-              (
-                {...root_child0.layout, top: 40000, left: 50000, width: 10000, height: 10000},
-                root_child0.layout
-              )
-            ]
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 4000, left: 5000, width: 1000, height: 1000}, root_child0.layout)]
         }
       }
     );

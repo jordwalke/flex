@@ -355,6 +355,12 @@
  </div>
   *
   */
+let floatMult = ( *. );
+
+let floatDiv = (/.);
+
+let floatSub = (-.);
+
 open LayoutTestUtils;
 
 open LayoutValue;
@@ -497,8 +503,50 @@ let jwalke_border_width_only_start = "jwalke_border_width_only_start";
 
 let jwalke_border_width_only_end = "jwalke_border_width_only_end";
 
-open Core_bench.Std;
 
+/**
+ * Since Core_bench is such a huge dependency and it doesn't compile with byte,
+ * we include a fake shim of it that we enable by default. To use the far
+ * superior Core_bench.
+ *
+ * - Comment out `include FakeCore;` below.
+ * - Uncomment `open Core_bench.Std;`
+ * - Delete the two targets in package.json (byteTarget, jsTarget)
+ * - Run `npm run build`, then `npm run bench`
+ *
+ */
+let module FakeCore = {
+  let module Bench = {
+    let module Test = {
+      let create name::s itm => (s, itm);
+    };
+    let make_command listofCreatedBenchmarks => listofCreatedBenchmarks;
+  };
+  let module Core = {
+    let runCommand (name, func) => {
+      Gc.full_major ();
+      let startSeconds = Sys.time ();
+      for i in 0 to 1000 {
+        func ()
+      };
+      let endSeconds = Sys.time ();
+      print_string (
+        "Average ms for " ^
+        name ^ " " ^ string_of_float (floatDiv (floatMult 1000.0 (floatSub endSeconds startSeconds)) 1000.0)
+      );
+      print_newline ()
+    };
+    let module Std = {
+      let module Command = {
+        let run listOftests => List.iter (fun command => runCommand command) listOftests;
+      };
+    };
+  };
+};
+
+include FakeCore;
+
+/* open Core_bench.Std; */
 if (LayoutTestUtils.runMode === Bench) {
   if LayoutTestUtils.shouldBenchmarkAllAsOne {
     Core.Std.Command.run (

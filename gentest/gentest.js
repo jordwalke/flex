@@ -144,10 +144,55 @@ function printTest(useFloats, LTRContainer, RTLContainer) {
   testLines = testLines.map((line) => '  ' + line);
   let totalLines = [
     '{commentLines}',
+    'let floatMult = ( *. );',
+    'let floatDiv = (/.);',
+    'let floatSub = (-.);',
     'open LayoutTestUtils;',
     'open LayoutValue;',
     '{testNameLines}',
-    'open Core_bench.Std;',
+    '/**',
+    ' * Since Core_bench is such a huge dependency and it doesn\'t compile with byte,',
+    ' * we include a fake shim of it that we enable by default. To use the far',
+    ' * superior Core_bench.',
+    ' *',
+    ' * - Comment out `include FakeCore;` below.',
+    ' * - Uncomment `open Core_bench.Std;`',
+    ' * - Delete the two targets in package.json (byteTarget, jsTarget)',
+    ' * - Run `npm run build`, then `npm run bench`',
+    ' *',
+    ' */',
+    'let module FakeCore = {',
+    '  let module Bench = {',
+    '    let module Test = {',
+    '      let create name::s itm => (s, itm);',
+    '    };',
+    '    let make_command listofCreatedBenchmarks => listofCreatedBenchmarks;',
+    '  };',
+    '  let module Core = {',
+    '    let runCommand (name, func) => {',
+    '      Gc.full_major ();',
+    '      let startSeconds = Sys.time ();',
+    '      for i in 0 to 1000 {',
+    '        func ()',
+    '      };',
+    '      let endSeconds = Sys.time ();',
+    '      print_string (',
+    '        "Average ms for " ^',
+    '        name ^ " " ^ string_of_float (floatDiv (floatMult 1000.0 (floatSub endSeconds startSeconds)) 1000.0)',
+    '      );',
+    '      print_newline ()',
+    '    };',
+    '    let module Std = {',
+    '      let module Command = {',
+    '        let run listOftests => List.iter (fun command => runCommand command) listOftests;',
+    '      };',
+    '    };',
+    '  };',
+    '};',
+    '',
+    'include FakeCore;',
+    '',
+    '/* open Core_bench.Std; */',
     'if (LayoutTestUtils.runMode === Bench) {',
     '  if LayoutTestUtils.shouldBenchmarkAllAsOne {',
     '    Core.Std.Command.run (Bench.make_command [Bench.Test.create name::"all-benchmarks" (fun()=>{',
@@ -171,7 +216,11 @@ function printTest(useFloats, LTRContainer, RTLContainer) {
   return totalLines;
 }
 
-let ensureInt = (v) => v != null ? '' + (v * 1000) : '0';
+// In the fixed point encoding of layout/style values, each field is measured in hundredths of pixels.
+let unitsPerPixel = 100;
+let zerosPerPixel = 2;
+let ensureIntThousandths = (v) => v != null ? '' + (v * unitsPerPixel) : '0';
+let ensureInt = (v) => v != null ? '' + (v) : '0';
 let ensureFloat = (v) => v != null ? '' + (v) + '.0' : '0.0';
 
 let errors = [];
@@ -179,7 +228,7 @@ let errors = [];
 let testNum = 0;
 
 let createLayoutExtensionNode = (useFloats, nodeName, top, left, width, height) => {
-  let converter = useFloats ? ensureFloat : ensureInt;
+  let converter = useFloats ? ensureFloat : ensureIntThousandths;
   return (
     '{...' +
     nodeName +
@@ -191,7 +240,7 @@ let createLayoutExtensionNode = (useFloats, nodeName, top, left, width, height) 
 };
 
 const createInequalityChecker = (useFloats, node, nodeName) => {
-  let converter = useFloats ? ensureFloat : ensureInt;
+  let converter = useFloats ? ensureFloat : ensureIntThousandths;
   return nodeName + '.layout.top != ' + converter(node.top) + ' || ' +
     nodeName + '.layout.left != ' + converter(node.left) + ' || ' +
     nodeName + '.layout.width != ' + converter(node.width) + ' || ' +
@@ -275,7 +324,7 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
       continue;
     }
     let val = node.computedStyleForKebabs[style];
-    let ensurer = useFloats ? ensureFloat : ensureInt;
+    let ensurerFlex = useFloats ? ensureFloat : ensureInt;
     if (val !== getDefaultStyleValue(style)) {
       switch (style) {
         case 'margin-left':
@@ -362,10 +411,10 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
           styleLines.push('overflow: ' + overflowValue(val));
           break;
         case 'flex-grow':
-          styleLines.push('flexGrow: ' + ensurer(val));
+          styleLines.push('flexGrow: ' + ensurerFlex(val));
           break;
         case 'flex-shrink':
-          styleLines.push('flexShrink: ' +  ensurer(val));
+          styleLines.push('flexShrink: ' +  ensurerFlex(val));
           break;
         case 'flex-basis':
           styleLines.push('flexBasis: ' +  pixelValue(useFloats, val));
@@ -541,9 +590,9 @@ function pixelValue(useFloats, value) {
         );
       } else {
         return (
-          (value.replace('px', '')).indexOf('.') === -1 ?
-            (value.replace('px', '')) + '000' :
-            '' + ((+value.replace('px', '')) * 1000)
+          hasNoDot ?
+            (value.replace('px', '')) + (Array(zerosPerPixel + 1).join('0')) :
+            '' + ((+value.replace('px', '')) * unitsPerPixel)
         );
       }
   }
