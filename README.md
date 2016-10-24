@@ -50,13 +50,13 @@ Your mileage may vary, but here's an example of the different performance you
 can observe when compiling `Reason` layout to either native assembly, byte code,
 and various JS engines.
 
-| Method       | Average time per test execution |
-| -------------|---------------------------------|
-| `native`     | `0.20ms`                        |
-| `byte`       | `5.0ms`                         |
-| `jsc`        | `18.6ms`                        |
-| `jscWithJit` | `3.05ms`                        |
-| `v8`         | `1.28ms`                        |
+| Method       | Average time per test execution | Requires JIT |
+| -------------|---------------------------------|---------------
+| `native`     | `0.20ms`                        | No
+| `byte`       | `5.0ms`                         | No
+| `jsc`        | `18.6ms`                        | No
+| `jscWithJit` | `3.05ms`                        | Yes
+| `v8`         | `1.28ms`                        | Yes
 
 One interesting fact is that `ReLayout` is compiles the `byte` version using
 `ocamlc`, which produces a Virtual Machine byte code, but this VM is
@@ -116,13 +116,13 @@ to slow down during the startup phase. This is much less of an issue for
 natively compiled code, where all compilation has been done ahead of time.
 
 
-| Method       | Startup duration + running tests once |
-| -------------|---------------------------------------|
-| `native`     | `7 ms`                                |
-| `byte`       | `18 ms`                               |
-| `jsc`        | `98 ms`                               |
-| `jscWithJit` | `150 ms`                              |
-| `v8`         | `220 ms`                              |
+| Method       | Startup duration + running tests once | Requires JIT
+| -------------|---------------------------------------|-------------
+| `native`     | `7 ms`                                | No
+| `byte`       | `18 ms`                               | No
+| `jsc`        | `98 ms`                               | No
+| `jscWithJit` | `150 ms`                              | Yes
+| `v8`         | `220 ms`                              | Yes
 
 Measurements use the `time` command line program (`real`).
 
