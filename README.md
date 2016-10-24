@@ -70,17 +70,81 @@ All of the JS benchmarks are compiled with `js_of_ocaml`, and `--opt 3`. You
 can adjust the `jsoo` flags in `package.json`. `v8`'s performance is especially
 impacted by `--opt 3` vs. `--opt 1`. Note that `v8` *only* has the option to
 enable the JIT (for now).
+
+## Interpreting the Data
+
+This benchmark is very useful because it tests the core compiler and runtimes
+of various language ecosystems - knowing that we are compiling a *single* exact
+algorithm to different runtimes. In general the JS that is compiled here (by
+`js_of_ocaml`), is somewhat idiomatic JS, and generally performs slightly
+better than what you would write by hand in JS. In this case, because of how
+the original code is written in `Reason` (which was ported from `C` and is not
+very functional), many of `js_of_ocaml`'s optimization opportunities are lost,
+so it's likely that this JS output is slightly slower than what you'd write by
+hand (I'd estimate 20% max). We can easily fix that in the `Reason` source, and
+not only will the `JS` output's performance benefit, but likely the
+`native`/`byte` targets as well.
+
+Still, regardless of what we do to improve the JS output, it's likely not going
+to recover the order(s) of magnitude.
+
+## Theories
+
+In past benchmark experiments I've performed with `jsc`/`v8`/`ocamlopt`, I've
+found that `jsc` with a JIT can be competitive with `ocamlopt`, under the right
+circumstances, but those other experiments were very allocation heavy. The
+layout algorithm is very computationally heavy, and not allocation heavy.  It
+seems that `ocamlopt` does well in a wide variety of cases (elegant allocation
+heavy function style, or dirty imperative systems work/computation).
+
+## Startup Time
+
+Different runtimes have different startup time characteristics. The following
+benchmarks give a *very rough* idea of how long each of the respective language
+runtimes take to startup. This isn't measuring how fast the *languages*
+initialize their environments, but rather, the languages *along with* their
+containing ecosystems (such as Node setup, and the JSC harness). `v8`'s startup
+time is at an inherent disadvantage because it includes to initialize the VM
+along with many built in libraries. Still, this is a good idea of what you
+could expect your relative startup time overhead to be for a very small (1000
+line) app in these respective environments.
+
+One thing not accounted for here, is how the startup time *grows* (or doesn't)
+with the amount of code added. JS engines must parse their code and generate
+some intermediate representation at startup time, so that will cause large apps
+to slow down during the startup phase. This is much less of an issue for
+natively compiled code, where all compilation has been done ahead of time.
+
+
+| Method       | Startup duration + running tests once |
+| -------------|---------------------------------------|
+| `native`     | `7 ms`                                |
+| `byte`       | `18 ms`                               |
+| `jsc`        | `98 ms`                               |
+| `jscWithJit` | `150 ms`                              |
+| `v8`         | `220 ms`                              |
+
+Measurements use the `time` command line program (`real`).
+
+
+## Multiple layout representations:
+
 There are two implementations of layout data encodings, one uses fixed point
 with explicit rounding, and the other uses floating point. The default is
 currently fixed point. You can toggle between the two by doing the following:
 
-## Multiple layout representations:
 
 - To test the floating point representation, open `./src/LayoutValue.re` and
   uncomment the upper half, and comment out the lower half.
 - Open `package.json` and replace `src/LayoutTestFixedEncoding.re` with
   `src/LayoutTestFloatEncoding.re`.
 - Run `npm run build`, `npm run test`, `npm run bench`, etc.
+
+
+The performance in `ocamlopt` would decrease by about `20%` when switching to
+floating point representation. That can be fixed in the floating point
+representation without having to use fixed point representation, but I just
+haven't gotten to that yet.
 
 ## More accurate benchmarks for native compilation
 

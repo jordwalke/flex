@@ -50,7 +50,7 @@
     "bench": "./_build/default/src/app.native -quota 20",
     "test:byte": "./_build/byteTarget/src/app.byte",
     "bench:byte": "./_build/byteTarget/src/app.byte -quota 20",
-    "test:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
+    "test:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
     "bench:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/jsTarget/src/app.js",
     "test:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
     "bench:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/jsTarget/src/app.js",
