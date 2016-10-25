@@ -63,8 +63,8 @@ shortly - so that neither is significantly advantaged).
 
 | Method       | Average time per test execution | Requires JIT |
 | -------------|---------------------------------|---------------
-| `c`          | `0.20ms`                        | No
-| `native`     | `0.21ms`                        | No
+| `c`          | `0.33ms`                        | No
+| `native`     | `0.26ms`                        | No
 | `byte`       | `5.0ms`                         | No
 | `jsc`        | `18.6ms`                        | No
 | `jscWithJit` | `4.05ms`                        | Yes
