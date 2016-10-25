@@ -54,35 +54,63 @@ against the `C` implementation of `css-layout`, and
 
 Your mileage may vary, but here's an example of the different performance you
 can observe when compiling `Reason` layout to either native assembly, byte code,
-and various JS engines.
+and various JS engines. Comparison against a pure-`C` implementation is also
+included.
+
+This test uses the FixedPoint encoding of layout data. `native` currently
+performs better on FixedPoint encoding (Float encoding will be improved
+shortly - so that neither is significantly advantaged).
 
 | Method       | Average time per test execution | Requires JIT |
 | -------------|---------------------------------|---------------
-| `native`     | `0.20ms`                        | No
+| `c`          | `0.20ms`                        | No
+| `native`     | `0.21ms`                        | No
 | `byte`       | `5.0ms`                         | No
 | `jsc`        | `18.6ms`                        | No
-| `jscWithJit` | `3.05ms`                        | Yes
-| `v8`         | `1.28ms`                        | Yes
+| `jscWithJit` | `4.05ms`                        | Yes
+| `v8`         | `3.28ms`                        | Yes
 
-One interesting fact is that `ReLayout` is compiles the `byte` version using
-`ocamlc`, which produces a Virtual Machine byte code, but this VM is
-interesting in that it does not use any runtime JIT to achieve decent
-performance. If a JIT is out of the question for you (or you just don't want to
-wait for JIT warmup at startup time), then `byte` is a good option for you. If
-raw performance and startup time are important to you, then compiling to native
-is the best option.
 
-All of the JS benchmarks are compiled with `js_of_ocaml`, and `--opt 3`. You
-can adjust the `jsoo` flags in `package.json`. `v8`'s performance is especially
-impacted by `--opt 3` vs. `--opt 1`. Note that `v8` *only* has the option to
-enable the JIT (for now).
+## Comparison to `C` Implementation.
 
-The native `C` implementation uses the official `css-layout` implementation,
-with a benchmark test case that matches the `Reason` benchmarks.
-
-You can run the `C` benchmark yourself by cloning the official `css-layout`
-project, and replacing the official benchmark with
+The native `C` implementation in the table above uses the official `css-layout`
+implementation, but with a benchmark test suite that matches the `ReLayout`
+benchmark tests. You can run the `C` benchmark yourself by cloning the official
+`css-layout` project, and replacing the official benchmark with
 [this](./benchmarks/CSSBenchmark.c).
+
+
+Here are several datapoints gathered from running the `ReLayout` test suite,
+and comparing it with those same tests executed in the `C` implementation.  We
+include both the fixed point and the floating point encodings.
+
+The Reason implementation of layout hasn't been optimized at all. Cleaning up
+the code to be less imperative will likely make it even faster. Upgrading to
+F-lambda will also likely make both fixed point, and especially floating point,
+faster.
+
+
+```
+    ┌────────────────────────────┬────────────────────────────┬────────────────────────────┐
+    │    Reason Layout Float     |      C Implementation      |   ReasonLayout FixedPoint  |
+    ├────────────────────────────┼────────────────────────────┼────────────────────────────┤
+    │                            |                            |                            |
+    │   ┌──────────┬─────────┐   |   ┌──────────┬─────────┐   |   ┌──────────┬─────────┐   |
+    │   │ AverageMs│ MedianMs│   |   │ AverageMs│ MedianMs│   |   │ AverageMs│ MedianMs│   |
+    │   ├──────────┼─────────┤   |   ├──────────┼─────────┤   |   ├──────────┼─────────┤   |
+    │   │ 0.32469  │ 0.296   │   |   │ 0.39579  │ 0.350   │   |   │ 0.27288  │ 0.245   │   |
+    │   │ 0.36458  │ 0.328   │   |   │ 0.33136  │ 0.299   │   |   │ 0.25957  │ 0.238   │   |
+    │   │ 0.36345  │ 0.329   │   |   │ 0.33733  │ 0.325   │   |   │ 0.26478  │ 0.241   │   |
+    │   │ 0.31851  │ 0.265   │   |   │ 0.31649  │ 0.289   │   |   │ 0.25594  │ 0.234   │   |
+    │   │ 0.3742   │ 0.331   │   |   │ 0.29206  │ 0.281   │   |   │ 0.27518  │ 0.241   │   |
+    │   │ 0.33161  │ 0.307   │   |   │ 0.34415  │ 0.319   │   |   │ 0.23987  │ 0.216   │   |
+    │   │ 0.34044  │ 0.303   │   |   │ 0.32270  │ 0.282   │   |   │ 0.25471  │ 0.233   │   |
+    │   │ 0.38866  │ 0.341   │   |   │ 0.35345  │ 0.332   │   |   │ 0.32457  │ 0.297   │   |  
+    │   └──────────┴─────────┘   |   └──────────┴─────────┘   |   └──────────┴─────────┘   |
+    │                            |                            |                            | 
+    └────────────────────────────┴────────────────────────────┴────────────────────────────┘
+```
+    
 
 ## Interpreting the Data
 
@@ -100,6 +128,22 @@ not only will the `JS` output's performance benefit, but likely the
 
 Still, regardless of what we do to improve the JS output, it's likely not going
 to recover the order(s) of magnitude.
+
+One interesting fact is that `ReLayout` is compiles the `byte` version using
+`ocamlc`, which produces a Virtual Machine byte code, but this VM is
+interesting in that it does not use any runtime JIT to achieve decent
+performance. If a JIT is out of the question for you (or you just don't want to
+wait for JIT warmup at startup time), then `byte` is a good option for you. If
+raw performance and startup time are important to you, then compiling to native
+is the best option.
+
+All of the JS benchmarks are compiled with `js_of_ocaml`, and `--opt 3`. You
+can adjust the `jsoo` flags in `package.json`. `v8`'s performance is especially
+impacted by `--opt 3` vs. `--opt 1`. Note that `v8` *only* has the option to
+enable the JIT (for now).
+
+
+
 
 ## Theories
 
