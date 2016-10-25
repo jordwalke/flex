@@ -77,6 +77,13 @@ can adjust the `jsoo` flags in `package.json`. `v8`'s performance is especially
 impacted by `--opt 3` vs. `--opt 1`. Note that `v8` *only* has the option to
 enable the JIT (for now).
 
+The native `C` implementation uses the official `css-layout` implementation,
+with a benchmark test case that matches the `Reason` benchmarks.
+
+You can run the `C` benchmark yourself by cloning the official `css-layout`
+project, and replacing the official benchmark with
+[this](./benchmarks/CSSBenchmark.c).
+
 ## Interpreting the Data
 
 This benchmark is very useful because it tests the core compiler and runtimes
