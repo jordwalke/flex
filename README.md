@@ -44,6 +44,12 @@ npm run bench:jscWithJit   # Run benchmarks in JavaScriptCore with JIT.
 npm run bench:v8           # Run benchmarks in v8.
 ```
 
+It will print the `mean` and `median` running time of the layout test runs.
+The `median` is not reliably on any of the `JS` targets due to lack of
+ubiquitous high precision timers in JS environments, so the `mean` is the only
+universally comparable metric - still, the `median` is useful when comparing
+against the `C` implementation of `css-layout`, and
+
 ## Some sample benchmark results (for those curious):
 
 Your mileage may vary, but here's an example of the different performance you

@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ * vim: set ft=rust:
+ * vim: set ft=reason:
  */
 
 /**
@@ -89,7 +91,7 @@
  </div>
 
  <div id="absolute_layout_start_top_end_bottom" style="width: 100px; height: 100px;">
-   <div style="position: absolute; left-because-start: 1;  start: 10px; top: 10px; right-because-end: 1; right: 10px; bottom: 10px;"></div>
+   <div style="position: absolute; left-because-start: 1; left: 10px; top: 10px; right-because-end: 1; right: 10px; bottom: 10px;"></div>
  </div>
 
  <div id="absolute_layout_width_height_start_top_end_bottom" style="width: 100px; height: 100px;">
@@ -524,15 +526,32 @@ let module FakeCore = {
   };
   let module Core = {
     let runCommand (name, func) => {
+      let numIterations = 100;
+      let timesInMs = Array.make_float numIterations;
       Gc.full_major ();
       let startSeconds = Sys.time ();
-      for i in 0 to 1000 {
-        func ()
+      for i in 0 to (numIterations - 1) {
+        let itemStartSeconds = Sys.time ();
+        func ();
+        let itemEndSeconds = Sys.time ();
+        timesInMs.(i) = floatSub itemEndSeconds itemStartSeconds
       };
       let endSeconds = Sys.time ();
       print_string (
         "Average ms for " ^
-        name ^ " " ^ string_of_float (floatDiv (floatMult 1000.0 (floatSub endSeconds startSeconds)) 1000.0)
+        name ^
+        " " ^
+        string_of_float (
+          floatMult 1000.0 (floatDiv (floatSub endSeconds startSeconds) (float_of_int numIterations))
+        )
+      );
+      print_newline ();
+      Array.sort compare timesInMs;
+      print_string (
+        "Median ms for " ^
+        name ^
+        " " ^
+        string_of_float (floatMult 1000.0 timesInMs.(numIterations / 2)) ^ " (Not Valid For JS benchmarks)"
       );
       print_newline ()
     };
@@ -842,6 +861,7 @@ if (LayoutTestUtils.runMode === Bench) {
                 positionType: CssPositionAbsolute,
                 top: 1000,
                 bottom: 1000,
+                start: 1000,
                 endd: 1000
               };
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
@@ -1180,7 +1200,6 @@ if (LayoutTestUtils.runMode === Bench) {
               /* align_content_flex_start */
               let root_style = {
                 ...LayoutSupport.defaultStyle,
-                alignContent: CssAlignFlexStart,
                 flexWrap: CssWrap,
                 width: 10000,
                 height: 10000
@@ -1998,6 +2017,7 @@ if (LayoutTestUtils.runMode === Bench) {
         positionType: CssPositionAbsolute,
         top: 1000,
         bottom: 1000,
+        start: 1000,
         endd: 1000
       };
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
@@ -2336,13 +2356,7 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
     let bench_align_content_flex_start () => {
-      let root_style = {
-        ...LayoutSupport.defaultStyle,
-        alignContent: CssAlignFlexStart,
-        flexWrap: CssWrap,
-        width: 10000,
-        height: 10000
-      };
+      let root_style = {...LayoutSupport.defaultStyle, flexWrap: CssWrap, width: 10000, height: 10000};
       let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
       let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
@@ -4137,6 +4151,7 @@ if (LayoutTestUtils.runMode === Bench) {
           positionType: CssPositionAbsolute,
           top: 1000,
           bottom: 1000,
+          start: 1000,
           endd: 1000
         };
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
@@ -4148,13 +4163,13 @@ if (LayoutTestUtils.runMode === Bench) {
           root.layout.width != 10000 ||
           root.layout.height != 10000 ||
           root_child0.layout.top != 1000 ||
-          root_child0.layout.left != 9000 ||
-          root_child0.layout.width != 0 || root_child0.layout.height != 8000
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 8000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             40
             ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
-            [({...root_child0.layout, top: 1000, left: 9000, width: 0, height: 8000}, root_child0.layout)]
+            [({...root_child0.layout, top: 1000, left: 1000, width: 8000, height: 8000}, root_child0.layout)]
         };
         Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
         if (
@@ -4164,12 +4179,12 @@ if (LayoutTestUtils.runMode === Bench) {
           root.layout.height != 10000 ||
           root_child0.layout.top != 1000 ||
           root_child0.layout.left != 1000 ||
-          root_child0.layout.width != 0 || root_child0.layout.height != 8000
+          root_child0.layout.width != 8000 || root_child0.layout.height != 8000
         ) {
           assertLayouts
             41
             ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
-            [({...root_child0.layout, top: 1000, left: 1000, width: 0, height: 8000}, root_child0.layout)]
+            [({...root_child0.layout, top: 1000, left: 1000, width: 8000, height: 8000}, root_child0.layout)]
         }
       }
     );
@@ -5406,13 +5421,7 @@ if (LayoutTestUtils.runMode === Bench) {
     align_content_flex_start
     (
       fun () => {
-        let root_style = {
-          ...LayoutSupport.defaultStyle,
-          alignContent: CssAlignFlexStart,
-          flexWrap: CssWrap,
-          width: 10000,
-          height: 10000
-        };
+        let root_style = {...LayoutSupport.defaultStyle, flexWrap: CssWrap, width: 10000, height: 10000};
         let root_child0_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
         let root_child1_style = {...LayoutSupport.defaultStyle, width: 5000, height: 1000};

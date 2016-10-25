@@ -21,6 +21,8 @@ function printTest(useFloats, LTRContainer, RTLContainer) {
     ' * This source code is licensed under the BSD-style license found in the',
     ' * LICENSE file in the root directory of this source tree. An additional grant',
     ' * of patent rights can be found in the PATENTS file in the same directory.',
+    ' * vim: set ft=rust:',
+    ' * vim: set ft=reason:',
     ' */',
     '',
   ];
@@ -170,15 +172,29 @@ function printTest(useFloats, LTRContainer, RTLContainer) {
     '  };',
     '  let module Core = {',
     '    let runCommand (name, func) => {',
+    '      let numIterations = 100;',
+    '      let timesInMs = Array.make_float numIterations;',
     '      Gc.full_major ();',
     '      let startSeconds = Sys.time ();',
-    '      for i in 0 to 1000 {',
-    '        func ()',
+    '      for i in 0 to (numIterations - 1) {',
+    '        let itemStartSeconds = Sys.time ();',
+    '        func ();',
+    '        let itemEndSeconds = Sys.time ();',
+    '        timesInMs.(i) = floatSub itemEndSeconds itemStartSeconds',
     '      };',
     '      let endSeconds = Sys.time ();',
     '      print_string (',
     '        "Average ms for " ^',
-    '        name ^ " " ^ string_of_float (floatDiv (floatMult 1000.0 (floatSub endSeconds startSeconds)) 1000.0)',
+    '        name ^',
+    '        " " ^',
+    '        string_of_float (',
+    '          floatMult 1000.0 (floatDiv (floatSub endSeconds startSeconds) (float_of_int numIterations))',
+    '        )',
+    '      );',
+    '      print_newline ();',
+    '      Array.sort compare timesInMs;',
+    '      print_string (',
+    '        "Median ms for " ^ name ^ " " ^ string_of_float (floatMult 1000.0 timesInMs.(numIterations / 2)) ^ " (Not Valid For JS benchmarks)"',
     '      );',
     '      print_newline ()',
     '    };',
@@ -193,6 +209,9 @@ function printTest(useFloats, LTRContainer, RTLContainer) {
     'include FakeCore;',
     '',
     '/* open Core_bench.Std; */',
+    '',
+    '',
+    '',
     'if (LayoutTestUtils.runMode === Bench) {',
     '  if LayoutTestUtils.shouldBenchmarkAllAsOne {',
     '    Core.Std.Command.run (Bench.make_command [Bench.Test.create name::"all-benchmarks" (fun()=>{',
@@ -760,7 +779,7 @@ function getComputedStyleInKebabForm(node) {
  </div>
 
  <div id="absolute_layout_start_top_end_bottom" style="width: 100px; height: 100px;">
-   <div style="position: absolute; replaceWithActualStart-because-start: 1;  start: 10px; top: 10px; replaceWithActualEnd-because-end: 1; replaceWithActualEnd: 10px; bottom: 10px;"></div>
+   <div style="position: absolute; replaceWithActualStart-because-start: 1; replaceWithActualStart: 10px; top: 10px; replaceWithActualEnd-because-end: 1; replaceWithActualEnd: 10px; bottom: 10px;"></div>
  </div>
 
  <div id="absolute_layout_width_height_start_top_end_bottom" style="width: 100px; height: 100px;">
