@@ -1,7 +1,7 @@
 type printOptions = {printLayout: bool, printStyle: bool, printChildren: bool};
 
 type direction =
-  | CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS /* 'inherit' */
+  | CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS /* inherit */
   | CssDirectionInherit /* 'inherit' */
   | CssDirectionLtr /* 'ltr'     */
   | CssDirectionRtl /* 'rtl'     */;
@@ -78,7 +78,7 @@ type specificDirection =
 type coordinates = {left: unitOfM, top: unitOfM};
 
 type cssStyle = {
-  direction: direction,
+  mutable direction: direction,
   flexDirection: flexDirection,
   justifyContent: justify,
   alignContent: align,
@@ -183,27 +183,3 @@ type node 'context = {
   isDirty: 'context => bool,
   context: 'context
 };
-/* static css_position_t leading[4] = { */
-/*   /* CssFlexDirectionColumn = */ CSS_TOP, */
-/*   /* CssFlexDirectionColumnReverse = */ CSS_BOTTOM, */
-/*   /* CssFlexDirectionRow = */ CSS_LEFT, */
-/*   /* CssFlexDirectionRowReverse = */ CSS_RIGHT */
-/* }; */
-/* static css_position_t trailing[4] = { */
-/*   /* CssFlexDirectionColumn = */ CSS_BOTTOM, */
-/*   /* CssFlexDirectionColumnReverse = */ CSS_TOP, */
-/*   /* CssFlexDirectionRow = */ CSS_RIGHT, */
-/*   /* CssFlexDirectionRowReverse = */ CSS_LEFT */
-/* }; */
-/* static css_position_t pos[4] = { */
-/*   /* CssFlexDirectionColumn = */ CSS_TOP, */
-/*   /* CssFlexDirectionColumnReverse = */ CSS_BOTTOM, */
-/*   /* CssFlexDirectionRow = */ CSS_LEFT, */
-/*   /* CssFlexDirectionRowReverse = */ CSS_RIGHT */
-/* }; */
-/* static css_dimension_t dim[4] = { */
-/*   /* CssFlexDirectionColumn = */ CSS_HEIGHT, */
-/*   /* CssFlexDirectionColumnReverse = */ CSS_HEIGHT, */
-/*   /* CssFlexDirectionRow = */ CSS_WIDTH, */
-/*   /* CssFlexDirectionRowReverse = */ CSS_WIDTH */
-/* }; */
