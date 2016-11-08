@@ -18,7 +18,6 @@
   "dependencies": {
     "@opam-alpha/core_bench": "113.33.3",
     "@opam-alpha/ocaml": "4.02.3",
-    "reason-ide-toolkit": "*",
     "dependency-env": "https://github.com/npm-ml/dependency-env.git",
     "js_of_ocaml-bin": "git+https://github.com/reasonml/js_of_ocaml-bin.git",
     "@opam-alpha/merlin": "2.5.0",
