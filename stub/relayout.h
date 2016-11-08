@@ -36,6 +36,11 @@ void CSSNodeInit(const CSSNodeRef node);
 
 void CSSNodeFree(const CSSNodeRef node);
 
+// On the contract, the ownership of a node always belong to the creator.
+// This function, however assumes the ownership of a node belong to the tree.
+// We have this function mostly for convenience purpose and are only encouraged to use in tests.
+void CSSNodeFreeRecursive(const CSSNodeRef node);
+
 void CSSNodeInsertChild(const CSSNodeRef node,
                         const CSSNodeRef child,
                         const uint32_t index);

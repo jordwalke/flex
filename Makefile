@@ -19,7 +19,7 @@ SOURCES := $(shell find $(SRCDIR) -name '*.re')
 
 SOURCES_IN_BUILD := $(addprefix $(BUILDDIR)/,$(SOURCES))
 
-MODULES=LayoutValue ReJsPrelude LayoutTypes LayoutSupport LayoutPrint Layout LayoutTestUtils LayoutTestFixedEncoding
+MODULES=LayoutValue ReJsPrelude LayoutTypes LayoutSupport LayoutPrint Layout LayoutTestUtils
 
 CMXS=$(addsuffix .cmx,$(MODULES))
 

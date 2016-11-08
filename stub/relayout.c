@@ -32,6 +32,16 @@ void CSSNodeFree(const CSSNodeRef node) {
     free(node);
 }
 
+// On the contract, the ownership of a node always belong to the creator.
+// This function, however assumes the ownership of a node belong to the tree.
+// We have this function mostly for convenience purpose in unit tests.
+void CSSNodeFreeRecursive(const CSSNodeRef node) {
+    // deregister the value with global heap, children of this object still need to be freed
+    // by its owner.
+    caml_remove_global_root(node);
+    free(node);
+}
+
 void CSSNodeInsertChild(const CSSNodeRef node,
                         const CSSNodeRef child,
                         const uint32_t index) {
