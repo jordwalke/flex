@@ -197,6 +197,11 @@ let rec theNullNode = {
   context: ()
 };
 
+/* Force allocating a new object */
+let createStyle () => {...defaultStyle, direction: CssDirectionInherit};
+
+let createLayout () => {...theNullNode.layout, direction: CssDirectionInherit};
+
 
 /**
  * It is critical that this actually be a different reference
@@ -208,7 +213,8 @@ let createNode context => {
   /**
    * We can keep the original style because it's immutable, but layout is not.
    */
-  layout: {...theNullNode.layout, direction: CssDirectionInherit},
+  layout: createLayout (),
+  style: createStyle (),
   context
 };
 
