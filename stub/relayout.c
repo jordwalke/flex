@@ -6,12 +6,14 @@
 #include <stdio.h>
 #include "relayout.h"
 
+#define assert__(x) for ( ; !(x) ; assert(x) )
+
 value *CSSNodeNew(void) {
     CAMLparam0();
     CAMLlocal1(v);
     value *valp;
     static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("cssNodeNew");
+    if (closure == NULL) closure = caml_named_value("CSSNodeNew");
     assert(closure);
     v = caml_callback(*closure, Val_unit);
     valp = (value *) malloc(sizeof *valp);
@@ -47,7 +49,7 @@ void CSSNodeInsertChild(const CSSNodeRef node,
                         const uint32_t index) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
     static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("cssNodeInsertChild");
+    if (closure == NULL) closure = caml_named_value("CSSNodeInsertChild");
     assert(closure);
     caml_callback3(*closure, *node, *child, Val_int(index));
     return;
@@ -62,10 +64,23 @@ void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection directio
     return;
 }
 
+void CSSNodeMarkDirty(const CSSNodeRef node) {
+    assert__(false) {
+        printf("Not implemented in OCaml\n");
+    }
+}
+
 CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node) {
     static value * closure = NULL;
     if (closure == NULL) closure = caml_named_value("CSSNodeStyleGetDirection");
     assert(closure);
     value v = caml_callback(*closure, *node);
     return Int_val(v);
+}
+
+bool CSSNodeIsDirty(const CSSNodeRef node) {
+    static value * closure = NULL;
+    if (closure == NULL) closure = caml_named_value("CSSNodeIsDirty");
+    assert(closure);
+    return Bool_val(caml_callback(*closure, *node));
 }

@@ -17,10 +17,14 @@ let cssNodeStyleSetDirection node direction => node.style.direction = direction;
 
 let cssNodeStyleGetDirection node => node.style.direction;
 
-let _ = Callback.register "cssNodeNew" cssNodeNew;
+let cssNodeIsDirty node => node.isDirty node.context;
 
-let _ = Callback.register "cssNodeInsertChild" cssNodeInsertChild;
+let _ = Callback.register "CSSNodeNew" cssNodeNew;
+
+let _ = Callback.register "CSSNodeInsertChild" cssNodeInsertChild;
 
 let _ = Callback.register "CSSNodeStyleGetDirection" cssNodeStyleGetDirection;
 
 let _ = Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
+
+let _ = Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
