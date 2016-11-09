@@ -173,6 +173,7 @@ type cssLayout = {
 };
 
 type node 'context = {
+  mutable selfRef: nativeint, /* a C pointer pointing to itself, needed for introp with C's memory management */
   style: cssStyle,
   layout: cssLayout,
   mutable lineIndex: int,

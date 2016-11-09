@@ -13,7 +13,8 @@ GENERATOR_FILES=$(BUILDDIR)/stub/bindings.re
 
 # The files used to build the stub generator.
 LIBFILES=$(BUILDDIR)/stub/bindings.cmx   \
-		$(BUILDDIR)/stub/relayout.o
+		$(BUILDDIR)/stub/CSSLayout.o \
+		$(BUILDDIR)/stub/CSSNodeList.o
 
 SOURCES := $(shell find $(SRCDIR) -name '*.re')
 

@@ -4,7 +4,7 @@
 #include <caml/callback.h>
 #include <assert.h>
 #include <stdio.h>
-#include "relayout.h"
+#include "CSSLayout.h"
 
 #define assert__(x) for ( ; !(x) ; assert(x) )
 
@@ -26,8 +26,8 @@ CSSNodeRef CSSNodeNew(void) {
     CAMLlocal1(v);
     value *valp;
     camlMethod(closure);
-    v = caml_callback(*closure, Val_unit);
     valp = (value *) malloc(sizeof *valp);
+    v = caml_callback(*closure, caml_copy_nativeint((CSSNodeRef)valp));
     *valp = v;
     gNodeInstanceCount++;
     // Register the value with global heap
@@ -41,6 +41,11 @@ void CSSNodeReset(const CSSNodeRef node){
     // - No need to call caml_register_global_root again as the pointer remain the same
     camlMethodWithName(closure, "CSSNodeNew");
     *node = caml_callback(*closure, Val_unit);
+}
+
+static CSSNodeRef CSSNodeGetSelfRef(value node) {
+    camlMethod(closure);
+    return (CSSNodeRef)Nativeint_val(caml_callback(*closure, node));
 }
 
 int32_t CSSNodeGetInstanceCount(void) {
@@ -75,6 +80,14 @@ void CSSNodeInsertChild(const CSSNodeRef node,
     camlMethod(closure);
     caml_callback3(*closure, *node, *child, Val_int(index));
     return;
+}
+
+CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
+                           const uint32_t index) {
+    // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
+    camlMethod(closure);
+    return (CSSNodeRef)Nativeint_val(caml_callback2(*closure,
+                                                    *node, Val_int(index)));
 }
 
 void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction) {
