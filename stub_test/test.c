@@ -8,6 +8,7 @@ int main() {
     CSSNodeInsertChild(r, r2, 0);
     CSSNodeStyleSetDirection(r, CSSDirectionRTL);
     assert(CSSNodeStyleGetDirection(r) == CSSDirectionRTL);
+    CSSNodeIsDirty(r);
     CSSNodeFree(r);
     CSSNodeFree(r2);
     printf("all good\n");

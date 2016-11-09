@@ -8,13 +8,19 @@
 
 #define assert__(x) for ( ; !(x) ; assert(x) )
 
+// Look for a ocaml method with the same name as function name, and memorize it
+#define camlMethod(x) \
+    static value * x = NULL; \
+    if (x == NULL) x = caml_named_value(__func__); \
+    assert__(closure) { \
+        printf("FATAL: function %s not implemented in OCaml, check bindings.re\n", __func__);  \
+    };
+
 value *CSSNodeNew(void) {
     CAMLparam0();
     CAMLlocal1(v);
     value *valp;
-    static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("CSSNodeNew");
-    assert(closure);
+    camlMethod(closure);
     v = caml_callback(*closure, Val_unit);
     valp = (value *) malloc(sizeof *valp);
     *valp = v;
@@ -48,18 +54,14 @@ void CSSNodeInsertChild(const CSSNodeRef node,
                         const CSSNodeRef child,
                         const uint32_t index) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
-    static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("CSSNodeInsertChild");
-    assert(closure);
+    camlMethod(closure);
     caml_callback3(*closure, *node, *child, Val_int(index));
     return;
 }
 
 void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
-    static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("CSSNodeStyleSetDirection");
-    assert(closure);
+    camlMethod(closure);
     caml_callback2(*closure, *node, Val_int(direction));
     return;
 }
@@ -71,16 +73,12 @@ void CSSNodeMarkDirty(const CSSNodeRef node) {
 }
 
 CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node) {
-    static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("CSSNodeStyleGetDirection");
-    assert(closure);
+    camlMethod(closure);
     value v = caml_callback(*closure, *node);
     return Int_val(v);
 }
 
 bool CSSNodeIsDirty(const CSSNodeRef node) {
-    static value * closure = NULL;
-    if (closure == NULL) closure = caml_named_value("CSSNodeIsDirty");
-    assert(closure);
+    camlMethod(closure);
     return Bool_val(caml_callback(*closure, *node));
 }
