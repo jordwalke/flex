@@ -1,0 +1,36 @@
+_build/src/Layout.cmo : _build/src/LayoutValue.cmo \
+    _build/src/LayoutTypes.cmo _build/src/LayoutSupport.cmo \
+    _build/src/LayoutPrint.cmo
+_build/src/Layout.cmx : _build/src/LayoutValue.cmx \
+    _build/src/LayoutTypes.cmx _build/src/LayoutSupport.cmx \
+    _build/src/LayoutPrint.cmx
+_build/src/LayoutPrint.cmo : _build/src/LayoutValue.cmo \
+    _build/src/LayoutTypes.cmo _build/src/LayoutSupport.cmo
+_build/src/LayoutPrint.cmx : _build/src/LayoutValue.cmx \
+    _build/src/LayoutTypes.cmx _build/src/LayoutSupport.cmx
+_build/src/LayoutSupport.cmo : _build/src/LayoutValue.cmo \
+    _build/src/LayoutTypes.cmo
+_build/src/LayoutSupport.cmx : _build/src/LayoutValue.cmx \
+    _build/src/LayoutTypes.cmx
+_build/src/LayoutTestFixedEncoding.cmo : _build/src/LayoutValue.cmo \
+    _build/src/LayoutTestUtils.cmo _build/src/LayoutSupport.cmo \
+    _build/src/Layout.cmo
+_build/src/LayoutTestFixedEncoding.cmx : _build/src/LayoutValue.cmx \
+    _build/src/LayoutTestUtils.cmx _build/src/LayoutSupport.cmx \
+    _build/src/Layout.cmx
+_build/src/LayoutTestUtils.cmo : _build/src/LayoutValue.cmo \
+    _build/src/LayoutTypes.cmo _build/src/LayoutSupport.cmo \
+    _build/src/LayoutPrint.cmo
+_build/src/LayoutTestUtils.cmx : _build/src/LayoutValue.cmx \
+    _build/src/LayoutTypes.cmx _build/src/LayoutSupport.cmx \
+    _build/src/LayoutPrint.cmx
+_build/src/LayoutTypes.cmo : _build/src/LayoutValue.cmo
+_build/src/LayoutTypes.cmx : _build/src/LayoutValue.cmx
+_build/src/LayoutValue.cmo :
+_build/src/LayoutValue.cmx :
+_build/src/ReJsPrelude.cmo :
+_build/src/ReJsPrelude.cmx :
+_build/cstubs/bindings.cmo :
+_build/cstubs/bindings.cmx :
+_build/stub_generator/generate.cmo : _build/cstubs/bindings.cmo
+_build/stub_generator/generate.cmx : _build/cstubs/bindings.cmx
