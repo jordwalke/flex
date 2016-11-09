@@ -1,14 +1,13 @@
-#include <relayout.h>
+#include <CSSLayout.h>
 #include <stdio.h>
 #include <assert.h>
 
-int main() {
-    printf("****************************\n");
-    printf("Starting poorman's unit test\n");
-
+void globalTest() {
     CSSNodeRef r = CSSNodeNew();
     CSSNodeRef r2 = CSSNodeNew();
-    CSSNodeInsertChild(r, r2, 0);
+    CSSNodeInsertChild(r, r2, 1);
+
+    assert(CSSNodeGetChild(r, 1) == r2);
     CSSNodeStyleSetDirection(r, CSSDirectionLTR);
     assert(CSSNodeStyleGetDirection(r) == CSSDirectionLTR);
 
@@ -21,6 +20,23 @@ int main() {
     CSSNodeFree(r2);
 
     assert(CSSNodeGetInstanceCount() == 0);
+}
+
+void testInsertGet() {
+    CSSNodeRef r = CSSNodeNew();
+    CSSNodeRef r2 = CSSNodeNew();
+    CSSNodeInsertChild(r, r2, 1);
+    assert(CSSNodeGetChild(r, 1) == r2);
+    CSSNodeFree(r);
+    CSSNodeFree(r2);
+}
+
+int main() {
+    printf("****************************\n");
+    printf("Starting poorman's unit test\n");
+    testInsertGet();
+    globalTest();
+
     printf("all good\n");
     printf("****************************\n");
 }

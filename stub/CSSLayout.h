@@ -49,6 +49,12 @@ void CSSNodeInsertChild(const CSSNodeRef node,
                         const CSSNodeRef child,
                         const uint32_t index);
 
+void CSSNodeRemoveChild(const CSSNodeRef node, const CSSNodeRef child);
+
+uint32_t CSSNodeChildCount(const CSSNodeRef node);
+
+CSSNodeRef CSSNodeGetChild(const CSSNodeRef node, const uint32_t index);
+
 void CSSNodeMarkDirty(const CSSNodeRef node);
 
 bool CSSNodeIsDirty(const CSSNodeRef node);

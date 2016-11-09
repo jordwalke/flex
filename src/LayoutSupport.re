@@ -149,6 +149,7 @@ let defaultStyle = {
 };
 
 let rec theNullNode = {
+  selfRef: Nativeint.zero,
   children: [||],
   style: defaultStyle,
   layout: {
