@@ -3,7 +3,13 @@ open LayoutSupport;
 open LayoutTypes;
 
 /* Force allocating a new node */
-let cssNodeNew () => {...theNullNode, children: [||]};
+let cssNodeNew () => {
+  ...theNullNode,
+  children: [||],
+  layout: createLayout (),
+  style: createStyle (),
+  context: ()
+};
 
 let cssNodeInsertChild node child i => {
   if (Array.length node.children <= i) {

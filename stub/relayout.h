@@ -34,6 +34,8 @@ CSSNodeRef CSSNodeNew(void);
 
 void CSSNodeInit(const CSSNodeRef node);
 
+void CSSNodeReset(const CSSNodeRef node);
+
 void CSSNodeFree(const CSSNodeRef node);
 
 // On the contract, the ownership of a node always belong to the creator.

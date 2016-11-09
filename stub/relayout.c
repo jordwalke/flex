@@ -10,13 +10,18 @@
 
 // Look for a ocaml method with the same name as function name, and memorize it
 #define camlMethod(x) \
+    camlMethodWithName(x, __func__)
+
+#define camlMethodWithName(x, name) \
     static value * x = NULL; \
-    if (x == NULL) x = caml_named_value(__func__); \
+    if (x == NULL) x = caml_named_value(name); \
     assert__(closure) { \
-        printf("FATAL: function %s not implemented in OCaml, check bindings.re\n", __func__);  \
+        printf("FATAL: function %s not implemented in OCaml, check bindings.re\n", name);  \
     };
 
-value *CSSNodeNew(void) {
+static int32_t gNodeInstanceCount = 0;
+
+CSSNodeRef CSSNodeNew(void) {
     CAMLparam0();
     CAMLlocal1(v);
     value *valp;
@@ -24,9 +29,18 @@ value *CSSNodeNew(void) {
     v = caml_callback(*closure, Val_unit);
     valp = (value *) malloc(sizeof *valp);
     *valp = v;
+    gNodeInstanceCount++;
     // Register the value with global heap
     caml_register_global_root(valp);
     CAMLreturnT(value *, valp);
+}
+
+void CSSNodeReset(const CSSNodeRef node){
+    // - Create a new, dummy node and assign it to the pointer
+    // - Old value should automatically be GCed
+    // - No need to call caml_register_global_root again as the pointer remain the same
+    camlMethodWithName(closure, "CSSNodeNew");
+    *node = caml_callback(*closure, Val_unit);
 }
 
 void CSSNodeInit(const CSSNodeRef node) {
@@ -35,6 +49,7 @@ void CSSNodeInit(const CSSNodeRef node) {
 }
 
 void CSSNodeFree(const CSSNodeRef node) {
+    gNodeInstanceCount--;
     // deregister the value with global heap
     caml_remove_global_root(node);
     free(node);
@@ -46,8 +61,7 @@ void CSSNodeFree(const CSSNodeRef node) {
 void CSSNodeFreeRecursive(const CSSNodeRef node) {
     // deregister the value with global heap, children of this object still need to be freed
     // by its owner.
-    caml_remove_global_root(node);
-    free(node);
+    CSSNodeFree(node);
 }
 
 void CSSNodeInsertChild(const CSSNodeRef node,
@@ -66,16 +80,16 @@ void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection directio
     return;
 }
 
-void CSSNodeMarkDirty(const CSSNodeRef node) {
-    assert__(false) {
-        printf("Not implemented in OCaml\n");
-    }
-}
-
 CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node) {
     camlMethod(closure);
     value v = caml_callback(*closure, *node);
     return Int_val(v);
+}
+
+void CSSNodeMarkDirty(const CSSNodeRef node) {
+    assert__(false) {
+        printf("Not implemented in OCaml\n");
+    }
 }
 
 bool CSSNodeIsDirty(const CSSNodeRef node) {

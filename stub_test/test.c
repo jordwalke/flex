@@ -6,8 +6,13 @@ int main() {
     CSSNodeRef r = CSSNodeNew();
     CSSNodeRef r2 = CSSNodeNew();
     CSSNodeInsertChild(r, r2, 0);
-    CSSNodeStyleSetDirection(r, CSSDirectionRTL);
-    assert(CSSNodeStyleGetDirection(r) == CSSDirectionRTL);
+    CSSNodeStyleSetDirection(r, CSSDirectionLTR);
+    assert(CSSNodeStyleGetDirection(r) == CSSDirectionLTR);
+
+    // reset and check again
+    CSSNodeReset(r);
+    assert(CSSNodeStyleGetDirection(r) != CSSDirectionLTR);
+
     CSSNodeIsDirty(r);
     CSSNodeFree(r);
     CSSNodeFree(r2);
