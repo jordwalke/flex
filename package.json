@@ -61,9 +61,6 @@
   },
   "notes": "The below is a temporary rebel config that only works with the hardcoded rebel used in the run scripts",
   "rebel": {
-    "ocamlfindDependencies": [
-      "ctypes"
-    ],
     "targets": [{
       "target": "default",
       "engine": "native",

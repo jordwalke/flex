@@ -39,5 +39,4 @@ FLG -w -30 -w -40
 
 
 # User Custom config here
-PKG ctypes-foreign
 S stub
