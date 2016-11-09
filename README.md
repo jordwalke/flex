@@ -32,6 +32,11 @@ npm run test:jscWithJit   # Run tests in JavaScriptCore with JIT.
 npm run test:v8           # Run tests in v8.
 ```
 
+## Building and running cstub tests 
+```sh
+npm run stubtest
+```
+
 ## Running Benchmarks
 While benchmarking, close any programs that are running so they do not
 interfere with benchmarks (especially Chrome, or music/media apps).
