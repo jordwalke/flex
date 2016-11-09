@@ -43,6 +43,10 @@ void CSSNodeReset(const CSSNodeRef node){
     *node = caml_callback(*closure, Val_unit);
 }
 
+int32_t CSSNodeGetInstanceCount(void) {
+    return gNodeInstanceCount;
+}
+
 void CSSNodeInit(const CSSNodeRef node) {
     // all objects from ocaml are already inited. This is an noop
     return;

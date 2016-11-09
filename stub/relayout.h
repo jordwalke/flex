@@ -32,6 +32,8 @@ typedef value *CSSNodeRef;
 
 CSSNodeRef CSSNodeNew(void);
 
+int32_t CSSNodeGetInstanceCount(void);
+
 void CSSNodeInit(const CSSNodeRef node);
 
 void CSSNodeReset(const CSSNodeRef node);
