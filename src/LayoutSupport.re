@@ -208,17 +208,14 @@ let createLayout () => {...theNullNode.layout, direction: CssDirectionInherit};
  * than theNullNode.
  */
 let createNode context => {
-  Printf.printf "here\n";
-  {
-    ...theNullNode,
-    children: [||],
-    /**
-     * We can keep the original style because it's immutable, but layout is not.
-     */
-    layout: createLayout (),
-    style: createStyle (),
-    context
-  }
+  ...theNullNode,
+  children: [||],
+  /**
+   * We can keep the original style because it's immutable, but layout is not.
+   */
+  layout: createLayout (),
+  style: createStyle (),
+  context
 };
 
 let createNode withChildren::children andStyle::style=defaultStyle context => {
