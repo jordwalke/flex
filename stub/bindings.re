@@ -57,6 +57,8 @@ let cssNodeChildCount node => node.childrenCount;
 
 let cssNodeGetChild node i => node.children.(i).selfRef;
 
+let cssNodeCalculateLayout = Layout.layoutNode;
+
 let _ = Callback.register "CSSNodeNew" cssNodeNew;
 
 let _ = Callback.register "CSSNodeGetSelfRef" cssNodeGetSelfRef;
@@ -74,3 +76,5 @@ let _ = Callback.register "CSSNodeStyleGetDirection" cssNodeStyleGetDirection;
 let _ = Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
 
 let _ = Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
+
+let _ = Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;

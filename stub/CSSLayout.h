@@ -64,3 +64,8 @@ void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection directio
 CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node);
 
 bool CSSValueIsUndefined(const float value);
+
+void CSSNodeCalculateLayout(const CSSNodeRef node,
+                            const float availableWidth,
+                            const float availableHeight,
+                            const CSSDirection parentDirection);

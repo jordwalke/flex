@@ -19,11 +19,31 @@
         printf("FATAL: function %s not implemented in OCaml, check bindings.re\n", name);  \
     };
 
+// Ocaml's macro system only supports up to 3 arguments, so we have to write one by ourselves here.
+// TODO: There definitely is a better way to macro this.
+value caml_callback4 (value closure, value arg1, value arg2,
+                      value arg3, value arg4) {
+    value arg[4];
+    arg[0] = arg1;
+    arg[1] = arg2;
+    arg[2] = arg3;
+    arg[3] = arg4;
+    value res = caml_callbackN_exn(closure, 4, arg);
+    if (Is_exception_result(res)) caml_raise(Extract_exception(res));
+    return res;
+}
+
 static int32_t gNodeInstanceCount = 0;
 
 inline bool CSSValueIsUndefined(const float value) {
     return isnan(value);
 }
+
+inline value CSSDirectionToCamlVal(const CSSDirection direction) {
+    return Val_int(direction);
+}
+
+#define scale_factor 100;
 
 CSSNodeRef CSSNodeNew(void) {
     CAMLparam0();
@@ -100,6 +120,17 @@ uint32_t CSSNodeChildCount(const CSSNodeRef node) {
     return (uint32_t)Int_val(v);
 }
 
+void CSSNodeCalculateLayout(const CSSNodeRef node,
+                            const float availableWidth,
+                            const float availableHeight,
+                            const CSSDirection parentDirection) {
+    camlMethod(closure);
+    caml_callback4(*closure, *node, Val_int(availableWidth * 100),
+                  Val_int(availableWidth * 100),
+                  CSSDirectionToCamlVal(parentDirection));
+    return;
+}
+
 CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
                            const uint32_t index) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
@@ -111,7 +142,7 @@ CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
 void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
     camlMethod(closure);
-    caml_callback2(*closure, *node, Val_int(direction));
+    caml_callback2(*closure, *node, CSSDirectionToCamlVal(direction));
     return;
 }
 
