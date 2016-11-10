@@ -21,6 +21,10 @@
 
 static int32_t gNodeInstanceCount = 0;
 
+inline bool CSSValueIsUndefined(const float value) {
+    return isnan(value);
+}
+
 CSSNodeRef CSSNodeNew(void) {
     CAMLparam0();
     CAMLlocal1(v);

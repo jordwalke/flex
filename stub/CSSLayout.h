@@ -62,3 +62,5 @@ bool CSSNodeIsDirty(const CSSNodeRef node);
 void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction);
 
 CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node);
+
+bool CSSValueIsUndefined(const float value);
