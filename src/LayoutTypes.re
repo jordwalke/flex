@@ -181,6 +181,7 @@ type node 'context = {
   measure: 'context => unitOfM => measureMode => unitOfM => measureMode => dimensions,
   print: option ('context => unit),
   mutable children: array (node 'context),
+  mutable childrenCount: int,
   isDirty: 'context => bool,
   context: 'context
 };

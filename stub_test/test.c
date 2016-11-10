@@ -31,12 +31,36 @@ void testInsertGet() {
     CSSNodeFree(r2);
 }
 
+void testBigInsert() {
+    CSSNodeRef r = CSSNodeNew();
+    CSSNodeRef r2 = CSSNodeNew();
+    assert(CSSNodeChildCount(r) == 0);
+    CSSNodeInsertChild(r, r2, 1);
+    assert(CSSNodeChildCount(r) == 1);
+    CSSNodeRemoveChild(r, r2);
+    assert(CSSNodeChildCount(r) == 0);
+    CSSNodeFree(r);
+    CSSNodeFree(r2);
+}
+
+void testChildInsertRemove() {
+    CSSNodeRef r = CSSNodeNew();
+    CSSNodeRef r2 = CSSNodeNew();
+    for (int i = 0; i < 16; i ++) {
+        assert(CSSNodeChildCount(r) == i);
+        CSSNodeInsertChild(r, r2, i);
+    }
+    CSSNodeFree(r);
+    CSSNodeFree(r2);
+}
+
 int main() {
     printf("****************************\n");
     printf("Starting poorman's unit test\n");
     testInsertGet();
     globalTest();
-
+    testChildInsertRemove ();
+    testBigInsert ();
     printf("all good\n");
     printf("****************************\n");
 }

@@ -151,6 +151,7 @@ let defaultStyle = {
 let rec theNullNode = {
   selfRef: Nativeint.zero,
   children: [||],
+  childrenCount: 0,
   style: defaultStyle,
   layout: {
     direction: CssDirectionInherit,

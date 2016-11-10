@@ -27,7 +27,7 @@ CSSNodeRef CSSNodeNew(void) {
     value *valp;
     camlMethod(closure);
     valp = (value *) malloc(sizeof *valp);
-    v = caml_callback(*closure, caml_copy_nativeint((CSSNodeRef)valp));
+    v = caml_callback(*closure, caml_copy_nativeint((intnat)valp));
     *valp = v;
     gNodeInstanceCount++;
     // Register the value with global heap
@@ -80,6 +80,20 @@ void CSSNodeInsertChild(const CSSNodeRef node,
     camlMethod(closure);
     caml_callback3(*closure, *node, *child, Val_int(index));
     return;
+}
+
+void CSSNodeRemoveChild(const CSSNodeRef node,
+                        const CSSNodeRef child) {
+    // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
+    camlMethod(closure);
+    caml_callback2(*closure, *node, caml_copy_nativeint((intnat)child));
+    return;
+}
+
+uint32_t CSSNodeChildCount(const CSSNodeRef node) {
+    camlMethod(closure);
+    value v = caml_callback(*closure, *node);
+    return (uint32_t)Int_val(v);
 }
 
 CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
