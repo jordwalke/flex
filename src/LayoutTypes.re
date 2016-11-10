@@ -77,8 +77,9 @@ type specificDirection =
 
 type coordinates = {left: unitOfM, top: unitOfM};
 
+/* TODO: Benchmark the immutable version versus mutable version */
 type cssStyle = {
-  mutable direction: direction,
+  direction: direction,
   flexDirection: flexDirection,
   justifyContent: justify,
   alignContent: align,
@@ -174,7 +175,7 @@ type cssLayout = {
 
 type node 'context = {
   mutable selfRef: nativeint, /* a C pointer pointing to itself, needed for introp with C's memory management */
-  style: cssStyle,
+  mutable style: cssStyle,
   layout: cssLayout,
   mutable lineIndex: int,
   mutable nextChild: node 'context,

@@ -162,3 +162,13 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
     camlMethod(closure);
     return Bool_val(caml_callback(*closure, *node));
 }
+
+void CSSNodeStyleSetWidth(const CSSNodeRef node, float width) {
+    camlMethod(closure);
+    caml_callback2(*closure, *node, Val_int(width * 100));
+}
+
+float CSSNodeStyleGetWidth(const CSSNodeRef node) {
+    camlMethod(closure);
+    return Int_val(caml_callback(*closure, *node)) / 100;
+}

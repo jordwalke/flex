@@ -47,7 +47,7 @@ let cssNodeRemoveChild node child => {
     oldChildren
 };
 
-let cssNodeStyleSetDirection node direction => node.style.direction = direction;
+let cssNodeStyleSetDirection node direction => node.style = {...node.style, direction};
 
 let cssNodeStyleGetDirection node => node.style.direction;
 
@@ -58,6 +58,14 @@ let cssNodeChildCount node => node.childrenCount;
 let cssNodeGetChild node i => node.children.(i).selfRef;
 
 let cssNodeCalculateLayout = Layout.layoutNode;
+
+let cssNodeStyleSetWidth node width => node.style = {...node.style, width};
+
+let cssNodeStyleGetWidth node => node.style.width;
+
+let cssNodeStyleSetHeight node height => node.style = {...node.style, height};
+
+let cssNodeStyleGetHeight node => node.style.height;
 
 let _ = Callback.register "CSSNodeNew" cssNodeNew;
 
@@ -78,3 +86,11 @@ let _ = Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
 let _ = Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
 
 let _ = Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;
+
+let _ = Callback.register "CSSNodeStyleSetWidth" cssNodeStyleSetWidth;
+
+let _ = Callback.register "CSSNodeStyleGetWidth" cssNodeStyleGetWidth;
+
+let _ = Callback.register "CSSNodeStyleSetHeight" cssNodeStyleSetHeight;
+
+let _ = Callback.register "CSSNodeStyleGetHeight" cssNodeStyleGetHeight;
