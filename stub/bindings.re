@@ -62,59 +62,92 @@ let cssNodeGetChild node i => node.children.(i).selfRef;
 
 let cssNodeCalculateLayout = Layout.layoutNode;
 
+type cssEdge =
+  | CSSEdgeLeft
+  | CSSEdgeTop
+  | CSSEdgeRight
+  | CSSEdgeBottom
+  | CSSEdgeStart
+  | CSSEdgeEnd
+  | CSSEdgeHorizontal
+  | CSSEdgeVertical
+  | CSSEdgeAll;
+
 /* Style */
-let cssNodeStyleSetWidth node width => node.style = {...node.style, width};
+Callback.register "CSSNodeStyleSetWidth" (fun node width => node.style = {...node.style, width});
 
-let _ = Callback.register "CSSNodeStyleSetWidth" cssNodeStyleSetWidth;
+Callback.register "CSSNodeStyleGetWidth" (fun node => node.style.width);
 
-let cssNodeStyleGetWidth node => node.style.width;
+Callback.register
+  "CSSNodeStyleSetHeight" (fun node height => node.style = {...node.style, height});
 
-let _ = Callback.register "CSSNodeStyleGetWidth" cssNodeStyleGetWidth;
+Callback.register "CSSNodeStyleGetHeight" (fun node => node.style.height);
 
-let cssNodeStyleSetHeight node height => node.style = {...node.style, height};
+Callback.register
+  "CSSNodeStyleSetFlexGrow" (fun node flexGrow => node.style = {...node.style, flexGrow});
 
-let _ = Callback.register "CSSNodeStyleSetHeight" cssNodeStyleSetHeight;
+Callback.register "CSSNodeStyleGetFlexGrow" (fun node => node.style.flexGrow);
 
-let cssNodeStyleGetHeight node => node.style.height;
+Callback.register
+  "CSSNodeStyleSetJustifyContent"
+  (fun node justifyContent => node.style = {...node.style, justifyContent});
 
-let _ = Callback.register "CSSNodeStyleGetHeight" cssNodeStyleGetHeight;
+Callback.register "CSSNodeStyleGetJustifyContent" (fun node => node.style.justifyContent);
+
+Callback.register
+  "CSSNodeStyleSetAlignItems" (fun node alignItems => node.style = {...node.style, alignItems});
+
+Callback.register "CSSNodeStyleGetAlignItems" (fun node => node.style.alignItems);
+
+/* Padding */
+let cssNodeStyleSetPadding node edge v =>
+  switch edge {
+  | CSSEdgeLeft => node.style = {...node.style, paddingLeft: v}
+  | CSSEdgeTop => node.style = {...node.style, paddingTop: v}
+  | CSSEdgeRight => node.style = {...node.style, paddingRight: v}
+  | CSSEdgeBottom => node.style = {...node.style, paddingBottom: v}
+  | CSSEdgeStart => node.style = {...node.style, paddingStart: v}
+  | CSSEdgeEnd => node.style = {...node.style, paddingEnd: v}
+  | CSSEdgeHorizontal => node.style = {...node.style, paddingLeft: v, paddingRight: v}
+  | CSSEdgeVertical => node.style = {...node.style, paddingTop: v, paddingBottom: v}
+  | CSSEdgeAll =>
+    node.style = {...node.style, paddingTop: v, paddingBottom: v, paddingLeft: v, paddingRight: v}
+  };
+
+Callback.register "CSSNodeStyleSetPadding" cssNodeStyleSetPadding;
 
 /* Layout */
-let cssNodeLayoutSetWidth node width => node.layout.width = width;
+Callback.register "CSSNodeLayoutGetWidth" (fun node => node.layout.width);
 
-let _ = Callback.register "CSSNodeLayoutSetWidth" cssNodeLayoutSetWidth;
+Callback.register "CSSNodeLayoutGetHeight" (fun node => node.layout.height);
 
-let cssNodeLayoutGetWidth node => node.layout.width;
+Callback.register "CSSNodeLayoutGetTop" (fun node => node.layout.top);
 
-let _ = Callback.register "CSSNodeLayoutGetWidth" cssNodeLayoutGetWidth;
+Callback.register "CSSNodeLayoutGetBottom" (fun node => node.layout.bottom);
 
-let cssNodeLayoutSetHeight node height => node.layout.height = height;
+Callback.register "CSSNodeLayoutGetLeft" (fun node => node.layout.left);
 
-let _ = Callback.register "CSSNodeLayoutSetHeight" cssNodeLayoutSetHeight;
-
-let cssNodeLayoutGetHeight node => node.layout.height;
-
-let _ = Callback.register "CSSNodeLayoutGetHeight" cssNodeLayoutGetHeight;
+Callback.register "CSSNodeLayoutGetRight" (fun node => node.layout.right);
 
 /* Misc */
-let _ = Callback.register "minInt" (fun () => min_int);
+Callback.register "minInt" (fun () => min_int);
 
-let _ = Callback.register "CSSNodeNew" cssNodeNew;
+Callback.register "CSSNodeNew" cssNodeNew;
 
-let _ = Callback.register "CSSNodeGetSelfRef" cssNodeGetSelfRef;
+Callback.register "CSSNodeGetSelfRef" cssNodeGetSelfRef;
 
-let _ = Callback.register "CSSNodeInsertChild" cssNodeInsertChild;
+Callback.register "CSSNodeInsertChild" cssNodeInsertChild;
 
-let _ = Callback.register "CSSNodeRemoveChild" cssNodeRemoveChild;
+Callback.register "CSSNodeRemoveChild" cssNodeRemoveChild;
 
-let _ = Callback.register "CSSNodeChildCount" cssNodeChildCount;
+Callback.register "CSSNodeChildCount" cssNodeChildCount;
 
-let _ = Callback.register "CSSNodeGetChild" cssNodeGetChild;
+Callback.register "CSSNodeGetChild" cssNodeGetChild;
 
-let _ = Callback.register "CSSNodeStyleGetDirection" cssNodeStyleGetDirection;
+Callback.register "CSSNodeStyleGetDirection" cssNodeStyleGetDirection;
 
-let _ = Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
+Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
 
-let _ = Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
+Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
 
-let _ = Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;
+Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;

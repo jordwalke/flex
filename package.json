@@ -42,7 +42,7 @@
     "regenerateReasonSource": "eval $(dependencyEnv) && cd ../../ && grunt transpile",
     "start": "eval $(dependencyEnv) && time ./_build/src/LayoutTest.native",
     "help": "eval $(dependencyEnv) && rebuild -help",
-    "stubtest": "eval $(dependencyEnv) && make test && _build/test/test.native",
+    "stubtest": "eval $(dependencyEnv) && make test && _build/test/CSSLayoutPaddingTest",
     "clean": "eval $(dependencyEnv) && nopam && rebuild -clean",
     "top": "eval $(dependencyEnv) && rtop",
     "env": "eval $(dependencyEnv) && env",

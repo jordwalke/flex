@@ -63,6 +63,21 @@ inline value CSSDirectionToCamlVal(const CSSDirection direction) {
     return Val_int(direction);
 }
 
+inline value CSSEdgeToCamlVal(const CSSEdge edge) {
+    return Val_int(edge);
+}
+
+#define bridgeEnumToCamlVal(type)               \
+    inline value type##ToCamlVal(const type v) {\
+        return Val_int(v);                      \
+    }                                           \
+    inline type CamlValTo##type(value v) {      \
+        return Int_val(v);                      \
+    }
+
+bridgeEnumToCamlVal(CSSAlign)
+bridgeEnumToCamlVal(CSSJustify)
+
 
 static value Min_int;
 __attribute__ ((__constructor__))
@@ -181,6 +196,41 @@ CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
                                                     *node, Val_int(index)));
 }
 
+void CSSNodeMarkDirty(const CSSNodeRef node) {
+    assert__(false) {
+        printf("Not implemented in OCaml\n");
+    }
+}
+
+bool CSSNodeIsDirty(const CSSNodeRef node) {
+    camlMethod(closure);
+    return Bool_val(caml_callback(*closure, *node));
+}
+
+/* Padding */
+void CSSNodeStyleSetPadding(const CSSNodeRef node, CSSEdge edge, float v) {
+    camlMethod(closure);
+    caml_callback3(*closure, *node, CSSEdgeToCamlVal(edge), floatToUnitOfM(v));
+}
+
+/* Style */
+#define defineNodeStyle(type, name)                                     \
+    void CSSNodeStyleSet##name(const CSSNodeRef node, const type v) {   \
+        camlMethod(closure);                                            \
+        caml_callback2(*closure, *node, type##ToCamlVal(v));            \
+        return;                                                         \
+    }                                                                   \
+    type CSSNodeStyleGet##name(const CSSNodeRef node) {                 \
+        camlMethod(closure);                                            \
+        value v = caml_callback(*closure, *node);                       \
+        return CamlValTo##type(caml_callback(*closure, *node));         \
+    }                                                                   \
+
+
+defineNodeStyle(CSSJustify, JustifyContent)
+
+defineNodeStyle(CSSAlign, AlignItems)
+
 void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
     camlMethod(closure);
@@ -193,19 +243,6 @@ CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node) {
     value v = caml_callback(*closure, *node);
     return Int_val(v);
 }
-
-void CSSNodeMarkDirty(const CSSNodeRef node) {
-    assert__(false) {
-        printf("Not implemented in OCaml\n");
-    }
-}
-
-bool CSSNodeIsDirty(const CSSNodeRef node) {
-    camlMethod(closure);
-    return Bool_val(caml_callback(*closure, *node));
-}
-
-/* Style */
 
 void CSSNodeStyleSetWidth(const CSSNodeRef node, float width) {
     camlMethod(closure);
@@ -227,23 +264,43 @@ float CSSNodeStyleGetHeight(const CSSNodeRef node) {
     return unitOfMToFloat(caml_callback(*closure, *node));
 }
 
-/* Layout */
-void CSSNodeLayoutSetWidth(const CSSNodeRef node, float width) {
+void CSSNodeStyleSetFlexGrow(const CSSNodeRef node, float v) {
     camlMethod(closure);
-    caml_callback2(*closure, *node, floatToUnitOfM(width));
+    caml_callback2(*closure, *node, floatToUnitOfM(v));
 }
 
+float CSSNodeStyleGetFlesGrow(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+/* Layout */
 float CSSNodeLayoutGetWidth(const CSSNodeRef node) {
     camlMethod(closure);
     return unitOfMToFloat(caml_callback(*closure, *node));
 }
 
-void CSSNodeLayoutSetHeight(const CSSNodeRef node, float height) {
+float CSSNodeLayoutGetHeight(const CSSNodeRef node) {
     camlMethod(closure);
-    caml_callback2(*closure, *node, floatToUnitOfM(height));
+    return unitOfMToFloat(caml_callback(*closure, *node));
 }
 
-float CSSNodeLayoutGetHeight(const CSSNodeRef node) {
+float CSSNodeLayoutGetTop(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+float CSSNodeLayoutGetBottom(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+float CSSNodeLayoutGetLeft(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+float CSSNodeLayoutGetRight(const CSSNodeRef node) {
     camlMethod(closure);
     return unitOfMToFloat(caml_callback(*closure, *node));
 }

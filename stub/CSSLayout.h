@@ -29,12 +29,45 @@ static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
 
 #define CSSUndefined NAN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum CSSDirection {
     // 0 is reserved for "non-exist"
     CSSDirectionInherit = 1,
-    CSSDirectionLTR = 2,
-    CSSDirectionRTL = 3,
+    CSSDirectionLTR,
+    CSSDirectionRTL,
 } CSSDirection;
+
+typedef enum CSSJustify {
+    CSSJustifyFlexStart = 0,
+    CSSJustifyCenter,
+    CSSJustifyFlexEnd,
+    CSSJustifySpaceBetween,
+    CSSJustifySpaceAround,
+} CSSJustify;
+
+typedef enum CSSEdge {
+    CSSEdgeLeft = 0,
+    CSSEdgeTop,
+    CSSEdgeRight,
+    CSSEdgeBottom,
+    CSSEdgeStart,
+    CSSEdgeEnd,
+    CSSEdgeHorizontal,
+    CSSEdgeVertical,
+    CSSEdgeAll,
+    CSSEdgeCount,
+} CSSEdge;
+
+typedef enum CSSAlign {
+    CSSAlignAuto,
+    CSSAlignFlexStart,
+    CSSAlignCenter,
+    CSSAlignFlexEnd,
+    CSSAlignStretch,
+} CSSAlign;
 
 typedef value *CSSNodeRef;
 
@@ -78,6 +111,8 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
                             const float availableHeight,
                             const CSSDirection parentDirection);
 
+/* style */
+
 void CSSNodeStyleSetWidth(const CSSNodeRef node, float width);
 
 float CSSNodeStyleGetWidth(const CSSNodeRef node);
@@ -86,13 +121,35 @@ void CSSNodeStyleSetHeight(const CSSNodeRef node, float height);
 
 float CSSNodeStyleGetHeight(const CSSNodeRef node);
 
-void CSSNodeLayoutSetWidth(const CSSNodeRef node, float width);
+void CSSNodeStyleSetFlexGrow(const CSSNodeRef node, float grow);
+
+float CSSNodeStyleGetFlexGrow(const CSSNodeRef node);
+
+void CSSNodeStyleSetJustifyContent(const CSSNodeRef node, const CSSJustify grow);
+
+CSSJustify CSSNodeStyleGetJustifyContent(const CSSNodeRef node);
+
+void CSSNodeStyleSetAlignItems(const CSSNodeRef node, const CSSAlign grow);
+
+CSSAlign CSSNodeStyleGetAlignItems(const CSSNodeRef node);
+
+/* layout */
 
 float CSSNodeLayoutGetWidth(const CSSNodeRef node);
 
-void CSSNodeLayoutSetHeight(const CSSNodeRef node, float height);
-
 float CSSNodeLayoutGetHeight(const CSSNodeRef node);
+
+float CSSNodeLayoutGetTop(const CSSNodeRef node);
+
+float CSSNodeLayoutGetBottom(const CSSNodeRef node);
+
+float CSSNodeLayoutGetRight(const CSSNodeRef node);
+
+float CSSNodeLayoutGetLeft(const CSSNodeRef node);
+
+/* padding */
+
+void CSSNodeStyleSetPadding(const CSSNodeRef node, CSSEdge edge, float v);
 
 inline bool eq(const float a, const float b) {
     if (CSSValueIsUndefined(a)) {
@@ -100,3 +157,7 @@ inline bool eq(const float a, const float b) {
     }
     return fabs(a - b) < 0.0001;
 }
+
+#ifdef __cplusplus
+}
+#endif
