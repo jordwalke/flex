@@ -4,12 +4,15 @@ open LayoutTypes;
 
 /* Force allocating a new node */
 let cssNodeNew ptr => {
-  ...theNullNode,
-  selfRef: ptr,
-  children: [||],
-  layout: createLayout (),
-  style: createStyle (),
-  context: ()
+  let r = {
+    ...theNullNode,
+    selfRef: ptr,
+    children: [||],
+    layout: createLayout (),
+    style: createStyle (),
+    context: ()
+  };
+  r
 };
 
 let cssNodeSetSelfRef node ptr => node.selfRef = ptr;
@@ -59,13 +62,42 @@ let cssNodeGetChild node i => node.children.(i).selfRef;
 
 let cssNodeCalculateLayout = Layout.layoutNode;
 
+/* Style */
 let cssNodeStyleSetWidth node width => node.style = {...node.style, width};
+
+let _ = Callback.register "CSSNodeStyleSetWidth" cssNodeStyleSetWidth;
 
 let cssNodeStyleGetWidth node => node.style.width;
 
+let _ = Callback.register "CSSNodeStyleGetWidth" cssNodeStyleGetWidth;
+
 let cssNodeStyleSetHeight node height => node.style = {...node.style, height};
 
+let _ = Callback.register "CSSNodeStyleSetHeight" cssNodeStyleSetHeight;
+
 let cssNodeStyleGetHeight node => node.style.height;
+
+let _ = Callback.register "CSSNodeStyleGetHeight" cssNodeStyleGetHeight;
+
+/* Layout */
+let cssNodeLayoutSetWidth node width => node.layout.width = width;
+
+let _ = Callback.register "CSSNodeLayoutSetWidth" cssNodeLayoutSetWidth;
+
+let cssNodeLayoutGetWidth node => node.layout.width;
+
+let _ = Callback.register "CSSNodeLayoutGetWidth" cssNodeLayoutGetWidth;
+
+let cssNodeLayoutSetHeight node height => node.layout.height = height;
+
+let _ = Callback.register "CSSNodeLayoutSetHeight" cssNodeLayoutSetHeight;
+
+let cssNodeLayoutGetHeight node => node.layout.height;
+
+let _ = Callback.register "CSSNodeLayoutGetHeight" cssNodeLayoutGetHeight;
+
+/* Misc */
+let _ = Callback.register "minInt" (fun () => min_int);
 
 let _ = Callback.register "CSSNodeNew" cssNodeNew;
 
@@ -86,11 +118,3 @@ let _ = Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
 let _ = Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
 
 let _ = Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;
-
-let _ = Callback.register "CSSNodeStyleSetWidth" cssNodeStyleSetWidth;
-
-let _ = Callback.register "CSSNodeStyleGetWidth" cssNodeStyleGetWidth;
-
-let _ = Callback.register "CSSNodeStyleSetHeight" cssNodeStyleSetHeight;
-
-let _ = Callback.register "CSSNodeStyleGetHeight" cssNodeStyleGetHeight;

@@ -21,6 +21,14 @@
 #endif
 #include <caml/mlvalues.h>
 
+// Not defined in MSVC++
+#ifndef NAN
+static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+#define NAN (*(const float *) __nan)
+#endif
+
+#define CSSUndefined NAN
+
 typedef enum CSSDirection {
     // 0 is reserved for "non-exist"
     CSSDirectionInherit = 1,
@@ -69,3 +77,26 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
                             const float availableWidth,
                             const float availableHeight,
                             const CSSDirection parentDirection);
+
+void CSSNodeStyleSetWidth(const CSSNodeRef node, float width);
+
+float CSSNodeStyleGetWidth(const CSSNodeRef node);
+
+void CSSNodeStyleSetHeight(const CSSNodeRef node, float height);
+
+float CSSNodeStyleGetHeight(const CSSNodeRef node);
+
+void CSSNodeLayoutSetWidth(const CSSNodeRef node, float width);
+
+float CSSNodeLayoutGetWidth(const CSSNodeRef node);
+
+void CSSNodeLayoutSetHeight(const CSSNodeRef node, float height);
+
+float CSSNodeLayoutGetHeight(const CSSNodeRef node);
+
+inline bool eq(const float a, const float b) {
+    if (CSSValueIsUndefined(a)) {
+        return CSSValueIsUndefined(b);
+    }
+    return fabs(a - b) < 0.0001;
+}

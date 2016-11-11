@@ -21,6 +21,24 @@ void globalTest() {
 
     assert(CSSNodeGetInstanceCount() == 0);
 }
+void align_items_stretch_test() {
+    const CSSNodeRef root = CSSNodeNew();
+    CSSNodeStyleSetWidth(root, 100);
+    CSSNodeStyleSetHeight(root, 100);
+
+    const CSSNodeRef root_child0 = CSSNodeNew();
+    CSSNodeInsertChild(root, root_child0, 0);
+
+    CSSNodeStyleSetHeight(root_child0, 10);
+
+    assert(CSSNodeLayoutGetHeight(root_child0) == 10);
+
+    assert(CSSNodeLayoutGetWidth(root_child0) == 100);
+
+    CSSNodeCalculateLayout(root, CSSUndefined, CSSUndefined, CSSDirectionLTR);
+
+    CSSNodeFreeRecursive(root);
+}
 
 void testInsertGet() {
     CSSNodeRef r = CSSNodeNew();
@@ -57,10 +75,14 @@ void testChildInsertRemove() {
 int main() {
     printf("****************************\n");
     printf("Starting poorman's unit test\n");
+
+    align_items_stretch_test();
+
     testInsertGet();
     globalTest();
     testChildInsertRemove ();
     testBigInsert ();
+
     printf("all good\n");
     printf("****************************\n");
 }

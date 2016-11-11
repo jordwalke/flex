@@ -1,6 +1,7 @@
 #include <caml/mlvalues.h>
 #include <caml/memory.h>
 #include <caml/alloc.h>
+#include <caml/fail.h>
 #include <caml/callback.h>
 #include <assert.h>
 #include <stdio.h>
@@ -15,9 +16,28 @@
 #define camlMethodWithName(x, name) \
     static value * x = NULL; \
     if (x == NULL) x = caml_named_value(name); \
-    assert__(closure) { \
+    assert__(x) { \
         printf("FATAL: function %s not implemented in OCaml, check bindings.re\n", name);  \
     };
+
+char* itoa(uintnat val, int base){
+
+    static char buf[65] = {0};
+
+    int i = 64;
+
+    for(; i ; --i, val /= base)
+
+        buf[i] = "0123456789abcdef"[val % base];
+
+    return &buf[i+1];
+
+}
+
+static void printBinary(uint32 i) {
+    char *buffer = itoa (i,2);
+    printf ("binary: %s\n",buffer);
+}
 
 // Ocaml's macro system only supports up to 3 arguments, so we have to write one by ourselves here.
 // TODO: There definitely is a better way to macro this.
@@ -35,12 +55,34 @@ value caml_callback4 (value closure, value arg1, value arg2,
 
 static int32_t gNodeInstanceCount = 0;
 
-inline bool CSSValueIsUndefined(const float value) {
-    return isnan(value);
+inline bool CSSValueIsUndefined(const float v) {
+    return isnan(v);
 }
 
 inline value CSSDirectionToCamlVal(const CSSDirection direction) {
     return Val_int(direction);
+}
+
+
+static value Min_int;
+__attribute__ ((__constructor__))
+void initMinInt(void) {
+    camlMethodWithName(minInt, "minInt");
+    Min_int = caml_callback(*minInt, Val_unit);
+}
+
+inline value floatToUnitOfM(const float v) {
+    if (CSSValueIsUndefined(v)) {
+        return Min_int;
+    }
+    return Val_int(v * 100);
+}
+
+static float unitOfMToFloat(value v) {
+    if (v == Min_int) {
+        return CSSUndefined;
+    }
+    return Int_val(v) / 100;
 }
 
 #define scale_factor 100;
@@ -125,8 +167,8 @@ void CSSNodeCalculateLayout(const CSSNodeRef node,
                             const float availableHeight,
                             const CSSDirection parentDirection) {
     camlMethod(closure);
-    caml_callback4(*closure, *node, Val_int(availableWidth * 100),
-                  Val_int(availableWidth * 100),
+    caml_callback4(*closure, *node, floatToUnitOfM(availableWidth),
+                  floatToUnitOfM(availableWidth),
                   CSSDirectionToCamlVal(parentDirection));
     return;
 }
@@ -163,12 +205,45 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
     return Bool_val(caml_callback(*closure, *node));
 }
 
+/* Style */
+
 void CSSNodeStyleSetWidth(const CSSNodeRef node, float width) {
     camlMethod(closure);
-    caml_callback2(*closure, *node, Val_int(width * 100));
+    caml_callback2(*closure, *node, floatToUnitOfM(width));
 }
 
 float CSSNodeStyleGetWidth(const CSSNodeRef node) {
     camlMethod(closure);
-    return Int_val(caml_callback(*closure, *node)) / 100;
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+void CSSNodeStyleSetHeight(const CSSNodeRef node, float height) {
+    camlMethod(closure);
+    caml_callback2(*closure, *node, floatToUnitOfM(height));
+}
+
+float CSSNodeStyleGetHeight(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+/* Layout */
+void CSSNodeLayoutSetWidth(const CSSNodeRef node, float width) {
+    camlMethod(closure);
+    caml_callback2(*closure, *node, floatToUnitOfM(width));
+}
+
+float CSSNodeLayoutGetWidth(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
+}
+
+void CSSNodeLayoutSetHeight(const CSSNodeRef node, float height) {
+    camlMethod(closure);
+    caml_callback2(*closure, *node, floatToUnitOfM(height));
+}
+
+float CSSNodeLayoutGetHeight(const CSSNodeRef node) {
+    camlMethod(closure);
+    return unitOfMToFloat(caml_callback(*closure, *node));
 }
