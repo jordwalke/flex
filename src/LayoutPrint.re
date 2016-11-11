@@ -55,6 +55,14 @@ let rec printCssNodeRec (node, options, level) => {
   if options.printStyle {
     indent (level + 1);
     Printf.printf "style: {\n";
+    indent (level + 2);
+    switch node.style.justifyContent {
+    | CssJustifyFlexStart => Printf.printf "justify: 'start',\n"
+    | CssJustifyCenter => Printf.printf "justify: 'center',\n"
+    | CssJustifyFlexEnd => Printf.printf "justify: 'flexend',\n"
+    | CssJustifySpaceBetween => Printf.printf "justify: 'speceBetween',\n"
+    | CssJustifySpaceAround => Printf.printf "justify: 'speceAround',\n"
+    };
     if (node.style.flexDirection == CssFlexDirectionColumn) {
       indent (level + 2);
       Printf.printf "flexDirection: 'column',\n"
@@ -198,7 +206,7 @@ let rec printCssNodeRec (node, options, level) => {
     Printf.printf "]},\n"
   } else {
     indent level;
-    Printf.printf "},\n"
+    Printf.printf "},%!\n"
   }
 };
 

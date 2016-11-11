@@ -21,7 +21,7 @@ let cssNodeGetSelfRef node => node.selfRef;
 
 let cssNodeInsertChild node child index => {
   if (Array.length node.children == node.childrenCount) {
-    let fill = Array.make ((Array.length node.children + 1) * 2) theNullNode;
+    let fill = Array.make (Array.length node.children + 1) theNullNode;
     Array.blit node.children 0 fill 0 (Array.length node.children);
     node.children = fill
   };
@@ -60,7 +60,7 @@ let cssNodeChildCount node => node.childrenCount;
 
 let cssNodeGetChild node i => node.children.(i).selfRef;
 
-let cssNodeCalculateLayout = Layout.layoutNode;
+let cssNodeCalculateLayout node aw ah pd => Layout.layoutNode node aw ah pd;
 
 type cssEdge =
   | CSSEdgeLeft
@@ -98,6 +98,45 @@ Callback.register
   "CSSNodeStyleSetAlignItems" (fun node alignItems => node.style = {...node.style, alignItems});
 
 Callback.register "CSSNodeStyleGetAlignItems" (fun node => node.style.alignItems);
+
+Callback.register
+  "CSSNodeStyleSetMaxWidth" (fun node maxWidth => node.style = {...node.style, maxWidth});
+
+Callback.register "CSSNodeStyleGetMaxWidth" (fun node => node.style.maxWidth);
+
+Callback.register
+  "CSSNodeStyleSetMaxHeight" (fun node maxHeight => node.style = {...node.style, maxHeight});
+
+Callback.register "CSSNodeStyleGetMaxHeight" (fun node => node.style.maxHeight);
+
+Callback.register
+  "CSSNodeStyleSetMinWidth" (fun node minWidth => node.style = {...node.style, minWidth});
+
+Callback.register "CSSNodeStyleGetMinWidth" (fun node => node.style.minWidth);
+
+Callback.register
+  "CSSNodeStyleSetMinHeight" (fun node minHeight => node.style = {...node.style, minHeight});
+
+Callback.register "CSSNodeStyleGetMinHeight" (fun node => node.style.minHeight);
+
+Callback.register "CSSNodeStyleGetDirection" (fun node => node.style.direction);
+
+Callback.register
+  "CSSNodeStyleSetDirection" (fun node direction => node.style = {...node.style, direction});
+
+Callback.register "CSSNodeStyleGetFlexDirection" (fun node => node.style.flexDirection);
+
+Callback.register
+  "CSSNodeStyleSetFlexDirection"
+  (
+    fun node flexDirection => {
+      node.style = {...node.style, flexDirection};
+      switch node.style.flexDirection {
+      | CssFlexDirectionColumn => Printf.printf "flexdirection set column%!\n"
+      | _ => Printf.printf "flexdirection set row!\n"
+      }
+    }
+  );
 
 /* Padding */
 let cssNodeStyleSetPadding node edge v =>
@@ -143,10 +182,6 @@ Callback.register "CSSNodeRemoveChild" cssNodeRemoveChild;
 Callback.register "CSSNodeChildCount" cssNodeChildCount;
 
 Callback.register "CSSNodeGetChild" cssNodeGetChild;
-
-Callback.register "CSSNodeStyleGetDirection" cssNodeStyleGetDirection;
-
-Callback.register "CSSNodeStyleSetDirection" cssNodeStyleSetDirection;
 
 Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
 

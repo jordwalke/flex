@@ -9,7 +9,7 @@ GTEST_DIR = $(CURDIR)/googletest/googletest
 CC:= $(shell ocamlfind ocamlc -config | awk '/^bytecomp_c_compiler/ {for(i=2;i<=NF;i++) printf "%s " ,$$i}')
 LD=$(CC)
 
-all: $(BUILDDIR)/CSSLayoutPaddingTest
+all: $(BUILDDIR)/test
 clean:
 	rm -rf $(BUILDDIR)
 
@@ -22,8 +22,8 @@ $(BUILDDIR)/%.o: %.cpp
 
 FLAGS = -fno-omit-frame-pointer -fexceptions -Wall -Werror -O3 -std=c++11
 
-$(BUILDDIR)/CSSLayoutPaddingTest: CSSLayoutPaddingTest.cpp
-	g++ -o $@ -isystem ${GTEST_DIR}/include $(FLAGS) -pthread -I $(OCAMLDIR) -I ../stub libgtest.a -L$(BUILDDIR)/.. -lrelayout ${CURDIR}/gtest_main.cc ${CURDIR}/CSSLayoutPaddingTest.cpp
+$(BUILDDIR)/test: CSSLayoutPaddingTest.cpp CSSLayoutMinMaxDimensionTest.cpp
+	g++ -o $@ -isystem ${GTEST_DIR}/include $(FLAGS) -pthread -I $(OCAMLDIR) -I ../stub libgtest.a -L$(BUILDDIR)/.. -lrelayout ${CURDIR}/gtest_main.cc $^
 
 gtest:
 	rm -rf googletest

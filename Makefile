@@ -12,9 +12,7 @@ $(shell nopam)
 GENERATOR_FILES=$(BUILDDIR)/stub/bindings.re
 
 # The files used to build the stub generator.
-LIBFILES=$(BUILDDIR)/stub/bindings.cmx   \
-		$(BUILDDIR)/stub/CSSLayout.o \
-		$(BUILDDIR)/stub/CSSNodeList.o
+LIBFILES=$(BUILDDIR)/stub/bindings.cmx $(BUILDDIR)/stub/CSSLayout.o $(BUILDDIR)/stub/CSSNodeList.o
 
 SOURCES := $(shell find $(SRCDIR) -name '*.re')
 
@@ -43,7 +41,7 @@ $(BUILDDIR)/%.ml: %.ml
 $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
-%.cmx: %.re
+%.cmx: %.re $(SOURCES_IN_BUILD)
 	ocamlfind ocamlopt -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src -package $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c

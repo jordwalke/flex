@@ -69,6 +69,14 @@ typedef enum CSSAlign {
     CSSAlignStretch,
 } CSSAlign;
 
+typedef enum CSSFlexDirection {
+    CSSFlexDirectionColumn,
+    CSSFlexDirectionColumnReverse,
+    CSSFlexDirectionRow,
+    CSSFlexDirectionRowReverse,
+} CSSFlexDirection;
+
+
 typedef value *CSSNodeRef;
 
 CSSNodeRef CSSNodeNew(void);
@@ -100,30 +108,49 @@ void CSSNodeMarkDirty(const CSSNodeRef node);
 
 bool CSSNodeIsDirty(const CSSNodeRef node);
 
-void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction);
-
-CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node);
-
 bool CSSValueIsUndefined(const float value);
 
 void CSSNodeCalculateLayout(const CSSNodeRef node,
                             const float availableWidth,
                             const float availableHeight,
                             const CSSDirection parentDirection);
-
 /* style */
 
 void CSSNodeStyleSetWidth(const CSSNodeRef node, float width);
 
+void CSSNodeStyleSetMaxWidth(const CSSNodeRef node, float width);
+
+void CSSNodeStyleSetMinWidth(const CSSNodeRef node, float width);
+
 float CSSNodeStyleGetWidth(const CSSNodeRef node);
+
+float CSSNodeStyleGetMaxWidth(const CSSNodeRef node);
+
+float CSSNodeStyleGetMinWidth(const CSSNodeRef node);
 
 void CSSNodeStyleSetHeight(const CSSNodeRef node, float height);
 
+void CSSNodeStyleSetMaxHeight(const CSSNodeRef node, float height);
+
+void CSSNodeStyleSetMinHeight(const CSSNodeRef node, float height);
+
 float CSSNodeStyleGetHeight(const CSSNodeRef node);
+
+float CSSNodeStyleGetMaxHeight(const CSSNodeRef node);
+
+float CSSNodeStyleGetMinHeight(const CSSNodeRef node);
 
 void CSSNodeStyleSetFlexGrow(const CSSNodeRef node, float grow);
 
 float CSSNodeStyleGetFlexGrow(const CSSNodeRef node);
+
+void CSSNodeStyleSetFlexDirection(const CSSNodeRef node, const CSSFlexDirection direction);
+
+CSSFlexDirection CSSNodeStyleGetFlexDirection(const CSSNodeRef node);
+
+void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction);
+
+CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node);
 
 void CSSNodeStyleSetJustifyContent(const CSSNodeRef node, const CSSJustify grow);
 

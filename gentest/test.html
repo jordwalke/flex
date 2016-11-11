@@ -46,7 +46,15 @@
   <body>
     <div id='ltr-container'>
 
-       
+
+ <div id="justify_content_min_max" style="max-height: 200px; min-height: 100px; width: 100px; justify-content: center;">
+   <div style="width: 60px; height: 60px;"></div>
+ </div>
+
+ <div id="align_items_min_max" style="max-width: 200px; min-width: 100px; height: 100px; align-items: center;">
+   <div style="width: 60px; height: 60px;"></div>
+ </div>
+
  <div id="align_items_stretch" style="width: 100px; height: 100px;">
    <div style="height: 10px;"></div>
  </div>
@@ -320,7 +328,7 @@
    <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
-   
+
  <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
    <div style="width: 10px; flex-grow:1"></div>
  </div>
@@ -396,7 +404,14 @@
     </div>
     <div id='rtl-container'>
 
-       
+ <div id="justify_content_min_max" style="max-height: 200px; min-height: 100px; width: 100px; justify-content: center;">
+   <div style="width: 60px; height: 60px;"></div>
+ </div>
+
+ <div id="align_items_min_max" style="max-width: 200px; min-width: 100px; height: 100px; align-items: center;">
+   <div style="width: 60px; height: 60px;"></div>
+ </div>
+
  <div id="align_items_stretch" style="width: 100px; height: 100px;">
    <div style="height: 10px;"></div>
  </div>
@@ -670,7 +685,7 @@
    <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
-   
+
  <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
    <div style="width: 10px; flex-grow:1"></div>
  </div>
@@ -732,8 +747,6 @@
    <div style="flex-basis: 50px;"></div>
  </div>
 
-
-
  <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-right-width-because-start: 1; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
  </div>
@@ -747,7 +760,7 @@
     <button style="top:20px; left: 100px;" id="fixedBtn">Copy Test to Clipboard (FixedPoint) </button>
     <button style="top:20px; left: 400px;" id="floatBtn">Copy Test to Clipboard (FloatingPoint) </button>
     <script type="text/javascript">
-          
+
       function copyTextToClipboard(text) {
         var textArea = document.createElement("textarea");
         textArea.style.position = 'fixed';

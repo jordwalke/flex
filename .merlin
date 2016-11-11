@@ -27,13 +27,13 @@ B ./_build/jsTarget/*
 # the location of third-party dependencies. For us, most of our third-party deps
 # reside in `node_modules/` (made visible to Merlin through the S command
 # above); this PKG command is for discovering the opam/ocamlfind packages.
-PKG ctypes
+
 
 # FLG is the set of flags to pass to Merlin, as if it used ocamlc to compile and
 # understand our sources. You don't have to understand what these flags are for
 # now; but if you're curious, go check the rebel.ml that generated this
 # .merlin at https://github.com/reasonml/rebel
-FLG -w -30 -w -40
+FLG -w -30 -w -40 -open Default_Tar -open ByteTarget_Tar -open JsTarget_Tar
 
 
 

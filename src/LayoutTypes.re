@@ -7,11 +7,11 @@ type direction =
   | CssDirectionRtl /* 'rtl'     */;
 
 type flexDirection =
-  | CssFlexDirectionRow /* 'row' */
-  | CssFlexDirectionRowReverse
   /* 'row-reverse' */
   | CssFlexDirectionColumn /* 'column' */
-  | CssFlexDirectionColumnReverse;
+  | CssFlexDirectionColumnReverse
+  | CssFlexDirectionRow /* 'row' */
+  | CssFlexDirectionRowReverse;
 
 /* 'column-reverse' */
 type justify =
