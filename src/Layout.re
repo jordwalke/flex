@@ -839,7 +839,13 @@ and layoutNodeImpl
           };
           remainingFreeSpace.contents = originalRemainingFreeSpace +. deltaFreeSpace.contents;
           if (measureModeMainDim === CssMeasureModeAtMost) {
-            remainingFreeSpace.contents = zero
+            let minDim = layoutMeasuredDimensionForAxis node mainAxis;
+            if (not (isUndefined minDim) && minDim >= 0) {
+              remainingFreeSpace.contents =
+                fmaxf 0 (minDim - (availableInnerMainDim -. remainingFreeSpace.contents))
+            } else {
+              remainingFreeSpace.contents = zero
+            }
           };
           switch justifyContent {
           | CssJustifyCenter =>
