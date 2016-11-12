@@ -15,6 +15,14 @@ let cssNodeNew ptr => {
   r
 };
 
+external cssMeasureFFI : nativeint =>
+                         nativeint =>
+                         int =>
+                         measureMode =>
+                         int =>
+                         measureMode =>
+                         dimensions = "cssMeasureFFI_bytecode" "cssMeasureFFI";
+
 let cssNodeSetSelfRef node ptr => node.selfRef = ptr;
 
 let cssNodeGetSelfRef node => node.selfRef;
@@ -128,15 +136,7 @@ Callback.register "CSSNodeStyleGetFlexDirection" (fun node => node.style.flexDir
 
 Callback.register
   "CSSNodeStyleSetFlexDirection"
-  (
-    fun node flexDirection => {
-      node.style = {...node.style, flexDirection};
-      switch node.style.flexDirection {
-      | CssFlexDirectionColumn => Printf.printf "flexdirection set column%!\n"
-      | _ => Printf.printf "flexdirection set row!\n"
-      }
-    }
-  );
+  (fun node flexDirection => node.style = {...node.style, flexDirection});
 
 /* Padding */
 let cssNodeStyleSetPadding node edge v =>
@@ -186,3 +186,11 @@ Callback.register "CSSNodeGetChild" cssNodeGetChild;
 Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
 
 Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;
+
+Callback.register
+  "CSSNodeSetMeasureFunc"
+  (
+    fun node ptr => node.measure = (fun node w wm h hm => cssMeasureFFI ptr node.selfRef w wm h hm)
+  );
+
+Callback.register "GetMeasurement" (fun width height => {width, height});

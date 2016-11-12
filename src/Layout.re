@@ -363,8 +363,7 @@ and layoutNodeImpl
       node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
       node.layout.measuredHeight = boundAxis node CssFlexDirectionColumn zero
     } else {
-      let measureDim =
-        node.measure node.context innerWidth widthMeasureMode innerHeight heightMeasureMode;
+      let measureDim = node.measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
       node.layout.measuredWidth =
         boundAxis
           node

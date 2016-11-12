@@ -34,7 +34,7 @@ char* itoa(uintnat val, int base){
 
 }
 
-static void printBinary(uint32 i) {
+static void printBinary(uintnat i) {
     char *buffer = itoa (i,2);
     printf ("binary: %s\n",buffer);
 }
@@ -72,6 +72,8 @@ bridgeEnumToCamlVal(CSSJustify)
 bridgeEnumToCamlVal(CSSDirection)
 bridgeEnumToCamlVal(CSSEdge)
 bridgeEnumToCamlVal(CSSFlexDirection)
+bridgeEnumToCamlVal(CSSMeasureMode)
+
 
 
 
@@ -120,6 +122,15 @@ void CSSNodeReset(const CSSNodeRef node){
     *node = caml_callback(*closure, Val_unit);
 }
 
+void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
+    CAMLparam0();
+    CAMLlocal1(v);
+    camlMethod(closure);
+    v = caml_copy_nativeint((intnat)measureFunc);
+    caml_callback2(*closure, *node, v);
+    CAMLreturn0;
+}
+
 static CSSNodeRef CSSNodeGetSelfRef(value node) {
     camlMethod(closure);
     return (CSSNodeRef)Nativeint_val(caml_callback(*closure, node));
@@ -162,9 +173,12 @@ void CSSNodeInsertChild(const CSSNodeRef node,
 void CSSNodeRemoveChild(const CSSNodeRef node,
                         const CSSNodeRef child) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
+    CAMLparam0();
+    CAMLlocal1(v);
+    v = caml_copy_nativeint((intnat)child);
     camlMethod(closure);
-    caml_callback2(*closure, *node, caml_copy_nativeint((intnat)child));
-    return;
+    caml_callback2(*closure, *node, v);
+    CAMLreturn0;
 }
 
 uint32_t CSSNodeChildCount(const CSSNodeRef node) {
@@ -242,25 +256,9 @@ defineNodeStyle(float, MinWidth);
 
 defineNodeStyle(float, MinHeight);
 
-void CSSNodeStyleSetHeight(const CSSNodeRef node, float height) {
-    camlMethod(closure);
-    caml_callback2(*closure, *node, floatToCamlVal(height));
-}
+defineNodeStyle(float, Height);
 
-float CSSNodeStyleGetHeight(const CSSNodeRef node) {
-    camlMethod(closure);
-    return CamlValTofloat(caml_callback(*closure, *node));
-}
-
-void CSSNodeStyleSetFlexGrow(const CSSNodeRef node, float v) {
-    camlMethod(closure);
-    caml_callback2(*closure, *node, floatToCamlVal(v));
-}
-
-float CSSNodeStyleGetFlesGrow(const CSSNodeRef node) {
-    camlMethod(closure);
-    return CamlValTofloat(caml_callback(*closure, *node));
-}
+defineNodeStyle(float, FlexGrow);
 
 /* Layout */
 float CSSNodeLayoutGetWidth(const CSSNodeRef node) {
@@ -291,4 +289,22 @@ float CSSNodeLayoutGetLeft(const CSSNodeRef node) {
 float CSSNodeLayoutGetRight(const CSSNodeRef node) {
     camlMethod(closure);
     return CamlValTofloat(caml_callback(*closure, *node));
+}
+
+// This is a special case for OCaml functions that have more than 5 parameters, in such cases you have to provide 2 C functions
+
+// This defines a stub api for ocaml to call back, it then passes control to the C function pointer
+CAMLprim value cssMeasureFFI(value ptr, value node, value w, value wm, value h, value hm) {
+    CSSMeasureFunc f = (CSSMeasureFunc)Nativeint_val(ptr);
+    CSSSize s = f((CSSNodeRef)Nativeint_val(node),
+                  CamlValTofloat(w),
+                  CamlValToCSSMeasureMode(wm),
+                  CamlValTofloat(h),
+                  CamlValToCSSMeasureMode(hm));
+    camlMethodWithName(getMeasurement, "GetMeasurement");
+    return caml_callback2(*getMeasurement, floatToCamlVal(w), floatToCamlVal(h));
+}
+
+CAMLprim value cssMeasureFFI_bytecode(value * argv, int argn) {
+    return cssMeasureFFI(argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
 }

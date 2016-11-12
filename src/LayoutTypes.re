@@ -179,7 +179,7 @@ type node 'context = {
   layout: cssLayout,
   mutable lineIndex: int,
   mutable nextChild: node 'context,
-  measure: 'context => unitOfM => measureMode => unitOfM => measureMode => dimensions,
+  mutable measure: node 'context => unitOfM => measureMode => unitOfM => measureMode => dimensions,
   print: option ('context => unit),
   mutable children: array (node 'context),
   mutable childrenCount: int,

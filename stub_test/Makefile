@@ -22,7 +22,7 @@ $(BUILDDIR)/%.o: %.cpp
 
 FLAGS = -fno-omit-frame-pointer -fexceptions -Wall -Werror -O3 -std=c++11
 
-$(BUILDDIR)/test: CSSLayoutPaddingTest.cpp CSSLayoutMinMaxDimensionTest.cpp
+$(BUILDDIR)/test: CSSLayoutPaddingTest.cpp CSSLayoutMinMaxDimensionTest.cpp CSSLayoutMeasureTest.cpp
 	g++ -o $@ -isystem ${GTEST_DIR}/include $(FLAGS) -pthread -I $(OCAMLDIR) -I ../stub libgtest.a -L$(BUILDDIR)/.. -lrelayout ${CURDIR}/gtest_main.cc $^
 
 gtest:

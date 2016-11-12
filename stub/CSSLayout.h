@@ -76,8 +76,25 @@ typedef enum CSSFlexDirection {
     CSSFlexDirectionRowReverse,
 } CSSFlexDirection;
 
+typedef enum CSSMeasureMode {
+    CSSMeasureModeUndefined,
+    CSSMeasureModeExactly,
+    CSSMeasureModeAtMost,
+    CSSMeasureModeCount,
+} CSSMeasureMode;
+
+typedef struct CSSSize {
+    float width;
+    float height;
+} CSSSize;
 
 typedef value *CSSNodeRef;
+
+typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
+                                  float width,
+                                  CSSMeasureMode widthMode,
+                                  float height,
+                                  CSSMeasureMode heightMode);
 
 CSSNodeRef CSSNodeNew(void);
 
@@ -173,6 +190,8 @@ float CSSNodeLayoutGetBottom(const CSSNodeRef node);
 float CSSNodeLayoutGetRight(const CSSNodeRef node);
 
 float CSSNodeLayoutGetLeft(const CSSNodeRef node);
+
+void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc);
 
 /* padding */
 
