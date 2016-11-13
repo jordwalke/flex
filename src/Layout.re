@@ -154,9 +154,9 @@ let rec layoutNodeInternal
   /* and dimensions for nodes in the subtree. The algorithm assumes that each node*/
   /* gets layed out a maximum of one time per tree layout, but multiple measurements*/
   /* may be required to resolve all of the flex dimensions.*/
-  /* We handle nodes with measure functions specially here because they are the most*/
-  /* expensive to measure, so it's worth avoiding redundant measurements if at all possible.*/
-  if (node.measure !== dummyMeasure) {
+  /* We handle nodes with measure functions specially here because they are the most
+   * expensive to measure, so it's worth avoiding redundant measurements if at all possible.*/
+  if (node.measure !== dummyMeasure && node.childrenCount === 0) {
     let marginAxisRow = getMarginAxis node CssFlexDirectionRow;
     let marginAxisColumn = getMarginAxis node CssFlexDirectionColumn;
     /* First, try to use the layout cache.*/
@@ -349,7 +349,9 @@ and layoutNodeImpl
   let marginAxisColumn = getMarginAxis node CssFlexDirectionColumn;
   let direction = resolveDirection node parentDirection;
   node.layout.direction = direction;
-  if (node.measure !== dummyMeasure) {
+  /* For content (text) nodes, determine the dimensions based on the text
+     contents. */
+  if (node.measure !== dummyMeasure && node.childrenCount === 0) {
     let innerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
     let innerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
     if (widthMeasureMode === CssMeasureModeExactly && heightMeasureMode === CssMeasureModeExactly) {
