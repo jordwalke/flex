@@ -36,10 +36,10 @@ type measureMode =
   /* there are some places in the reference implementation that set
    * the measure mode to negative one.*/
   /* https://github.com/facebook/css-layout/pull/185#r64995699 */
-  | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS
   | CssMeasureModeUndefined /* 'undefined' */
   | CssMeasureModeExactly /* 'exactly' */
-  | CssMeasureModeAtMost /* 'at-most' */;
+  | CssMeasureModeAtMost /* 'at-most' */
+  | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS;
 
 let css_max_cached_result_count = 6;
 
@@ -60,8 +60,8 @@ type cachedMeasurement = {
 
 type overflow =
   | Visible
-  | Scroll
-  | Hidden;
+  | Hidden
+  | Scroll;
 
 type wrapType =
   | CssNoWrap

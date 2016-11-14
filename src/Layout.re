@@ -358,7 +358,8 @@ and layoutNodeImpl
       node.layout.measuredHeight =
         boundAxis node CssFlexDirectionColumn (availableHeight -. marginAxisColumn)
     } else if (
-      innerWidth <= zero || innerHeight <= zero
+      not (isUndefined innerWidth) && innerWidth <= zero ||
+      not (isUndefined innerHeight) && innerHeight <= zero
     ) {
       node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
       node.layout.measuredHeight = boundAxis node CssFlexDirectionColumn zero
@@ -409,16 +410,20 @@ and layoutNodeImpl
       if (not performLayout) {
         if (
           (
-            (widthMeasureMode === CssMeasureModeAtMost && availableWidth <= zero) &&
+            (
+              widthMeasureMode === CssMeasureModeAtMost &&
+              not (isUndefined availableWidth) && availableWidth <= zero
+            ) &&
             heightMeasureMode === CssMeasureModeAtMost
           ) &&
-          availableHeight <= zero
+          not (isUndefined availableHeight) && availableHeight <= zero
         ) {
           node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
           node.layout.measuredHeight = boundAxis node CssFlexDirectionColumn zero;
           shouldContinue.contents = false
         } else if (
-          widthMeasureMode === CssMeasureModeAtMost && availableWidth <= zero
+          widthMeasureMode === CssMeasureModeAtMost &&
+          not (isUndefined availableWidth) && availableWidth <= zero
         ) {
           node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
           node.layout.measuredHeight =
@@ -428,7 +433,8 @@ and layoutNodeImpl
               (isUndefined availableHeight ? zero : availableHeight -. marginAxisColumn);
           shouldContinue.contents = false
         } else if (
-          heightMeasureMode === CssMeasureModeAtMost && availableHeight <= zero
+          heightMeasureMode === CssMeasureModeAtMost &&
+          not (isUndefined availableHeight) && availableHeight <= zero
         ) {
           node.layout.measuredWidth =
             boundAxis

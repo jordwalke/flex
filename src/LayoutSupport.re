@@ -51,7 +51,7 @@ let failOnDummyMeasure = true;
 /**
  * In the integer encoding of all
  */
-let dummyMeasure node width widthMeasureMode height heightMeasureMode =>
+let dummyMeasure context width widthMeasureMode height heightMeasureMode =>
   if failOnDummyMeasure {
     raise (
       Invalid_argument (

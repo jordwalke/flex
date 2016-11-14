@@ -73,8 +73,9 @@ bridgeEnumToCamlVal(CSSDirection)
 bridgeEnumToCamlVal(CSSEdge)
 bridgeEnumToCamlVal(CSSFlexDirection)
 bridgeEnumToCamlVal(CSSMeasureMode)
-
-
+bridgeEnumToCamlVal(CSSWrapType)
+bridgeEnumToCamlVal(CSSPositionType)
+bridgeEnumToCamlVal(CSSOverflow)
 
 
 static value Min_int;
@@ -129,6 +130,35 @@ void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
     v = caml_copy_nativeint((intnat)measureFunc);
     caml_callback2(*closure, *node, v);
     CAMLreturn0;
+}
+
+CSSMeasureFunc CSSNodeGetMeasureFunc(const CSSNodeRef node) {
+    camlMethod(closure);
+    return (CSSMeasureFunc)Nativeint_val(caml_callback(*closure, *node));
+}
+
+void CSSNodeSetHasNewLayout(const CSSNodeRef node, bool hasNewLayout) {
+    camlMethod(closure);
+    caml_callback(*closure, Val_int(hasNewLayout));
+}
+
+void CSSNodeSetContext(const CSSNodeRef node, void *context) {
+    CAMLparam0();
+    CAMLlocal1(v);
+    camlMethod(closure);
+    v = caml_copy_nativeint((intnat)context);
+    caml_callback2(*closure, *node, v);
+    CAMLreturn0;
+}
+
+void *CSSNodeGetContext(const CSSNodeRef node) {
+    camlMethod(closure);
+    return (void *)Nativeint_val(caml_callback(*closure, *node));
+}
+
+bool CSSNodeGetHasNewLayout(const CSSNodeRef node) {
+    camlMethod(closure);
+    return Int_val(caml_callback(*closure, *node));
 }
 
 static CSSNodeRef CSSNodeGetSelfRef(value node) {
@@ -207,9 +237,8 @@ CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
 }
 
 void CSSNodeMarkDirty(const CSSNodeRef node) {
-    assert__(false) {
-        printf("Not implemented in OCaml\n");
-    }
+    // TODO: implement this
+    return;
 }
 
 bool CSSNodeIsDirty(const CSSNodeRef node) {
@@ -217,10 +246,67 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
     return Bool_val(caml_callback(*closure, *node));
 }
 
+void CSSNodePrint(const CSSNodeRef node,
+                  const CSSPrintOptions options) {
+    // TODO: implement this
+}
+
+bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
+                                    const float width,
+                                    const CSSMeasureMode heightMode,
+                                    const float height,
+                                    const CSSMeasureMode lastWidthMode,
+                                    const float lastWidth,
+                                    const CSSMeasureMode lastHeightMode,
+                                    const float lastHeight,
+                                    const float lastComputedWidth,
+                                    const float lastComputedHeight,
+                                    const float marginRow,
+                                    const float marginColumn) {
+    // TODO: implement this
+    return false;
+}
+
 /* Padding */
 void CSSNodeStyleSetPadding(const CSSNodeRef node, CSSEdge edge, float v) {
     camlMethod(closure);
     caml_callback3(*closure, *node, CSSEdgeToCamlVal(edge), floatToCamlVal(v));
+}
+
+void CSSNodeStyleSetPosition(const CSSNodeRef node, CSSEdge edge, float v) {
+    camlMethod(closure);
+    caml_callback3(*closure, *node, CSSEdgeToCamlVal(edge), floatToCamlVal(v));
+}
+
+void CSSNodeStyleSetMargin(const CSSNodeRef node, CSSEdge edge, float v) {
+    camlMethod(closure);
+    caml_callback3(*closure, *node, CSSEdgeToCamlVal(edge), floatToCamlVal(v));
+}
+
+void CSSNodeStyleSetBorder(const CSSNodeRef node, CSSEdge edge, float v) {
+    camlMethod(closure);
+    caml_callback3(*closure, *node, CSSEdgeToCamlVal(edge), floatToCamlVal(v));
+}
+
+
+float CSSNodeStyleGetPadding(const CSSNodeRef node, CSSEdge edge) {
+    camlMethod(closure);
+    return CamlValTofloat(caml_callback2(*closure, *node, CSSEdgeToCamlVal(edge)));
+}
+
+float CSSNodeStyleGetMargin(const CSSNodeRef node, CSSEdge edge) {
+    camlMethod(closure);
+    return CamlValTofloat(caml_callback2(*closure, *node, CSSEdgeToCamlVal(edge)));
+}
+
+float CSSNodeStyleGetPosition(const CSSNodeRef node, CSSEdge edge) {
+    camlMethod(closure);
+    return CamlValTofloat(caml_callback2(*closure, *node, CSSEdgeToCamlVal(edge)));
+}
+
+float CSSNodeStyleGetBorder(const CSSNodeRef node, CSSEdge edge) {
+    camlMethod(closure);
+    return CamlValTofloat(caml_callback2(*closure, *node, CSSEdgeToCamlVal(edge)));
 }
 
 /* Style */
@@ -236,16 +322,26 @@ void CSSNodeStyleSetPadding(const CSSNodeRef node, CSSEdge edge, float v) {
         return CamlValTo##type(caml_callback(*closure, *node));         \
     }                                                                   \
 
+/* Style */
 
 defineNodeStyle(CSSJustify, JustifyContent)
 
 defineNodeStyle(CSSAlign, AlignItems)
 
+defineNodeStyle(CSSAlign, AlignContent)
+
+defineNodeStyle(CSSAlign, AlignSelf)
+
 defineNodeStyle(CSSDirection, Direction)
+
+defineNodeStyle(CSSPositionType, PositionType)
+
+defineNodeStyle(CSSWrapType, FlexWrap)
 
 defineNodeStyle(CSSFlexDirection, FlexDirection)
 
-/* Style */
+defineNodeStyle(CSSOverflow, Overflow)
+
 defineNodeStyle(float, Width);
 
 defineNodeStyle(float, MaxWidth);
@@ -259,6 +355,13 @@ defineNodeStyle(float, MinHeight);
 defineNodeStyle(float, Height);
 
 defineNodeStyle(float, FlexGrow);
+
+defineNodeStyle(float, FlexShrink);
+
+defineNodeStyle(float, FlexBasis);
+
+defineNodeStyle(float, Flex);
+
 
 /* Layout */
 float CSSNodeLayoutGetWidth(const CSSNodeRef node) {
@@ -289,6 +392,11 @@ float CSSNodeLayoutGetLeft(const CSSNodeRef node) {
 float CSSNodeLayoutGetRight(const CSSNodeRef node) {
     camlMethod(closure);
     return CamlValTofloat(caml_callback(*closure, *node));
+}
+
+CSSDirection CSSNodeLayoutGetDirection(const CSSNodeRef node) {
+    camlMethod(closure);
+    return CamlValToCSSDirection(caml_callback(*closure, *node));
 }
 
 // This is a special case for OCaml functions that have more than 5 parameters, in such cases you have to provide 2 C functions

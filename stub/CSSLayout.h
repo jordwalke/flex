@@ -83,10 +83,46 @@ typedef enum CSSMeasureMode {
     CSSMeasureModeCount,
 } CSSMeasureMode;
 
+typedef enum CSSPositionType {
+    CSSPositionTypeRelative,
+    CSSPositionTypeAbsolute,
+} CSSPositionType;
+
+typedef enum CSSDimension {
+    CSSDimensionWidth,
+    CSSDimensionHeight,
+} CSSDimension;
+
+typedef enum CSSWrapType {
+    CSSWrapTypeNoWrap,
+    CSSWrapTypeWrap,
+} CSSWrapType;
+
 typedef struct CSSSize {
     float width;
     float height;
 } CSSSize;
+
+typedef enum CSSOverflow {
+    CSSOverflowVisible,
+    CSSOverflowHidden,
+    CSSOverflowScroll,
+} CSSOverflow;
+
+
+typedef enum CSSLogLevel {
+    CSSLogLevelError,
+    CSSLogLevelWarn,
+    CSSLogLevelInfo,
+    CSSLogLevelDebug,
+    CSSLogLevelVerbose,
+} CSSLogLevel;
+
+typedef enum CSSPrintOptions {
+    CSSPrintOptionsLayout = 1,
+    CSSPrintOptionsStyle = 2,
+    CSSPrintOptionsChildren = 4,
+} CSSPrintOptions;
 
 typedef value *CSSNodeRef;
 
@@ -95,6 +131,11 @@ typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
                                   CSSMeasureMode widthMode,
                                   float height,
                                   CSSMeasureMode heightMode);
+
+typedef void (*CSSPrintFunc)(CSSNodeRef node);
+
+typedef int (*CSSLogger)(CSSLogLevel level, const char *format, va_list args);
+
 
 CSSNodeRef CSSNodeNew(void);
 
@@ -126,6 +167,16 @@ void CSSNodeMarkDirty(const CSSNodeRef node);
 bool CSSNodeIsDirty(const CSSNodeRef node);
 
 bool CSSValueIsUndefined(const float value);
+
+void CSSNodePrint(const CSSNodeRef node, const CSSPrintOptions options);
+
+void CSSNodeSetHasNewLayout(const CSSNodeRef node, bool hasNewLayout);
+
+bool CSSNodeGetHasNewLayout(const CSSNodeRef node);
+
+void CSSNodeSetContext(const CSSNodeRef node, void *context);
+
+void* CSSNodeGetContext(const CSSNodeRef node);
 
 void CSSNodeCalculateLayout(const CSSNodeRef node,
                             const float availableWidth,
@@ -161,13 +212,33 @@ void CSSNodeStyleSetFlexGrow(const CSSNodeRef node, float grow);
 
 float CSSNodeStyleGetFlexGrow(const CSSNodeRef node);
 
+void CSSNodeStyleSetFlexBasis(const CSSNodeRef node, float grow);
+
+float CSSNodeStyleGetFlexBasis(const CSSNodeRef node);
+
+void CSSNodeStyleSetFlexShrink(const CSSNodeRef node, float shrink);
+
+CSSOverflow CSSNodeStyleGetOverflow(const CSSNodeRef node);
+
+void CSSNodeStyleSetOverflow(const CSSNodeRef node, CSSOverflow overflow);
+
+float CSSNodeStyleGetFlexShrink(const CSSNodeRef node);
+
 void CSSNodeStyleSetFlexDirection(const CSSNodeRef node, const CSSFlexDirection direction);
 
 CSSFlexDirection CSSNodeStyleGetFlexDirection(const CSSNodeRef node);
 
+void CSSNodeStyleSetFlexWrap(const CSSNodeRef node, const CSSWrapType flexType);
+
+CSSWrapType CSSNodeStyleGetFlexWrap(const CSSNodeRef node);
+
 void CSSNodeStyleSetDirection(const CSSNodeRef node, const CSSDirection direction);
 
 CSSDirection CSSNodeStyleGetDirection(const CSSNodeRef node);
+
+void CSSNodeStyleSetPositionType(const CSSNodeRef node, const CSSPositionType);
+
+CSSPositionType CSSNodeStyleGetPositionType(const CSSNodeRef node);
 
 void CSSNodeStyleSetJustifyContent(const CSSNodeRef node, const CSSJustify grow);
 
@@ -176,6 +247,14 @@ CSSJustify CSSNodeStyleGetJustifyContent(const CSSNodeRef node);
 void CSSNodeStyleSetAlignItems(const CSSNodeRef node, const CSSAlign grow);
 
 CSSAlign CSSNodeStyleGetAlignItems(const CSSNodeRef node);
+
+void CSSNodeStyleSetAlignContent(const CSSNodeRef node, const CSSAlign);
+
+CSSAlign CSSNodeStyleGetAlignContent(const CSSNodeRef node);
+
+void CSSNodeStyleSetAlignSelf(const CSSNodeRef node, const CSSAlign);
+
+CSSAlign CSSNodeStyleGetAlignSelf(const CSSNodeRef node);
 
 /* layout */
 
@@ -191,11 +270,30 @@ float CSSNodeLayoutGetRight(const CSSNodeRef node);
 
 float CSSNodeLayoutGetLeft(const CSSNodeRef node);
 
+CSSDirection CSSNodeLayoutGetDirection(const CSSNodeRef node);
+
 void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc);
 
-/* padding */
+CSSMeasureFunc CSSNodeGetMeasureFunc(const CSSNodeRef node);
+
+/* edge */
 
 void CSSNodeStyleSetPadding(const CSSNodeRef node, CSSEdge edge, float v);
+
+void CSSNodeStyleSetPosition(const CSSNodeRef node, CSSEdge edge, float v);
+
+void CSSNodeStyleSetMargin(const CSSNodeRef node, CSSEdge edge, float v);
+
+void CSSNodeStyleSetBorder(const CSSNodeRef node, CSSEdge edge, float v);
+
+float CSSNodeStyleGetPadding(const CSSNodeRef node, CSSEdge edge);
+
+float CSSNodeStyleGetPosition(const CSSNodeRef node, CSSEdge edge);
+
+float CSSNodeStyleGetMargin(const CSSNodeRef node, CSSEdge edge);
+
+float CSSNodeStyleGetBorder(const CSSNodeRef node, CSSEdge edge);
+
 
 inline bool eq(const float a, const float b) {
     if (CSSValueIsUndefined(a)) {
