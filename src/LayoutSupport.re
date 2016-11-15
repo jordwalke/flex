@@ -287,6 +287,18 @@ let styleDimensionForAxis node axis =>
 
 
 /**
+ * Dimension style getter.
+ */
+let styleMinDimensionForAxis node axis =>
+  switch axis {
+  | CssFlexDirectionColumn => node.style.minHeight
+  | CssFlexDirectionColumnReverse => node.style.minHeight
+  | CssFlexDirectionRow => node.style.minWidth
+  | CssFlexDirectionRowReverse => node.style.minWidth
+  };
+
+
+/**
  * Leading style getters.
  */
 let styleLeadingPositionForAxis node axis =>

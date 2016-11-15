@@ -845,8 +845,10 @@ and layoutNodeImpl
             }
           };
           remainingFreeSpace.contents = originalRemainingFreeSpace +. deltaFreeSpace.contents;
+          /* If we are using "at most" rules in the main axis. Calculate the remaining space when
+             constraint by the min size defined for the main axis. */
           if (measureModeMainDim === CssMeasureModeAtMost) {
-            let minDim = layoutMeasuredDimensionForAxis node mainAxis;
+            let minDim = styleMinDimensionForAxis node mainAxis;
             if (not (isUndefined minDim) && minDim >= 0) {
               remainingFreeSpace.contents =
                 fmaxf 0 (minDim - (availableInnerMainDim -. remainingFreeSpace.contents))
