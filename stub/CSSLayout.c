@@ -103,11 +103,12 @@ static float CamlValTofloat(value v) {
 
 CSSNodeRef CSSNodeNew(void) {
     CAMLparam0();
-    CAMLlocal1(v);
+    CAMLlocal2(v, selfRef);
     value *valp;
-    camlMethod(closure);
     valp = (value *) malloc(sizeof *valp);
-    v = caml_callback(*closure, caml_copy_nativeint((intnat)valp));
+    selfRef = caml_copy_nativeint((intnat)valp);
+    camlMethod(closure);
+    v = caml_callback(*closure, selfRef);
     *valp = v;
     gNodeInstanceCount++;
     // Register the value with global heap
@@ -120,7 +121,7 @@ void CSSNodeReset(const CSSNodeRef node){
     // - Old value should automatically be GCed
     // - No need to call caml_register_global_root again as the pointer remain the same
     camlMethodWithName(closure, "CSSNodeNew");
-    *node = caml_callback(*closure, Val_unit);
+    *node = caml_callback(*closure, caml_copy_nativeint((intnat)node));
 }
 
 void CSSNodeSetMeasureFunc(const CSSNodeRef node, CSSMeasureFunc measureFunc) {
@@ -236,10 +237,31 @@ CSSNodeRef CSSNodeGetChild(const CSSNodeRef node,
                                                     *node, Val_int(index)));
 }
 
+void CSSLayoutSetLogger(CSSLogger logger) {
+    // TODO: implement this
+    return;
+}
+
+void CSSLog(CSSLogLevel level, const char *message, ...) {
+    // TODO: implement this
+    return;
+}
+
+void CSSLayoutSetExperimentalFeatureEnabled(CSSExperimentalFeature feature, bool enabled) {
+    // TODO: implement this
+    return;
+}
+bool CSSLayoutIsExperimentalFeatureEnabled(CSSExperimentalFeature feature) {
+    // TODO: implement this
+    return false;
+}
+
 void CSSNodeMarkDirty(const CSSNodeRef node) {
     // TODO: implement this
     return;
 }
+
+
 
 bool CSSNodeIsDirty(const CSSNodeRef node) {
     camlMethod(closure);
@@ -249,6 +271,17 @@ bool CSSNodeIsDirty(const CSSNodeRef node) {
 void CSSNodePrint(const CSSNodeRef node,
                   const CSSPrintOptions options) {
     // TODO: implement this
+    return;
+}
+
+
+void CSSNodeSetPrintFunc(const CSSNodeRef node, CSSPrintFunc printfunc) {
+    // TODO: implement this
+    return;
+}
+
+CSSPrintFunc CSSNodeGetPrintFunc(const CSSNodeRef node) {
+    return 0;
 }
 
 bool CSSNodeCanUseCachedMeasurement(const CSSMeasureMode widthMode,
@@ -319,7 +352,7 @@ float CSSNodeStyleGetBorder(const CSSNodeRef node, CSSEdge edge) {
     type CSSNodeStyleGet##name(const CSSNodeRef node) {                 \
         camlMethod(closure);                                            \
         value v = caml_callback(*closure, *node);                       \
-        return CamlValTo##type(caml_callback(*closure, *node));         \
+        return CamlValTo##type(v);                                      \
     }                                                                   \
 
 /* Style */
@@ -402,17 +435,34 @@ CSSDirection CSSNodeLayoutGetDirection(const CSSNodeRef node) {
 // This is a special case for OCaml functions that have more than 5 parameters, in such cases you have to provide 2 C functions
 
 // This defines a stub api for ocaml to call back, it then passes control to the C function pointer
-CAMLprim value cssMeasureFFI(value ptr, value node, value w, value wm, value h, value hm) {
+CAMLprim value cssMeasureFFI(value node, value w, value wm, value h, value hm) {
+    CAMLparam5(node, w, wm, h, hm);
+    CAMLlocal3(ptr, width, height);
+
+    assert((intnat)node != 0x5);
+    CSSNodeRef ref = (CSSNodeRef)Nativeint_val(node);
+
+    camlMethodWithName(getMeasureFunc, "CSSNodeGetMeasureFunc");
+
+    ptr = caml_callback(*getMeasureFunc, *ref);
+
     CSSMeasureFunc f = (CSSMeasureFunc)Nativeint_val(ptr);
-    CSSSize s = f((CSSNodeRef)Nativeint_val(node),
+
+    CSSSize s = f(ref,
                   CamlValTofloat(w),
                   CamlValToCSSMeasureMode(wm),
                   CamlValTofloat(h),
                   CamlValToCSSMeasureMode(hm));
+
     camlMethodWithName(getMeasurement, "GetMeasurement");
-    return caml_callback2(*getMeasurement, floatToCamlVal(w), floatToCamlVal(h));
+
+    assert(getMeasurement != 0x5);
+    assert(*getMeasurement != 0x5);
+    width = floatToCamlVal(s.width);
+    height = floatToCamlVal(s.height);
+    CAMLreturn(caml_callback2(*getMeasurement, width, height));
 }
 
 CAMLprim value cssMeasureFFI_bytecode(value * argv, int argn) {
-    return cssMeasureFFI(argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+    return cssMeasureFFI(argv[0], argv[1], argv[2], argv[3], argv[4]);
 }

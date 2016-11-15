@@ -4,13 +4,8 @@ open LayoutTypes;
 
 open LayoutValue;
 
-external cssMeasureFFI : nativeint =>
-                         nativeint =>
-                         int =>
-                         measureMode =>
-                         int =>
-                         measureMode =>
-                         dimensions = "cssMeasureFFI_bytecode" "cssMeasureFFI";
+external cssMeasureFFI : nativeint => int => measureMode => int => measureMode => dimensions = "cssMeasureFFI_bytecode"
+                                                                    "cssMeasureFFI";
 
 type bindingContext = {mutable measureFuncPtr: nativeint, mutable contextPtr: nativeint};
 
@@ -234,6 +229,8 @@ Callback.register
 
 Callback.register "CSSNodeStyleGetFlexBasis" (fun node => node.style.flexBasis);
 
+Callback.register "CSSNodeStyleSetFlex" (fun node flex => ());
+
 Callback.register
   "CSSNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
 
@@ -426,15 +423,13 @@ Callback.register
     fun node ptr => {
       node.context.measureFuncPtr = ptr;
       if (node.context.measureFuncPtr != Nativeint.zero) {
-        node.measure = (
-          fun node w wm h hm => cssMeasureFFI node.context.measureFuncPtr node.selfRef w wm h hm
-        )
+        node.measure = (fun node w wm h hm => cssMeasureFFI node.selfRef w wm h hm)
       } else {
         node.measure = dummyMeasure
       }
     }
   );
 
-Callback.register "CSSNodeGetMeasureFunc" (fun node ptr => node.context.measureFuncPtr);
+Callback.register "CSSNodeGetMeasureFunc" (fun node => node.context.measureFuncPtr);
 
 Callback.register "GetMeasurement" (fun width height => {width, height});

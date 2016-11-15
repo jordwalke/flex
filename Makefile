@@ -3,7 +3,7 @@ BUILDDIR=_build
 SRCDIR=src
 CAML_INIT=$(BUILDDIR)/stub/init.o
 
-EXTDLL:=.so
+EXTDLL:=.o
 
 $(shell mkdir -p $(BUILDDIR) $(BUILDDIR)/stub $(BUILDDIR)/$(SRCDIR) $(BUILDDIR)/test)
 
@@ -12,7 +12,7 @@ $(shell nopam)
 GENERATOR_FILES=$(BUILDDIR)/stub/bindings.re
 
 # The files used to build the stub generator.
-LIBFILES=$(BUILDDIR)/stub/bindings.cmx $(BUILDDIR)/stub/CSSLayout.o $(BUILDDIR)/stub/CSSNodeList.o
+LIBFILES=$(BUILDDIR)/stub/bindings.cmx $(BUILDDIR)/stub/CSSLayout.o
 
 SOURCES := $(shell find $(SRCDIR) -name '*.re')
 
@@ -26,7 +26,7 @@ CMXS_IN_BUILD=$(addprefix $(BUILDDIR)/src/,$(CMXS))
 
 GENERATOR = $(BUILDDIR)/generate
 
-PACKAGES=str
+PACKAGES=
 
 all: sharedlib
 
@@ -42,15 +42,15 @@ $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
 %.cmx: %.re $(SOURCES_IN_BUILD)
-	ocamlfind ocamlopt -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src -package $(PACKAGES) -impl $<
+	ocamlfind -toolchain android opt -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c
-	ocamlopt -g -c $< -o $@
+	ocamlfind -toolchain android opt -ccopt -std=c++11 -g -c $< -o $@
 	mv $(notdir $@) $@
 
 $(BUILDDIR)/librelayout$(EXTDLL): $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind opt -o $@ -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib -package $(PACKAGES) $^
-	@echo "shared lib genereated at: $@"
+	ocamlfind -toolchain android opt -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
+	@echo "lib genereated at: $@"
 
 clean:
 	rm -rf $(BUILDDIR)

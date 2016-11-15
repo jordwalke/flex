@@ -124,6 +124,12 @@ typedef enum CSSPrintOptions {
     CSSPrintOptionsChildren = 4,
 } CSSPrintOptions;
 
+
+typedef enum CSSExperimentalFeature {
+    CSSExperimentalFeatureCount,
+} CSSExperimentalFeature;
+
+
 typedef value *CSSNodeRef;
 
 typedef CSSSize (*CSSMeasureFunc)(CSSNodeRef node,
