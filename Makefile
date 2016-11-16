@@ -28,9 +28,14 @@ GENERATOR = $(BUILDDIR)/generate
 
 PACKAGES=
 
+TOOLCHAIN=
+
 all: sharedlib
 
-sharedlib: $(BUILDDIR)/librelayout$(EXTDLL)
+android: TOOLCHAIN=-toolchain android
+android: $(BUILDDIR)/librelayout$(EXTDLL)
+
+sharedlib: $(BUILDDIR)/librelayout.so
 
 $(BUILDDIR)/%.re: %.re
 	cp $< $@
@@ -42,11 +47,15 @@ $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
 %.cmx: %.re $(SOURCES_IN_BUILD)
-	ocamlfind -toolchain android opt -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
+	ocamlfind $(TOOLCHAIN) opt -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c
-	ocamlfind -toolchain android opt -ccopt -std=c++11 -g -c $< -o $@
+	ocamlfind $(TOOLCHAIN) opt -ccopt -std=c11 -g -c $< -o $@
 	mv $(notdir $@) $@
+
+$(BUILDDIR)/librelayout.so: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
+	ocamlfind opt -o $@ -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(PACKAGES) $^
+	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/librelayout$(EXTDLL): $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
 	ocamlfind -toolchain android opt -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
