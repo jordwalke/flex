@@ -699,6 +699,32 @@ function getComputedStyleInKebabForm(node) {
 
 
 /* Supported:
+
+<div id="flex_grow_within_max_width" style="width: 200px; height: 100px;">
+   <div style="flex-direction: row; max-width: 100px;">
+     <div style="height: 20px; flex-grow: 1;"></div>
+   </div>
+ </div>
+
+ <div id="flex_grow_within_constrained_max_width" style="width: 200px; height: 100px;">
+   <div style="flex-direction: row; max-width: 300px;">
+     <div style="height: 20px; flex-grow: 1;"></div>
+   </div>
+ </div>
+
+ <div id="justify_content_overflow_min_max" style="min-height: 100px; max-height: 110px; justify-content: center;">
+   <div style="width: 50px; height: 50px;"></div>
+   <div style="width: 50px; height: 50px;"></div>
+   <div style="width: 50px; height: 50px;"></div>
+ </div>
+
+ <div id="justify_content_min_max" style="max-height: 200px; min-height: 100px; width: 100px; justify-content: center;">
+   <div style="width: 60px; height: 60px;"></div>
+ </div>
+
+ <div id="align_items_min_max" style="max-width: 200px; min-width: 100px; height: 100px; align-items: center;">
+   <div style="width: 60px; height: 60px;"></div>
+ </div>
  
  <div id="align_items_stretch" style="width: 100px; height: 100px;">
    <div style="height: 10px;"></div>
