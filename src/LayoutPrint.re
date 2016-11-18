@@ -148,7 +148,7 @@ let rec printCssNodeRec (node, options, level) => {
       indent (level + 2);
       Printf.printf "alignSelf: 'stretch',\n"
     };
-    /* print_number_nan (level + 2, "flex", LayoutSupport.cssNodeStyleGetFlex node); */
+    print_number_nan (level + 2, "flex", LayoutSupport.cssNodeStyleGetFlex node);
     if (node.style.overflow == Hidden) {
       indent (level + 2);
       Printf.printf "overflow: 'hidden',\n"

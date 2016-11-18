@@ -34,8 +34,7 @@ extern "C" {
 #endif
 
 typedef enum CSSDirection {
-    // 0 is reserved for "non-exist"
-    CSSDirectionInherit = 1,
+    CSSDirectionInherit,
     CSSDirectionLTR,
     CSSDirectionRTL,
 } CSSDirection;

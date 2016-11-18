@@ -35,6 +35,8 @@ all: sharedlib
 android: TOOLCHAIN=-toolchain android
 android: $(BUILDDIR)/librelayout$(EXTDLL)
 
+android64: $(BUILDDIR)/librelayout$(EXTDLL)
+
 sharedlib: $(BUILDDIR)/librelayout.so
 
 $(BUILDDIR)/%.re: %.re
@@ -55,10 +57,11 @@ $(BUILDDIR)/%.o: %.c
 
 $(BUILDDIR)/librelayout.so: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
 	ocamlfind opt -o $@ -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(PACKAGES) $^
+	# ocamlfind $(TOOLCHAIN) opt -o $(BUILDDIR)/librelayout$(EXTDLL) -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
 	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/librelayout$(EXTDLL): $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind -toolchain android opt -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
+	ocamlfind $(TOOLCHAIN) opt -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
 	@echo "lib genereated at: $@"
 
 clean:

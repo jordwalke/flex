@@ -36,10 +36,10 @@ let rec theNullNode = {
      * Start out as zero.
      */
     computedFlexBasis: cssUndefined,
-    left: zero,
-    top: zero,
-    right: zero,
-    bottom: zero,
+    left: cssUndefined,
+    top: cssUndefined,
+    right: cssUndefined,
+    bottom: cssUndefined,
     /**
      * Start out as undefined.
      */
@@ -62,12 +62,12 @@ let rec theNullNode = {
 
 /* Force allocating a new node */
 let cssNodeNew ptr => {
-  ...theNullNode,
-  selfRef: ptr,
-  children: [||],
-  layout: createLayout (),
-  style: createStyle (),
-  context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
+    ...theNullNode,
+    selfRef: ptr,
+    children: [||],
+    layout: createLayout (),
+    style: createStyle (),
+    context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
 };
 
 let cssNodeSetSelfRef node ptr => node.selfRef = ptr;
@@ -108,7 +108,7 @@ let cssNodeRemoveChild node child => {
     oldChildren
 };
 
-let cssNodeIsDirty node => node.isDirty node.context;
+let cssNodeIsDirty node => true /* node.isDirty node.context */;
 
 let cssNodeChildCount node => Array.length node.children;
 
@@ -229,7 +229,30 @@ Callback.register
 
 Callback.register "CSSNodeStyleGetFlexBasis" (fun node => node.style.flexBasis);
 
-Callback.register "CSSNodeStyleSetFlex" (fun node flex => ());
+let setIfUndefined oldValue newValue =>
+  if (isUndefined oldValue) {
+    newValue
+  } else {
+    oldValue
+  };
+
+let setIfZero oldValue newValue =>
+  if (0 == oldValue) {
+    newValue
+  } else {
+    oldValue
+  };
+
+Callback.register
+  "CSSNodeStyleSetFlex"
+  (
+    fun node flex => {
+      ...node.style,
+      flexBasis: setIfUndefined node.style.flexBasis flex,
+      flexGrow: setIfUndefined node.style.flexGrow flex,
+      flexShrink: setIfUndefined node.style.flexShrink flex
+    }
+  );
 
 Callback.register
   "CSSNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
@@ -242,18 +265,36 @@ Callback.register
       | CSSEdgeLeft => node.style = {...node.style, paddingLeft: v}
       | CSSEdgeTop => node.style = {...node.style, paddingTop: v}
       | CSSEdgeRight => node.style = {...node.style, paddingRight: v}
-      | CSSEdgeBottom => node.style = {...node.style, paddingBottom: v}
-      | CSSEdgeStart => node.style = {...node.style, paddingStart: v}
-      | CSSEdgeEnd => node.style = {...node.style, paddingEnd: v}
-      | CSSEdgeHorizontal => node.style = {...node.style, paddingLeft: v, paddingRight: v}
-      | CSSEdgeVertical => node.style = {...node.style, paddingTop: v, paddingBottom: v}
+      | CSSEdgeBottom =>
+        Printf.printf "setting bottom to %d %!\n" v;
+        node.style = {...node.style, paddingBottom: v}
+      | CSSEdgeStart =>
+        node.style = {
+          Printf.printf "setting start to %d %!\n" v;
+          {...node.style, paddingStart: v}
+        }
+      | CSSEdgeEnd =>
+        Printf.printf "setting end to %d %!\n" v;
+        node.style = {...node.style, paddingEnd: v}
+      | CSSEdgeHorizontal =>
+        node.style = {
+          ...node.style,
+          paddingLeft: setIfZero node.style.paddingLeft v,
+          paddingRight: setIfZero node.style.paddingRight v
+        }
+      | CSSEdgeVertical =>
+        node.style = {
+          ...node.style,
+          paddingTop: setIfZero node.style.paddingTop v,
+          paddingBottom: setIfZero node.style.paddingBottom v
+        }
       | CSSEdgeAll =>
         node.style = {
           ...node.style,
-          paddingTop: v,
-          paddingBottom: v,
-          paddingLeft: v,
-          paddingRight: v
+          paddingTop: setIfZero node.style.paddingTop v,
+          paddingBottom: setIfZero node.style.paddingBottom v,
+          paddingLeft: setIfZero node.style.paddingLeft v,
+          paddingRight: setIfZero node.style.paddingRight v
         }
       }
   );
@@ -269,10 +310,26 @@ Callback.register
       | CSSEdgeBottom => node.style = {...node.style, marginBottom: v}
       | CSSEdgeStart => node.style = {...node.style, marginStart: v}
       | CSSEdgeEnd => node.style = {...node.style, marginEnd: v}
-      | CSSEdgeHorizontal => node.style = {...node.style, marginLeft: v, marginRight: v}
-      | CSSEdgeVertical => node.style = {...node.style, marginTop: v, marginBottom: v}
+      | CSSEdgeHorizontal =>
+        node.style = {
+          ...node.style,
+          marginLeft: setIfZero node.style.marginLeft v,
+          marginRight: setIfZero node.style.marginRight v
+        }
+      | CSSEdgeVertical =>
+        node.style = {
+          ...node.style,
+          marginTop: setIfZero node.style.marginTop v,
+          marginBottom: setIfZero node.style.marginBottom v
+        }
       | CSSEdgeAll =>
-        node.style = {...node.style, marginTop: v, marginBottom: v, marginLeft: v, marginRight: v}
+        node.style = {
+          ...node.style,
+          marginTop: setIfZero node.style.marginTop v,
+          marginBottom: setIfZero node.style.marginBottom v,
+          marginLeft: setIfZero node.style.marginLeft v,
+          marginRight: setIfZero node.style.marginRight v
+        }
       }
   );
 
@@ -287,10 +344,26 @@ Callback.register
       | CSSEdgeBottom => node.style = {...node.style, borderBottom: v}
       | CSSEdgeStart => node.style = {...node.style, borderStart: v}
       | CSSEdgeEnd => node.style = {...node.style, borderEnd: v}
-      | CSSEdgeHorizontal => node.style = {...node.style, borderLeft: v, borderRight: v}
-      | CSSEdgeVertical => node.style = {...node.style, borderTop: v, borderBottom: v}
+      | CSSEdgeHorizontal =>
+        node.style = {
+          ...node.style,
+          borderLeft: setIfZero node.style.borderLeft v,
+          borderRight: setIfZero node.style.borderRight v
+        }
+      | CSSEdgeVertical =>
+        node.style = {
+          ...node.style,
+          borderTop: setIfZero node.style.borderTop v,
+          borderBottom: setIfZero node.style.borderBottom v
+        }
       | CSSEdgeAll =>
-        node.style = {...node.style, borderTop: v, borderBottom: v, borderLeft: v, borderRight: v}
+        node.style = {
+          ...node.style,
+          borderTop: setIfZero node.style.borderTop v,
+          borderBottom: setIfZero node.style.borderBottom v,
+          borderLeft: setIfZero node.style.borderLeft v,
+          borderRight: setIfZero node.style.borderRight v
+        }
       }
   );
 
@@ -305,9 +378,26 @@ Callback.register
       | CSSEdgeBottom => node.style = {...node.style, bottom: v}
       | CSSEdgeStart => node.style = {...node.style, start: v}
       | CSSEdgeEnd => node.style = {...node.style, endd: v}
-      | CSSEdgeHorizontal => node.style = {...node.style, left: v, right: v}
-      | CSSEdgeVertical => node.style = {...node.style, top: v, bottom: v}
-      | CSSEdgeAll => node.style = {...node.style, top: v, bottom: v, left: v, right: v}
+      | CSSEdgeHorizontal =>
+        node.style = {
+          ...node.style,
+          left: setIfZero node.style.left v,
+          right: setIfZero node.style.right v
+        }
+      | CSSEdgeVertical =>
+        node.style = {
+          ...node.style,
+          top: setIfZero node.style.top v,
+          bottom: setIfZero node.style.bottom v
+        }
+      | CSSEdgeAll =>
+        node.style = {
+          ...node.style,
+          left: setIfZero node.style.left v,
+          bottom: setIfZero node.style.bottom v,
+          top: setIfZero node.style.top v,
+          right: setIfZero node.style.right v
+        }
       }
   );
 

@@ -59,26 +59,26 @@ inline bool CSSValueIsUndefined(const float v) {
     return isnan(v);
 }
 
-#define bridgeEnumToCamlVal(type)               \
+#define bridgeEnumToCamlVal(type, offset)       \
     inline value type##ToCamlVal(const type v) {\
-        return Val_int(v);                      \
+        return Val_int((int)v + offset);        \
     }                                           \
     inline type CamlValTo##type(value v) {      \
-        return Int_val(v);                      \
+        return Int_val(v) - offset;             \
     }
 
-bridgeEnumToCamlVal(CSSAlign)
-bridgeEnumToCamlVal(CSSJustify)
-bridgeEnumToCamlVal(CSSDirection)
-bridgeEnumToCamlVal(CSSEdge)
-bridgeEnumToCamlVal(CSSFlexDirection)
-bridgeEnumToCamlVal(CSSMeasureMode)
-bridgeEnumToCamlVal(CSSWrapType)
-bridgeEnumToCamlVal(CSSPositionType)
-bridgeEnumToCamlVal(CSSOverflow)
+bridgeEnumToCamlVal(CSSAlign, 0)
+bridgeEnumToCamlVal(CSSJustify, 0)
+bridgeEnumToCamlVal(CSSDirection, 1)
+bridgeEnumToCamlVal(CSSEdge, 0)
+bridgeEnumToCamlVal(CSSFlexDirection, 0)
+bridgeEnumToCamlVal(CSSMeasureMode, 0)
+bridgeEnumToCamlVal(CSSWrapType, 0)
+bridgeEnumToCamlVal(CSSPositionType, 0)
+bridgeEnumToCamlVal(CSSOverflow, 0)
 
 
-static value Min_int;
+value Min_int;
 __attribute__ ((__constructor__))
 void initMinInt(void) {
     camlMethodWithName(minInt, "minInt");
@@ -439,7 +439,6 @@ CAMLprim value cssMeasureFFI(value node, value w, value wm, value h, value hm) {
     CAMLparam5(node, w, wm, h, hm);
     CAMLlocal3(ptr, width, height);
 
-    assert((intnat)node != 0x5);
     CSSNodeRef ref = (CSSNodeRef)Nativeint_val(node);
 
     camlMethodWithName(getMeasureFunc, "CSSNodeGetMeasureFunc");
@@ -456,8 +455,6 @@ CAMLprim value cssMeasureFFI(value node, value w, value wm, value h, value hm) {
 
     camlMethodWithName(getMeasurement, "GetMeasurement");
 
-    assert(getMeasurement != 0x5);
-    assert(*getMeasurement != 0x5);
     width = floatToCamlVal(s.width);
     height = floatToCamlVal(s.height);
     CAMLreturn(caml_callback2(*getMeasurement, width, height));
