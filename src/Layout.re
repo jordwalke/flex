@@ -554,8 +554,18 @@ and layoutNodeImpl
         let availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
         let availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
         let child = {contents: theNullNode};
-        /* let i = 0; */
         /* STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM */
+        /**
+         * This loop computes `.computedFlexBasis` for each child, and mutates
+         * each item's `.nextChild` property to form a chain that can be
+         * "efficiently" traversed.
+         *
+         * Creates:
+         *
+         *   firstAbsoluteChild: 
+         *   firstAbsoluteChild: 
+         *   firstAbsoluteChild: 
+         */
         for i in 0 to (childCount - 1) {
           child.contents = node.children.(i);
           if performLayout {

@@ -46,7 +46,7 @@
   <body>
     <div id='ltr-container'>
 
-       <div id="flex_grow_within_max_width" style="width: 200px; height: 100px;">
+      <div id="flex_grow_within_max_width" style="width: 200px; height: 100px;">
    <div style="flex-direction: row; max-width: 100px;">
      <div style="height: 20px; flex-grow: 1;"></div>
    </div>
@@ -71,7 +71,7 @@
  <div id="align_items_min_max" style="max-width: 200px; min-width: 100px; height: 100px; align-items: center;">
    <div style="width: 60px; height: 60px;"></div>
  </div>
- 
+
  <div id="align_items_stretch" style="width: 100px; height: 100px;">
    <div style="height: 10px;"></div>
  </div>
@@ -345,7 +345,7 @@
    <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
-   
+
  <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
    <div style="width: 10px; flex-grow:1"></div>
  </div>
@@ -408,7 +408,6 @@
  </div>
 
 
-
  <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-left-width-because-start: 1; border-left-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
  </div>
@@ -417,11 +416,118 @@
    <div style="height: 10px; width: 10px;"></div>
  </div>
 
+
+ <div id="start_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-left-because-start: 1;
+     margin-left: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-right-because-end: 1;
+     margin-right: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-left-because-start: 1;
+     padding-left: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-right-because-end: 1;
+     padding-right: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-left-width-because-start: 1;
+     border-left-width: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-right-width-because-end: 1;
+     border-right-width: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     left-because-start: 1;
+     left: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     right-because-end: 1;
+     right: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
       <div id='default'></div>
     </div>
     <div id='rtl-container'>
 
-       <div id="flex_grow_within_max_width" style="width: 200px; height: 100px;">
+      <div id="flex_grow_within_max_width" style="width: 200px; height: 100px;">
    <div style="flex-direction: row; max-width: 100px;">
      <div style="height: 20px; flex-grow: 1;"></div>
    </div>
@@ -446,7 +552,7 @@
  <div id="align_items_min_max" style="max-width: 200px; min-width: 100px; height: 100px; align-items: center;">
    <div style="width: 60px; height: 60px;"></div>
  </div>
- 
+
  <div id="align_items_stretch" style="width: 100px; height: 100px;">
    <div style="height: 10px;"></div>
  </div>
@@ -720,7 +826,7 @@
    <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
-   
+
  <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
    <div style="width: 10px; flex-grow:1"></div>
  </div>
@@ -783,13 +889,119 @@
  </div>
 
 
-
  <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-right-width-because-start: 1; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
  </div>
 
  <div id="jwalke_border_width_only_end" style="width: 100px; height: 100px; border-left-width-because-end: 1; border-left-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
+ </div>
+
+
+ <div id="start_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-right-because-start: 1;
+     margin-right: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-left-because-end: 1;
+     margin-left: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-right-because-start: 1;
+     padding-right: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-left-because-end: 1;
+     padding-left: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-right-width-because-start: 1;
+     border-right-width: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-left-width-because-end: 1;
+     border-left-width: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     right-because-start: 1;
+     right: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     left-because-end: 1;
+     left: 10px;
+     flex-grow: 1;"
+   >
+   </div>
  </div>
 
       <div id='default'></div>

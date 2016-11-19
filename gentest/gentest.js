@@ -350,9 +350,21 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
       switch (style) {
         case 'margin-left':
           if (node.rawStyle.indexOf('margin-left-because-start') !== -1) {
+            // In our test cases, start/end is only simulated by swapping it
+            // withthe appropriate left/right. Therefore, when reading back values,
+            // we won't see two distinct fields for start/left. We need to mark on the
+            // node that we originally set both left/start. Super hacky.
             styleLines.push('marginStart: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both left, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-margin-left-to-twenty') !== -1) {
+              styleLines.push('marginLeft: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('margin-left-because-end') !== -1) {
             styleLines.push('marginEnd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-margin-left-to-twenty') !== -1) {
+              styleLines.push('marginLeft: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('marginLeft: ' + pixelValue(useFloats, val));
           }
@@ -360,8 +372,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'margin-right':
           if (node.rawStyle.indexOf('margin-right-because-start') !== -1) {
             styleLines.push('marginStart: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-margin-right-to-twenty') !== -1) {
+              styleLines.push('marginRight: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('margin-right-because-end') !== -1) {
             styleLines.push('marginEnd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-margin-right-to-twenty') !== -1) {
+              styleLines.push('marginRight: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('marginRight: ' + pixelValue(useFloats, val));
           }
@@ -369,8 +389,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'padding-left':
           if (node.rawStyle.indexOf('padding-left-because-start') !== -1) {
             styleLines.push('paddingStart: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both left, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-padding-left-to-twenty') !== -1) {
+              styleLines.push('paddingLeft: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('padding-left-because-end') !== -1) {
             styleLines.push('paddingEnd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-padding-left-to-twenty') !== -1) {
+              styleLines.push('paddingLeft: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('paddingLeft: ' + pixelValue(useFloats, val));
           }
@@ -378,8 +406,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'padding-right':
           if (node.rawStyle.indexOf('padding-right-because-start') !== -1) {
             styleLines.push('paddingStart: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-padding-right-to-twenty') !== -1) {
+              styleLines.push('paddingRight: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('padding-right-because-end') !== -1) {
             styleLines.push('paddingEnd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-padding-right-to-twenty') !== -1) {
+              styleLines.push('paddingRight: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('paddingRight: ' + pixelValue(useFloats, val));
           }
@@ -387,8 +423,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'border-left-width':
           if (node.rawStyle.indexOf('border-left-width-because-start') !== -1) {
             styleLines.push('borderStart: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both left, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-border-left-width-to-twenty') !== -1) {
+              styleLines.push('borderLeft: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('border-left-width-because-end') !== -1) {
             styleLines.push('borderEnd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-border-left-width-to-twenty') !== -1) {
+              styleLines.push('borderLeft: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('borderLeft: ' + pixelValue(useFloats, val));
           }
@@ -396,8 +440,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'border-right-width':
           if (node.rawStyle.indexOf('border-right-width-because-start') !== -1) {
             styleLines.push('borderStart: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-border-right-width-to-twenty') !== -1) {
+              styleLines.push('borderRight: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('border-right-width-because-end') !== -1) {
             styleLines.push('borderEnd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding end.
+            if (node.rawStyle.indexOf('also-set-border-right-width-to-twenty') !== -1) {
+              styleLines.push('borderRight: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('borderRight: ' + pixelValue(useFloats, val));
           }
@@ -443,8 +495,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'left':
           if (node.rawStyle.indexOf('left-because-start') !== -1) {
             styleLines.push('start: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both left, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-left-to-twenty') !== -1) {
+              styleLines.push('left: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('left-because-end') !== -1) {
             styleLines.push('endd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both left, and an overriding end.
+            if (node.rawStyle.indexOf('also-set-left-to-twenty') !== -1) {
+              styleLines.push('left: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('left: ' + pixelValue(useFloats, val));
           }
@@ -455,8 +515,16 @@ function setupTestTree(useFloats, testName, parent, node, nodeName, parentName, 
         case 'right':
           if (node.rawStyle.indexOf('right-because-start') !== -1) {
             styleLines.push('start: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding start.
+            if (node.rawStyle.indexOf('also-set-right-to-twenty') !== -1) {
+              styleLines.push('right: ' + pixelValue(useFloats, '20'));
+            }
           } else if (node.rawStyle.indexOf('right-because-end') !== -1) {
             styleLines.push('endd: ' + pixelValue(useFloats, val));
+            // In the rare case that they have both right, and an overriding end.
+            if (node.rawStyle.indexOf('also-set-right-to-twenty') !== -1) {
+              styleLines.push('right: ' + pixelValue(useFloats, '20'));
+            }
           } else {
             styleLines.push('right: ' + pixelValue(useFloats, val));
           }
@@ -725,7 +793,7 @@ function getComputedStyleInKebabForm(node) {
  <div id="align_items_min_max" style="max-width: 200px; min-width: 100px; height: 100px; align-items: center;">
    <div style="width: 60px; height: 60px;"></div>
  </div>
- 
+
  <div id="align_items_stretch" style="width: 100px; height: 100px;">
    <div style="height: 10px;"></div>
  </div>
@@ -999,7 +1067,7 @@ function getComputedStyleInKebabForm(node) {
    <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
-   
+
  <div id="border_flex_child" style="width: 100px; height: 100px; border-width: 10px;">
    <div style="width: 10px; flex-grow:1"></div>
  </div>
@@ -1062,7 +1130,6 @@ function getComputedStyleInKebabForm(node) {
  </div>
 
 
-
  <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-replaceWithActualStart-width-because-start: 1; border-replaceWithActualStart-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
  </div>
@@ -1071,6 +1138,112 @@ function getComputedStyleInKebabForm(node) {
    <div style="height: 10px; width: 10px;"></div>
  </div>
 
+
+ <div id="start_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-replaceWithActualStart-because-start: 1;
+     margin-replaceWithActualStart: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-replaceWithActualEnd-because-end: 1;
+     margin-replaceWithActualEnd: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-replaceWithActualStart-because-start: 1;
+     padding-replaceWithActualStart: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-replaceWithActualEnd-because-end: 1;
+     padding-replaceWithActualEnd: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-replaceWithActualStart-width-because-start: 1;
+     border-replaceWithActualStart-width: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-replaceWithActualEnd-width-because-end: 1;
+     border-replaceWithActualEnd-width: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="start_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     replaceWithActualStart-because-start: 1;
+     replaceWithActualStart: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
+
+ <div id="end_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     replaceWithActualEnd-because-end: 1;
+     replaceWithActualEnd: 10px;
+     flex-grow: 1;"
+   >
+   </div>
+ </div>
 
 */
 

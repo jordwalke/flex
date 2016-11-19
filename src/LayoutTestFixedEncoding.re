@@ -384,6 +384,104 @@
  <div id="jwalke_border_width_only_end" style="width: 100px; height: 100px; border-right-width-because-end: 1; border-right-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
  </div>
+
+ <div id="start_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-left-because-start: 1;
+     margin-left: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="end_overrides_margin" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-margin-left-to-twenty:1;
+     also-set-margin-right-to-twenty:1;
+     margin-left: 20px;
+     margin-right: 20px;
+     margin-right-because-end: 1;
+     margin-right: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="start_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-left-because-start: 1;
+     padding-left: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="end_overrides_padding" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-padding-left-to-twenty:1;
+     also-set-padding-right-to-twenty:1;
+     padding-left: 20px;
+     padding-right: 20px;
+     padding-right-because-end: 1;
+     padding-right: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="start_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-left-width-because-start: 1;
+     border-left-width: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="end_overrides_border" style="width: 100px; height: 100px;">
+   <div style="
+     also-set-border-left-width-to-twenty:1;
+     also-set-border-right-width-to-twenty:1;
+     border-left-width: 20px;
+     border-right-width: 20px;
+     border-right-width-because-end: 1;
+     border-right-width: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="start_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     left-because-start: 1;
+     left: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
+
+ <div id="end_overrides" style="width: 100px; height: 100px;">
+   <div style="
+     position:absolute;
+     also-set-left-to-twenty:1;
+     also-set-right-to-twenty:1;
+     left: 20px;
+     right: 20px;
+     right-because-end: 1;
+     right: 10px;
+     flex-grow: 1;">
+   </div>
+ </div>
   *
   */
 let floatMult = ( *. );
@@ -543,6 +641,22 @@ let flex_basis_flex_shrink_row = "flex_basis_flex_shrink_row";
 let jwalke_border_width_only_start = "jwalke_border_width_only_start";
 
 let jwalke_border_width_only_end = "jwalke_border_width_only_end";
+
+let start_overrides_margin = "start_overrides_margin";
+
+let end_overrides_margin = "end_overrides_margin";
+
+let start_overrides_padding = "start_overrides_padding";
+
+let end_overrides_padding = "end_overrides_padding";
+
+let start_overrides_border = "start_overrides_border";
+
+let end_overrides_border = "end_overrides_border";
+
+let start_overrides = "start_overrides";
+
+let end_overrides = "end_overrides";
 
 
 /**
@@ -1822,6 +1936,112 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
               let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* start_overrides_margin */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                marginStart: 1000,
+                marginLeft: 2000,
+                marginRight: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* end_overrides_margin */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                marginLeft: 2000,
+                marginEnd: 1000,
+                marginRight: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* start_overrides_padding */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                paddingStart: 1000,
+                paddingLeft: 2000,
+                paddingRight: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* end_overrides_padding */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                paddingLeft: 2000,
+                paddingEnd: 1000,
+                paddingRight: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* start_overrides_border */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                borderStart: 1000,
+                borderLeft: 2000,
+                borderRight: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* end_overrides_border */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                borderLeft: 2000,
+                borderEnd: 1000,
+                borderRight: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* start_overrides */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                positionType: CssPositionAbsolute,
+                flexGrow: 1,
+                start: 1000,
+                left: 2000,
+                right: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+              /* end_overrides */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                positionType: CssPositionAbsolute,
+                flexGrow: 1,
+                left: 2000,
+                endd: 1000,
+                right: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
               Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
             }
           )
@@ -3082,6 +3302,120 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
       Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
     };
+    let bench_start_overrides_margin () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        flexGrow: 1,
+        marginStart: 1000,
+        marginLeft: 2000,
+        marginRight: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_end_overrides_margin () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        flexGrow: 1,
+        marginLeft: 2000,
+        marginEnd: 1000,
+        marginRight: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_start_overrides_padding () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        flexGrow: 1,
+        paddingStart: 1000,
+        paddingLeft: 2000,
+        paddingRight: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_end_overrides_padding () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        flexGrow: 1,
+        paddingLeft: 2000,
+        paddingEnd: 1000,
+        paddingRight: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_start_overrides_border () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        flexGrow: 1,
+        borderStart: 1000,
+        borderLeft: 2000,
+        borderRight: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_end_overrides_border () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        flexGrow: 1,
+        borderLeft: 2000,
+        borderEnd: 1000,
+        borderRight: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_start_overrides () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        positionType: CssPositionAbsolute,
+        flexGrow: 1,
+        start: 1000,
+        left: 2000,
+        right: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
+    let bench_end_overrides () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {
+        ...LayoutSupport.defaultStyle,
+        positionType: CssPositionAbsolute,
+        flexGrow: 1,
+        left: 2000,
+        endd: 1000,
+        right: 2000
+      };
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl
+    };
     let benchmarks = [];
     let benchmarks =
       LayoutTestUtils.shouldRun flex_grow_within_max_width ?
@@ -3461,6 +3795,34 @@ if (LayoutTestUtils.runMode === Bench) {
           ...benchmarks
         ] :
         benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun start_overrides_margin ?
+        [Bench.Test.create name::start_overrides_margin bench_start_overrides_margin, ...benchmarks] :
+        benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun end_overrides_margin ?
+        [Bench.Test.create name::end_overrides_margin bench_end_overrides_margin, ...benchmarks] : benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun start_overrides_padding ?
+        [Bench.Test.create name::start_overrides_padding bench_start_overrides_padding, ...benchmarks] :
+        benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun end_overrides_padding ?
+        [Bench.Test.create name::end_overrides_padding bench_end_overrides_padding, ...benchmarks] :
+        benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun start_overrides_border ?
+        [Bench.Test.create name::start_overrides_border bench_start_overrides_border, ...benchmarks] :
+        benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun end_overrides_border ?
+        [Bench.Test.create name::end_overrides_border bench_end_overrides_border, ...benchmarks] : benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun start_overrides ?
+        [Bench.Test.create name::start_overrides bench_start_overrides, ...benchmarks] : benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun end_overrides ?
+        [Bench.Test.create name::end_overrides bench_end_overrides, ...benchmarks] : benchmarks;
     Core.Std.Command.run (Bench.make_command benchmarks)
   }
 } else {
@@ -8012,6 +8374,376 @@ if (LayoutTestUtils.runMode === Bench) {
             153
             ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
             [({...root_child0.layout, top: 4000, left: 5000, width: 1000, height: 1000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    start_overrides_margin
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          flexGrow: 1,
+          marginStart: 1000,
+          marginLeft: 2000,
+          marginRight: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            154
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 7000, height: 10000}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            155
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 2000, width: 7000, height: 10000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    end_overrides_margin
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          flexGrow: 1,
+          marginLeft: 2000,
+          marginEnd: 1000,
+          marginRight: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            156
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 2000, width: 7000, height: 10000}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            157
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 7000, height: 10000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    start_overrides_padding
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          flexGrow: 1,
+          paddingStart: 1000,
+          paddingLeft: 2000,
+          paddingRight: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            158
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            159
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    end_overrides_padding
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          flexGrow: 1,
+          paddingLeft: 2000,
+          paddingEnd: 1000,
+          paddingRight: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            160
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            161
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    start_overrides_border
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          flexGrow: 1,
+          borderStart: 1000,
+          borderLeft: 2000,
+          borderRight: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            162
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            163
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    end_overrides_border
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          flexGrow: 1,
+          borderLeft: 2000,
+          borderEnd: 1000,
+          borderRight: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            164
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 || root_child0.layout.height != 10000
+        ) {
+          assertLayouts
+            165
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 0, width: 10000, height: 10000}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    start_overrides
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          positionType: CssPositionAbsolute,
+          flexGrow: 1,
+          start: 1000,
+          left: 2000,
+          right: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 0
+        ) {
+          assertLayouts
+            166
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 7000, height: 0}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 0
+        ) {
+          assertLayouts
+            167
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 2000, width: 7000, height: 0}, root_child0.layout)]
+        }
+      }
+    );
+  it
+    end_overrides
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {
+          ...LayoutSupport.defaultStyle,
+          positionType: CssPositionAbsolute,
+          flexGrow: 1,
+          left: 2000,
+          endd: 1000,
+          right: 2000
+        };
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root = LayoutSupport.createNode withChildren::[|root_child0|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 2000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 0
+        ) {
+          assertLayouts
+            168
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 2000, width: 7000, height: 0}, root_child0.layout)]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 1000 ||
+          root_child0.layout.width != 7000 || root_child0.layout.height != 0
+        ) {
+          assertLayouts
+            169
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [({...root_child0.layout, top: 0, left: 1000, width: 7000, height: 0}, root_child0.layout)]
         }
       }
     );
