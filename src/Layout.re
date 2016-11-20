@@ -325,37 +325,35 @@ and computeChildFlexBasis node child width widthMode height heightMode direction
   let childHeight = {contents: zero};
   let childWidthMeasureMode = {contents: CssMeasureModeUndefined};
   let childHeightMeasureMode = {contents: CssMeasureModeUndefined};
-  if (isMainAxisRow && isStyleDimDefined child.contents CssFlexDirectionRow) {
-    child.contents.layout.computedFlexBasis =
-      fmaxf child.contents.style.width (getPaddingAndBorderAxis child.contents CssFlexDirectionRow)
+  if (isMainAxisRow && isStyleDimDefined child CssFlexDirectionRow) {
+    child.layout.computedFlexBasis =
+      fmaxf child.style.width (getPaddingAndBorderAxis child CssFlexDirectionRow)
   } else if (
-    not isMainAxisRow && isStyleDimDefined child.contents CssFlexDirectionColumn
+    not isMainAxisRow && isStyleDimDefined child CssFlexDirectionColumn
   ) {
-    child.contents.layout.computedFlexBasis =
-      fmaxf child.contents.style.height (getPaddingAndBorderAxis child.contents CssFlexDirectionColumn)
+    child.layout.computedFlexBasis =
+      fmaxf child.style.height (getPaddingAndBorderAxis child CssFlexDirectionColumn)
   } else if (
-    not (isUndefined child.contents.style.flexBasis)
+    not (isUndefined child.style.flexBasis)
   ) {
-    if (isUndefined child.contents.layout.computedFlexBasis) {
-      child.contents.layout.computedFlexBasis =
-        fmaxf child.contents.style.flexBasis (getPaddingAndBorderAxis child.contents mainAxis)
+    if (isUndefined child.layout.computedFlexBasis) {
+      child.layout.computedFlexBasis = fmaxf child.style.flexBasis (getPaddingAndBorderAxis child mainAxis)
     }
   } else {
     childWidth.contents = cssUndefined;
     childHeight.contents = cssUndefined;
     childWidthMeasureMode.contents = CssMeasureModeUndefined;
     childHeightMeasureMode.contents = CssMeasureModeUndefined;
-    if (isStyleDimDefined child.contents CssFlexDirectionRow) {
-      childWidth.contents = child.contents.style.width +. getMarginAxis child.contents CssFlexDirectionRow;
+    if (isStyleDimDefined child CssFlexDirectionRow) {
+      childWidth.contents = child.style.width +. getMarginAxis child CssFlexDirectionRow;
       childWidthMeasureMode.contents = CssMeasureModeExactly
     };
 
     /**
      * Why can't this just be inlined to .height !== cssUndefined.
      */
-    if (isStyleDimDefined child.contents CssFlexDirectionColumn) {
-      childHeight.contents =
-        child.contents.style.height +. getMarginAxis child.contents CssFlexDirectionColumn;
+    if (isStyleDimDefined child CssFlexDirectionColumn) {
+      childHeight.contents = child.style.height +. getMarginAxis child CssFlexDirectionColumn;
       childHeightMeasureMode.contents = CssMeasureModeExactly
     };
     if (not isMainAxisRow && node.style.overflow === Scroll || node.style.overflow !== Scroll) {
@@ -378,8 +376,8 @@ and computeChildFlexBasis node child width widthMode height heightMode direction
     if (
       not isMainAxisRow &&
       not (isUndefined width) &&
-      not (isStyleDimDefined child.contents CssFlexDirectionRow) &&
-      widthMode === CssMeasureModeExactly && getAlignItem node child.contents === CssAlignStretch
+      not (isStyleDimDefined child CssFlexDirectionRow) &&
+      widthMode === CssMeasureModeExactly && getAlignItem node child === CssAlignStretch
     ) {
       childWidth.contents = width;
       childWidthMeasureMode.contents = CssMeasureModeExactly
@@ -387,15 +385,15 @@ and computeChildFlexBasis node child width widthMode height heightMode direction
     if (
       isMainAxisRow &&
       not (isUndefined height) &&
-      not (isStyleDimDefined child.contents CssFlexDirectionColumn) &&
-      heightMode === CssMeasureModeExactly && getAlignItem node child.contents === CssAlignStretch
+      not (isStyleDimDefined child CssFlexDirectionColumn) &&
+      heightMode === CssMeasureModeExactly && getAlignItem node child === CssAlignStretch
     ) {
       childHeight.contents = height;
       childHeightMeasureMode.contents = CssMeasureModeExactly
     };
     let _ =
       layoutNodeInternal
-        child.contents
+        child
         childWidth.contents
         childHeight.contents
         direction
@@ -403,10 +401,10 @@ and computeChildFlexBasis node child width widthMode height heightMode direction
         childHeightMeasureMode.contents
         false
         measureString;
-    child.contents.layout.computedFlexBasis =
+    child.layout.computedFlexBasis =
       fmaxf
-        (isMainAxisRow ? child.contents.layout.measuredWidth : child.contents.layout.measuredHeight)
-        (getPaddingAndBorderAxis child.contents mainAxis)
+        (isMainAxisRow ? child.layout.measuredWidth : child.layout.measuredHeight)
+        (getPaddingAndBorderAxis child mainAxis)
   }
 }
 /**
@@ -541,7 +539,7 @@ and layoutNodeImpl
         let justifyContent = node.style.justifyContent;
         let isNodeFlexWrap = node.style.flexWrap === CssWrap;
         let firstAbsoluteChild = {contents: theNullNode};
-        let currentAbsoluteChild = {contents: theNullNode};
+        let currentAbsoluteChildRef = {contents: theNullNode};
         let leadingPaddingAndBorderMain = getLeadingPaddingAndBorder node mainAxis;
         let trailingPaddingAndBorderMain = getTrailingPaddingAndBorder node mainAxis;
         let leadingPaddingAndBorderCross = getLeadingPaddingAndBorder node crossAxis;
@@ -555,33 +553,47 @@ and layoutNodeImpl
         let availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
         let child = {contents: theNullNode};
         /* STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM */
+
         /**
-         * This loop computes `.computedFlexBasis` for each child, and mutates
-         * each item's `.nextChild` property to form a chain that can be
-         * "efficiently" traversed.
+         * This loop computes `.computedFlexBasis` for each child, and
+         * constructs a chain of absolute children using their `.nextChild`
+         * property.
          *
-         * Creates:
+         * For every non-absolute child, we store a `.computedFlexBasis`.
          *
-         *   firstAbsoluteChild: 
-         *   firstAbsoluteChild: 
-         *   firstAbsoluteChild: 
+         * We should find a way to avoid having to construct these chains or
+         * store a computed flex basis at all. Perhaps we can show that for
+         * each node it's only used once, and therefore can be computed when
+         * needed, resulting in just as many computations, but zero mutations.
          */
         for i in 0 to (childCount - 1) {
-          child.contents = node.children.(i);
+          let child = node.children.(i);
           if performLayout {
-            let childDirection = resolveDirection child.contents direction;
-            setPosition child.contents childDirection
+            let childDirection = resolveDirection child direction;
+            setPosition child childDirection
           };
-          if (child.contents.style.positionType === CssPositionAbsolute) {
+          if (child.style.positionType === CssPositionAbsolute) {
             if (firstAbsoluteChild.contents === theNullNode) {
-              firstAbsoluteChild.contents = child.contents
+              firstAbsoluteChild.contents = child
             };
-            if (currentAbsoluteChild.contents !== theNullNode) {
-              currentAbsoluteChild.contents.nextChild = child.contents
+            let previousAbsoluteChild = currentAbsoluteChildRef.contents;
+            /* If there was a previous absolute node, set its `nextChild` to
+             * this `child`. */
+            if (previousAbsoluteChild !== theNullNode) {
+              previousAbsoluteChild.nextChild = child
             };
-            currentAbsoluteChild.contents = child.contents;
-            child.contents.nextChild = theNullNode
+            currentAbsoluteChildRef.contents = child;
+            /* Set the current `child.nextChild` to null just in case this is
+             * the last absolute child. */
+            child.nextChild = theNullNode
           } else {
+            /**
+             * We compute the flex basis for each child, then just read it out
+             * immediately.  That might be okay, but it's not clear if we read
+             * that value out more than once for any given child. If not, we
+             * should only compute it on the fly and not pay the cost of
+             * mutation. This mutation happens *all* the time.
+             */
             computeChildFlexBasis
               node
               child
@@ -1134,50 +1146,49 @@ and layoutNodeImpl
                 paddingAndBorderAxisCross
             )
         };
-        currentAbsoluteChild.contents = firstAbsoluteChild.contents;
-        while (currentAbsoluteChild.contents !== theNullNode) {
+        let currentAbsoluteChildRef = {contents: firstAbsoluteChild.contents};
+        while (currentAbsoluteChildRef.contents !== theNullNode) {
+          let currentAbsoluteChild = currentAbsoluteChildRef.contents;
           if performLayout {
             let childWidth = {contents: cssUndefined};
             let childHeight = {contents: cssUndefined};
             let childWidthMeasureMode = {contents: CssMeasureModeUndefined};
             let childHeightMeasureMode = {contents: CssMeasureModeUndefined};
-            if (isStyleDimDefined currentAbsoluteChild.contents CssFlexDirectionRow) {
+            if (isStyleDimDefined currentAbsoluteChild CssFlexDirectionRow) {
               childWidth.contents =
-                currentAbsoluteChild.contents.style.width +.
-                getMarginAxis currentAbsoluteChild.contents CssFlexDirectionRow
+                currentAbsoluteChild.style.width +. getMarginAxis currentAbsoluteChild CssFlexDirectionRow
             } else if (
-              isLeadingPosDefinedWithFallback currentAbsoluteChild.contents CssFlexDirectionRow &&
-              isTrailingPosDefinedWithFallback currentAbsoluteChild.contents CssFlexDirectionRow
+              isLeadingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionRow &&
+              isTrailingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionRow
             ) {
               childWidth.contents =
                 node.layout.measuredWidth -. (
                   getLeadingBorder node CssFlexDirectionRow +. getTrailingBorder node CssFlexDirectionRow
                 ) -. (
-                  getLeadingPositionWithFallback currentAbsoluteChild.contents CssFlexDirectionRow +.
-                  getTrailingPositionWithFallback currentAbsoluteChild.contents CssFlexDirectionRow
+                  getLeadingPositionWithFallback currentAbsoluteChild CssFlexDirectionRow +.
+                  getTrailingPositionWithFallback currentAbsoluteChild CssFlexDirectionRow
                 );
-              childWidth.contents =
-                boundAxis currentAbsoluteChild.contents CssFlexDirectionRow childWidth.contents
+              childWidth.contents = boundAxis currentAbsoluteChild CssFlexDirectionRow childWidth.contents
             };
-            if (isStyleDimDefined currentAbsoluteChild.contents CssFlexDirectionColumn) {
+            if (isStyleDimDefined currentAbsoluteChild CssFlexDirectionColumn) {
               childHeight.contents =
-                currentAbsoluteChild.contents.style.height +.
-                getMarginAxis currentAbsoluteChild.contents CssFlexDirectionColumn
+                currentAbsoluteChild.style.height +.
+                getMarginAxis currentAbsoluteChild CssFlexDirectionColumn
             } else if (
               /* If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined. */
-              isLeadingPosDefinedWithFallback currentAbsoluteChild.contents CssFlexDirectionColumn &&
-              isTrailingPosDefinedWithFallback currentAbsoluteChild.contents CssFlexDirectionColumn
+              isLeadingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionColumn &&
+              isTrailingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionColumn
             ) {
               childHeight.contents =
                 node.layout.measuredHeight -. (
                   getLeadingBorder node CssFlexDirectionColumn +.
                   getTrailingBorder node CssFlexDirectionColumn
                 ) -. (
-                  getLeadingPositionWithFallback currentAbsoluteChild.contents CssFlexDirectionColumn +.
-                  getTrailingPositionWithFallback currentAbsoluteChild.contents CssFlexDirectionColumn
+                  getLeadingPositionWithFallback currentAbsoluteChild CssFlexDirectionColumn +.
+                  getTrailingPositionWithFallback currentAbsoluteChild CssFlexDirectionColumn
                 );
               childHeight.contents =
-                boundAxis currentAbsoluteChild.contents CssFlexDirectionColumn childHeight.contents
+                boundAxis currentAbsoluteChild CssFlexDirectionColumn childHeight.contents
             };
             if (isUndefined childWidth.contents || isUndefined childHeight.contents) {
               childWidthMeasureMode.contents =
@@ -1203,7 +1214,7 @@ and layoutNodeImpl
                */
               let _ =
                 layoutNodeInternal
-                  currentAbsoluteChild.contents
+                  currentAbsoluteChild
                   childWidth.contents
                   childHeight.contents
                   direction
@@ -1212,15 +1223,15 @@ and layoutNodeImpl
                   false
                   absMeasureString;
               childWidth.contents =
-                currentAbsoluteChild.contents.layout.measuredWidth +.
-                getMarginAxis currentAbsoluteChild.contents CssFlexDirectionRow;
+                currentAbsoluteChild.layout.measuredWidth +.
+                getMarginAxis currentAbsoluteChild CssFlexDirectionRow;
               childHeight.contents =
-                currentAbsoluteChild.contents.layout.measuredHeight +.
-                getMarginAxis currentAbsoluteChild.contents CssFlexDirectionColumn
+                currentAbsoluteChild.layout.measuredHeight +.
+                getMarginAxis currentAbsoluteChild CssFlexDirectionColumn
             };
             let _ =
               layoutNodeInternal
-                currentAbsoluteChild.contents
+                currentAbsoluteChild
                 childWidth.contents
                 childHeight.contents
                 direction
@@ -1229,33 +1240,33 @@ and layoutNodeImpl
                 true
                 absLayoutString;
             if (
-              isTrailingPosDefinedWithFallback currentAbsoluteChild.contents mainAxis &&
-              not (isLeadingPosDefinedWithFallback currentAbsoluteChild.contents mainAxis)
+              isTrailingPosDefinedWithFallback currentAbsoluteChild mainAxis &&
+              not (isLeadingPosDefinedWithFallback currentAbsoluteChild mainAxis)
             ) {
               setLayoutLeadingPositionForAxis
-                currentAbsoluteChild.contents
+                currentAbsoluteChild
                 mainAxis
                 (
                   layoutMeasuredDimensionForAxis node mainAxis -.
-                  layoutMeasuredDimensionForAxis currentAbsoluteChild.contents mainAxis -.
-                  getTrailingPositionWithFallback currentAbsoluteChild.contents mainAxis
+                  layoutMeasuredDimensionForAxis currentAbsoluteChild mainAxis -.
+                  getTrailingPositionWithFallback currentAbsoluteChild mainAxis
                 )
             };
             if (
-              isTrailingPosDefinedWithFallback currentAbsoluteChild.contents crossAxis &&
-              not (isLeadingPosDefinedWithFallback currentAbsoluteChild.contents crossAxis)
+              isTrailingPosDefinedWithFallback currentAbsoluteChild crossAxis &&
+              not (isLeadingPosDefinedWithFallback currentAbsoluteChild crossAxis)
             ) {
               setLayoutLeadingPositionForAxis
-                currentAbsoluteChild.contents
+                currentAbsoluteChild
                 crossAxis
                 (
                   layoutMeasuredDimensionForAxis node crossAxis -.
-                  layoutMeasuredDimensionForAxis currentAbsoluteChild.contents crossAxis -.
-                  getTrailingPositionWithFallback currentAbsoluteChild.contents crossAxis
+                  layoutMeasuredDimensionForAxis currentAbsoluteChild crossAxis -.
+                  getTrailingPositionWithFallback currentAbsoluteChild crossAxis
                 )
             }
           };
-          currentAbsoluteChild.contents = currentAbsoluteChild.contents.nextChild
+          currentAbsoluteChildRef.contents = currentAbsoluteChild.nextChild
         };
         /* STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN */
         if performLayout {
