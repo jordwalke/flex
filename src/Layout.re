@@ -1317,7 +1317,7 @@ let layoutNode node availableWidth availableHeight parentDirection => {
   gCurrentGenerationCount.contents = gCurrentGenerationCount.contents + 1;
   /* If the caller didn't specify a height/width, use the dimensions*/
   /* specified in the style.*/
-  let (availableWidth, widthMeasureMode) =
+  let (width, widthMeasureMode) =
     if (not (isUndefined availableWidth)) {
       (availableWidth, CssMeasureModeExactly)
     } else if (
@@ -1331,7 +1331,7 @@ let layoutNode node availableWidth availableHeight parentDirection => {
     } else {
       (availableWidth, CssMeasureModeUndefined)
     };
-  let (availableHeight, heightMeasureMode) =
+  let (height, heightMeasureMode) =
     if (not (isUndefined availableHeight)) {
       (availableHeight, CssMeasureModeExactly)
     } else if (
@@ -1348,8 +1348,8 @@ let layoutNode node availableWidth availableHeight parentDirection => {
   if (
     layoutNodeInternal
       node
-      availableWidth
-      availableHeight
+      width
+      height
       parentDirection
       widthMeasureMode
       heightMeasureMode
