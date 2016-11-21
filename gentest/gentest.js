@@ -1128,7 +1128,11 @@ function getComputedStyleInKebabForm(node) {
    <div style="flex-basis: 100px; flex-shrink: 1;"></div>
    <div style="flex-basis: 50px;"></div>
  </div>
-
+ 
+ <div id="flex_basis_flex_grow_undefined_main" style="width: 100px;">
+   <div style="flex-basis: 100px; flex-grow: 1;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
 
  <div id="jwalke_border_width_only_start" style="width: 100px; height: 100px; border-replaceWithActualStart-width-because-start: 1; border-replaceWithActualStart-width: 10px; border-top-width: 10px; border-bottom-width: 20px; align-items: center; justify-content: center;">
    <div style="height: 10px; width: 10px;"></div>
