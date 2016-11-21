@@ -454,8 +454,7 @@ let isColumnDirection flexDirection =>
   flexDirection === CssFlexDirectionColumn || flexDirection === CssFlexDirectionColumnReverse;
 
 let getCrossFlexDirection flex_direction direction =>
-  isColumnDirection flex_direction ?
-    resolveAxis CssFlexDirectionRow direction : CssFlexDirectionColumn;
+  isColumnDirection flex_direction ? resolveAxis CssFlexDirectionRow direction : CssFlexDirectionColumn;
 
 let isFlex node =>
   node.style.positionType === CssPositionRelative && (
@@ -477,10 +476,7 @@ let getTrailingMargin node axis =>
   };
 
 let getLeadingPadding node axis =>
-  if (
-    isRowDirection axis &&
-    not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero
-  ) {
+  if (isRowDirection axis && not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero) {
     node.style.paddingStart
   } else {
     let leadingPadding = styleLeadingPaddingForAxis node axis;
@@ -492,9 +488,7 @@ let getLeadingPadding node axis =>
   };
 
 let getTrailingPadding node axis =>
-  if (
-    isRowDirection axis && not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero
-  ) {
+  if (isRowDirection axis && not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero) {
     node.style.paddingEnd
   } else {
     let trailingPadding = styleTrailingPaddingForAxis node axis;
@@ -502,10 +496,7 @@ let getTrailingPadding node axis =>
   };
 
 let getLeadingBorder node axis =>
-  if (
-    isRowDirection axis &&
-    not (isUndefined node.style.borderStart) && node.style.borderStart >= zero
-  ) {
+  if (isRowDirection axis && not (isUndefined node.style.borderStart) && node.style.borderStart >= zero) {
     node.style.borderStart
   } else {
     let leadingBorder = styleLeadingBorderForAxis node axis;
@@ -513,20 +504,16 @@ let getLeadingBorder node axis =>
   };
 
 let getTrailingBorder node axis =>
-  if (
-    isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero
-  ) {
+  if (isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero) {
     node.style.borderEnd
   } else {
     let trailingBorder = styleTrailingBorderForAxis node axis;
     trailingBorder >= zero ? trailingBorder : zero
   };
 
-let getLeadingPaddingAndBorder node axis =>
-  getLeadingPadding node axis +. getLeadingBorder node axis;
+let getLeadingPaddingAndBorder node axis => getLeadingPadding node axis +. getLeadingBorder node axis;
 
-let getTrailingPaddingAndBorder node axis =>
-  getTrailingPadding node axis +. getTrailingBorder node axis;
+let getTrailingPaddingAndBorder node axis => getTrailingPadding node axis +. getTrailingBorder node axis;
 
 let getMarginAxis node axis => getLeadingMargin node axis +. getTrailingMargin node axis;
 
@@ -537,8 +524,7 @@ let getAlignItem node child =>
   child.style.alignSelf !== CssAlignAuto ? child.style.alignSelf : node.style.alignItems;
 
 let getDimWithMargin node axis =>
-  layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +.
-  getTrailingMargin node axis;
+  layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +. getTrailingMargin node axis;
 
 let isStyleDimDefined node axis => {
   let value = styleDimensionForAxis node axis;
@@ -586,9 +572,7 @@ let boundAxisWithinMinAndMax node axis value => {
   let (min, max) =
     if (isColumnDirection axis) {
       (node.style.minHeight, node.style.maxHeight)
-    } else if (
-      isRowDirection axis
-    ) {
+    } else if (isRowDirection axis) {
       (node.style.minWidth, node.style.maxWidth)
     } else {
       (cssUndefined, cssUndefined)
