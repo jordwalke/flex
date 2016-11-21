@@ -561,14 +561,31 @@ and layoutNodeImpl
          *
          * For every non-absolute child, we store a `.computedFlexBasis`.
          *
+         * Later, after this for loop, we construct a chain of relative
+         * children.
+         *
          * We should find a way to avoid having to construct these chains or
-         * store a computed flex basis at all. Perhaps we can show that for
-         * each node it's only used once, and therefore can be computed when
-         * needed, resulting in just as many computations, but zero mutations.
+         * store a computed flex basis at all. Perhaps we can show that for each
+         * node it's only used once, and therefore can be computed when needed,
+         * resulting in just as many computations, but zero mutations.
+         *
+         * Insight: Most children in practice are either all absolute or all
+         * relative. Maybe there's a way to optimize for that. If so, we could
+         * then just do straight loops over the children, and not mess with
+         * `nextChild` pointers.
          */
         for i in 0 to (childCount - 1) {
           let child = node.children.(i);
           if performLayout {
+            /* This is strange. We set the layout values to some intermediate
+             * ones based purely on the style (essentially marginLeft + left).
+             * This doesn't take into account the flex algorithm at all at thi
+             * point, only the style.
+             *
+             * I think this intermediate position is either supposed to be
+             * relative to the parent (if it's position:absolute) or relative to
+             * its default layout (position:relative).
+             */
             let childDirection = resolveDirection child direction;
             setPosition child childDirection
           };
@@ -577,15 +594,11 @@ and layoutNodeImpl
               firstAbsoluteChild.contents = child
             };
             let previousAbsoluteChild = currentAbsoluteChildRef.contents;
-            /* If there was a previous absolute node, set its `nextChild` to
-             * this `child`. */
+            /* If there was a prev absolute, set its `nextChild` to `child`. */
             if (previousAbsoluteChild !== theNullNode) {
               previousAbsoluteChild.nextChild = child
             };
-            currentAbsoluteChildRef.contents = child;
-            /* Set the current `child.nextChild` to null just in case this is
-             * the last absolute child. */
-            child.nextChild = theNullNode
+            currentAbsoluteChildRef.contents = child
           } else {
             /**
              * We compute the flex basis for each child, then just read it out
@@ -603,6 +616,10 @@ and layoutNodeImpl
               heightMeasureMode
               direction
           }
+        };
+        if (currentAbsoluteChildRef.contents !== theNullNode) {
+          /* Set `child.nextChild` to null in case it's the last absolute */
+          currentAbsoluteChildRef.contents.nextChild = theNullNode
         };
         /* STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES */
         let startOfLineIndex = {contents: 0};
