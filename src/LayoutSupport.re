@@ -204,26 +204,11 @@ let createStyle () => {...defaultStyle, direction: CssDirectionInherit};
 
 let createLayout () => {...theNullNode.layout, direction: CssDirectionInherit};
 
-
-/**
- * It is critical that this actually be a different reference
- * than theNullNode.
- */
-let createNode context => {
-  ...theNullNode,
-  children: [||],
-  /**
-   * We can keep the original style because it's immutable, but layout is not.
-   */
-  layout: createLayout (),
-  style: createStyle (),
-  context
-};
-
-let createNode withChildren::children andStyle::style=defaultStyle context => {
+let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=dummyMeasure context => {
   ...theNullNode,
   children,
   style,
+  measure: m,
   /**
    * We can keep the original style because it's immutable, but layout is not.
    */
