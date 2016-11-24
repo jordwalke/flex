@@ -98,8 +98,8 @@ function printTest(useFloats, LTRContainer, RTLContainer) {
         'root',
         null
       ).join('\n');
-    let performLtrLine = '  Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;';
-    let performRtlLine = '  Layout.layoutNode root cssUndefined cssUndefined CssDirectionRtl;';
+    let performLtrLine = '  Layout.layoutNode root cssUndefined cssUndefined Ltr;';
+    let performRtlLine = '  Layout.layoutNode root cssUndefined cssUndefined Rtl;';
     testLines = testLines.concat([
       'it ' + testName + ' (fun () => {',
       setupTreeStr,
@@ -628,45 +628,45 @@ function wrapValue(value) {
 
 function flexDirectionValue(value) {
   switch (value) {
-    case 'row': return 'CssFlexDirectionRow';
-    case 'row-reverse': return 'CssFlexDirectionRowReverse';
-    case 'column': return 'CssFlexDirectionColumn';
-    case 'column-reverse': return 'CssFlexDirectionColumnReverse';
+    case 'row': return 'Row';
+    case 'row-reverse': return 'RowReverse';
+    case 'column': return 'Column';
+    case 'column-reverse': return 'ColumnReverse';
   }
 }
 
 function justifyValue(value) {
   switch (value) {
-    case 'center': return 'CssJustifyCenter';
-    case 'space-around': return 'CssJustifySpaceAround';
-    case 'space-between': return 'CssJustifySpaceBetween';
-    case 'flex-start': return 'CssJustifyFlexStart';
-    case 'flex-end': return 'CssJustifyFlexEnd';
+    case 'center': return 'JustifyCenter';
+    case 'space-around': return 'JustifySpaceAround';
+    case 'space-between': return 'JustifySpaceBetween';
+    case 'flex-start': return 'JustifyFlexStart';
+    case 'flex-end': return 'JustifyFlexEnd';
   }
 }
 
 function positionValue(value) {
   switch (value) {
-    case 'absolute': return 'CssPositionAbsolute';
-    default: return 'CssPositionRelative'
+    case 'absolute': return 'Absolute';
+    default: return 'Relative'
   }
 }
 
 function directionValue(value) {
   switch (value) {
-    case 'ltr': return 'CssDirectionLtr';
-    case 'rtl': return 'CssDirectionRtl';
-    case 'inherit': return 'CssDirectionInherit';
+    case 'ltr': return 'Ltr';
+    case 'rtl': return 'Rtl';
+    case 'inherit': return 'Inherit';
   }
 }
 
 function alignValue(value) {
   switch (value) {
-    case 'auto': return 'CssAlignAuto';
-    case 'center': return 'CssAlignCenter';
-    case 'stretch': return 'CssAlignStretch';
-    case 'flex-start': return 'CssAlignFlexStart';
-    case 'flex-end': return 'CssAlignFlexEnd';
+    case 'auto': return 'AlignAuto';
+    case 'center': return 'AlignCenter';
+    case 'stretch': return 'AlignStretch';
+    case 'flex-start': return 'AlignFlexStart';
+    case 'flex-end': return 'AlignFlexEnd';
   }
 }
 
