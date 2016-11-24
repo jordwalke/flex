@@ -388,9 +388,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     if (direction === Rtl) {
       if (flex_direction === Row) {
         RowReverse
-      } else if (
-        flex_direction === RowReverse
-      ) {
+      } else if (flex_direction === RowReverse) {
         Row
       } else {
         flex_direction
@@ -398,16 +396,12 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     } else {
       flex_direction
     };
-  let isRowDirection flexDirection =>
-    flexDirection === Row || flexDirection === RowReverse;
-  let isColumnDirection flexDirection =>
-    flexDirection === Column || flexDirection === ColumnReverse;
+  let isRowDirection flexDirection => flexDirection === Row || flexDirection === RowReverse;
+  let isColumnDirection flexDirection => flexDirection === Column || flexDirection === ColumnReverse;
   let getCrossFlexDirection flex_direction direction =>
     isColumnDirection flex_direction ? resolveAxis Row direction : Column;
   let isFlex node =>
-    node.style.positionType === Relative && (
-      node.style.flexGrow != zero || node.style.flexShrink != zero
-    );
+    node.style.positionType === Relative && (node.style.flexGrow != zero || node.style.flexShrink != zero);
   let getLeadingMargin node axis =>
     if (isRowDirection axis && not (isUndefined node.style.marginStart)) {
       node.style.marginStart
