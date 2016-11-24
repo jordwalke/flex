@@ -495,9 +495,20 @@ let floatDiv = (/.);
 
 let floatSub = (-.);
 
+let module Node = {
+  type context = unit;
+  let nullContext = ();
+};
+
+let module Encoding = FloatEncoding;
+
+let module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;
+
+let module Layout = Layout.Create Node Encoding;
+
 open LayoutTestUtils;
 
-open LayoutValue;
+open Encoding;
 
 let flex_grow_within_max_width = "flex_grow_within_max_width";
 
