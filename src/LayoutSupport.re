@@ -195,6 +195,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=dummyMeasure context => {
     ...theNullNode,
     children,
+    childrenCount: Array.length children,
     style,
     measure: m,
     /**
