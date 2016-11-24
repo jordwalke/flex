@@ -2,38 +2,38 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   type printOptions = {printLayout: bool, printStyle: bool, printChildren: bool};
   type direction =
     | CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS /* inherit */
-    | CssDirectionInherit /* 'inherit' */
-    | CssDirectionLtr /* 'ltr'     */
-    | CssDirectionRtl /* 'rtl'     */;
+    | Inherit /* 'inherit' */
+    | Ltr /* 'ltr'     */
+    | Rtl /* 'rtl'     */;
   type flexDirection =
     /* 'row-reverse' */
-    | CssFlexDirectionColumn /* 'column' */
-    | CssFlexDirectionColumnReverse
-    | CssFlexDirectionRow /* 'row' */
-    | CssFlexDirectionRowReverse;
+    | Column /* 'column' */
+    | ColumnReverse
+    | Row /* 'row' */
+    | RowReverse;
   /* 'column-reverse' */
   type justify =
-    | CssJustifyFlexStart /* 'flex-start' */
-    | CssJustifyCenter /* 'center' */
-    | CssJustifyFlexEnd /* 'flex-end' */
-    | CssJustifySpaceBetween /* 'space-between' */
-    | CssJustifySpaceAround /* space-around' */;
+    | JustifyFlexStart /* 'flex-start' */
+    | JustifyCenter /* 'center' */
+    | JustifyFlexEnd /* 'flex-end' */
+    | JustifySpaceBetween /* 'space-between' */
+    | JustifySpaceAround /* space-around' */;
   type align =
-    | CssAlignAuto
-    | CssAlignFlexStart /* 'flex-start' */
-    | CssAlignCenter /* 'center' */
-    | CssAlignFlexEnd /* 'flex-end' */
-    | CssAlignStretch /* 'stretch' */;
+    | AlignAuto
+    | AlignFlexStart /* 'flex-start' */
+    | AlignCenter /* 'center' */
+    | AlignFlexEnd /* 'flex-end' */
+    | AlignStretch /* 'stretch' */;
   type positionType =
-    | CssPositionRelative /* 'relative' */
-    | CssPositionAbsolute /* 'absolute' */;
+    | Relative /* 'relative' */
+    | Absolute /* 'absolute' */;
   type measureMode =
     /* there are some places in the reference implementation that set
      * the measure mode to negative one.*/
     /* https://github.com/facebook/css-layout/pull/185#r64995699 */
-    | CssMeasureModeUndefined /* 'undefined' */
-    | CssMeasureModeExactly /* 'exactly' */
-    | CssMeasureModeAtMost /* 'at-most' */
+    | Undefined /* 'undefined' */
+    | Exactly /* 'exactly' */
+    | AtMost /* 'at-most' */
     | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS;
   let css_max_cached_result_count = 6;
 

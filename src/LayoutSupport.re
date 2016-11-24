@@ -58,11 +58,11 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     };
   let dummyIsDirty context => false;
   /*
-     node->style.align_items = CssAlignStretch;
-     node->style.align_content = CssAlignFlexStart;
+     node->style.align_items = AlignStretch;
+     node->style.align_content = AlignFlexStart;
 
-     node->style.direction = CssDirectionInherit;
-     node->style.flex_direction = CssFlexDirectionColumn;
+     node->style.direction = Inherit;
+     node->style.flex_direction = Column;
 
      node->style.overflow = Visible;
 
@@ -90,13 +90,13 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     computedHeight: zero
   };
   let defaultStyle = {
-    direction: CssDirectionInherit,
-    flexDirection: CssFlexDirectionColumn,
-    justifyContent: CssJustifyFlexStart,
-    alignContent: CssAlignFlexStart,
-    alignItems: CssAlignStretch,
-    alignSelf: CssAlignAuto,
-    positionType: CssPositionRelative,
+    direction: Inherit,
+    flexDirection: Column,
+    justifyContent: JustifyFlexStart,
+    alignContent: AlignFlexStart,
+    alignItems: AlignStretch,
+    alignSelf: AlignAuto,
+    positionType: Relative,
     flexWrap: CssNoWrap,
     overflow: Visible,
     /**
@@ -145,7 +145,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     childrenCount: 0,
     style: defaultStyle,
     layout: {
-      direction: CssDirectionInherit,
+      direction: Inherit,
       /* Instead of recomputing the entire layout every single time, we
        * cache some information to break early when nothing changed */
       hasNewLayout: true,
@@ -190,8 +190,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     context: Node.nullContext
   };
   /* Force allocating a new object */
-  let createStyle () => {...defaultStyle, direction: CssDirectionInherit};
-  let createLayout () => {...theNullNode.layout, direction: CssDirectionInherit};
+  let createStyle () => {...defaultStyle, direction: Inherit};
+  let createLayout () => {...theNullNode.layout, direction: Inherit};
   let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=dummyMeasure context => {
     ...theNullNode,
     children,
@@ -201,7 +201,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /**
      * We can keep the original style because it's immutable, but layout is not.
      */
-    layout: {...theNullNode.layout, direction: CssDirectionInherit},
+    layout: {...theNullNode.layout, direction: Inherit},
     context
   };
 
@@ -210,10 +210,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let layoutMeasuredDimensionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.measuredHeight
-    | CssFlexDirectionColumnReverse => node.layout.measuredHeight
-    | CssFlexDirectionRow => node.layout.measuredWidth
-    | CssFlexDirectionRowReverse => node.layout.measuredWidth
+    | Column => node.layout.measuredHeight
+    | ColumnReverse => node.layout.measuredHeight
+    | Row => node.layout.measuredWidth
+    | RowReverse => node.layout.measuredWidth
     };
 
   /**
@@ -221,10 +221,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let layoutPosPositionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.top
-    | CssFlexDirectionColumnReverse => node.layout.bottom
-    | CssFlexDirectionRow => node.layout.left
-    | CssFlexDirectionRowReverse => node.layout.right
+    | Column => node.layout.top
+    | ColumnReverse => node.layout.bottom
+    | Row => node.layout.left
+    | RowReverse => node.layout.right
     };
 
   /**
@@ -237,10 +237,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let layoutTrailingPositionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.bottom
-    | CssFlexDirectionColumnReverse => node.layout.top
-    | CssFlexDirectionRow => node.layout.right
-    | CssFlexDirectionRowReverse => node.layout.left
+    | Column => node.layout.bottom
+    | ColumnReverse => node.layout.top
+    | Row => node.layout.right
+    | RowReverse => node.layout.left
     };
 
   /**
@@ -248,10 +248,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleDimensionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.style.height
-    | CssFlexDirectionColumnReverse => node.style.height
-    | CssFlexDirectionRow => node.style.width
-    | CssFlexDirectionRowReverse => node.style.width
+    | Column => node.style.height
+    | ColumnReverse => node.style.height
+    | Row => node.style.width
+    | RowReverse => node.style.width
     };
 
   /**
@@ -259,10 +259,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleMinDimensionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.style.minHeight
-    | CssFlexDirectionColumnReverse => node.style.minHeight
-    | CssFlexDirectionRow => node.style.minWidth
-    | CssFlexDirectionRowReverse => node.style.minWidth
+    | Column => node.style.minHeight
+    | ColumnReverse => node.style.minHeight
+    | Row => node.style.minWidth
+    | RowReverse => node.style.minWidth
     };
 
   /**
@@ -270,10 +270,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleLeadingPositionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.style.top
-    | CssFlexDirectionColumnReverse => node.style.bottom
-    | CssFlexDirectionRow => node.style.left
-    | CssFlexDirectionRowReverse => node.style.right
+    | Column => node.style.top
+    | ColumnReverse => node.style.bottom
+    | Row => node.style.left
+    | RowReverse => node.style.right
     };
   let styleLeadingPositionForAxisOrZero node axis => {
     let leadingPos = styleLeadingPositionForAxis node axis;
@@ -281,24 +281,24 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let styleLeadingPaddingForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.style.paddingTop
-    | CssFlexDirectionColumnReverse => node.style.paddingBottom
-    | CssFlexDirectionRow => node.style.paddingLeft
-    | CssFlexDirectionRowReverse => node.style.paddingRight
+    | Column => node.style.paddingTop
+    | ColumnReverse => node.style.paddingBottom
+    | Row => node.style.paddingLeft
+    | RowReverse => node.style.paddingRight
     };
   let styleLeadingMarginForAxis node leadingAxis =>
     switch leadingAxis {
-    | CssFlexDirectionColumn => node.style.marginTop
-    | CssFlexDirectionColumnReverse => node.style.marginBottom
-    | CssFlexDirectionRow => node.style.marginLeft
-    | CssFlexDirectionRowReverse => node.style.marginRight
+    | Column => node.style.marginTop
+    | ColumnReverse => node.style.marginBottom
+    | Row => node.style.marginLeft
+    | RowReverse => node.style.marginRight
     };
   let styleLeadingBorderForAxis node leadingAxis =>
     switch leadingAxis {
-    | CssFlexDirectionColumn => node.style.borderTop
-    | CssFlexDirectionColumnReverse => node.style.borderBottom
-    | CssFlexDirectionRow => node.style.borderLeft
-    | CssFlexDirectionRowReverse => node.style.borderRight
+    | Column => node.style.borderTop
+    | ColumnReverse => node.style.borderBottom
+    | Row => node.style.borderLeft
+    | RowReverse => node.style.borderRight
     };
 
   /**
@@ -306,10 +306,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleTrailingPositionForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.style.bottom
-    | CssFlexDirectionColumnReverse => node.style.top
-    | CssFlexDirectionRow => node.style.right
-    | CssFlexDirectionRowReverse => node.style.left
+    | Column => node.style.bottom
+    | ColumnReverse => node.style.top
+    | Row => node.style.right
+    | RowReverse => node.style.left
     };
   let styleTrailingPositionForAxisOrZero node axis => {
     let leadingPos = styleTrailingPositionForAxis node axis;
@@ -317,24 +317,24 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let styleTrailingPaddingForAxis node axis =>
     switch axis {
-    | CssFlexDirectionColumn => node.style.paddingBottom
-    | CssFlexDirectionColumnReverse => node.style.paddingTop
-    | CssFlexDirectionRow => node.style.paddingRight
-    | CssFlexDirectionRowReverse => node.style.paddingLeft
+    | Column => node.style.paddingBottom
+    | ColumnReverse => node.style.paddingTop
+    | Row => node.style.paddingRight
+    | RowReverse => node.style.paddingLeft
     };
   let styleTrailingMarginForAxis node trailingAxis =>
     switch trailingAxis {
-    | CssFlexDirectionColumn => node.style.marginBottom
-    | CssFlexDirectionColumnReverse => node.style.marginTop
-    | CssFlexDirectionRow => node.style.marginRight
-    | CssFlexDirectionRowReverse => node.style.marginLeft
+    | Column => node.style.marginBottom
+    | ColumnReverse => node.style.marginTop
+    | Row => node.style.marginRight
+    | RowReverse => node.style.marginLeft
     };
   let styleTrailingBorderForAxis node trailingAxis =>
     switch trailingAxis {
-    | CssFlexDirectionColumn => node.style.borderBottom
-    | CssFlexDirectionColumnReverse => node.style.borderTop
-    | CssFlexDirectionRow => node.style.borderRight
-    | CssFlexDirectionRowReverse => node.style.borderLeft
+    | Column => node.style.borderBottom
+    | ColumnReverse => node.style.borderTop
+    | Row => node.style.borderRight
+    | RowReverse => node.style.borderLeft
     };
 
   /**
@@ -342,17 +342,17 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let setDimLayoutDimensionForAxis node axis value =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.height = value
-    | CssFlexDirectionColumnReverse => node.layout.height = value
-    | CssFlexDirectionRow => node.layout.width = value
-    | CssFlexDirectionRowReverse => node.layout.width = value
+    | Column => node.layout.height = value
+    | ColumnReverse => node.layout.height = value
+    | Row => node.layout.width = value
+    | RowReverse => node.layout.width = value
     };
   let setLayoutMeasuredDimensionForAxis node axis value =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.measuredHeight = value
-    | CssFlexDirectionColumnReverse => node.layout.measuredHeight = value
-    | CssFlexDirectionRow => node.layout.measuredWidth = value
-    | CssFlexDirectionRowReverse => node.layout.measuredWidth = value
+    | Column => node.layout.measuredHeight = value
+    | ColumnReverse => node.layout.measuredHeight = value
+    | Row => node.layout.measuredWidth = value
+    | RowReverse => node.layout.measuredWidth = value
     };
 
   /**
@@ -360,10 +360,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let setLayoutLeadingPositionForAxis node axis value =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.top = value
-    | CssFlexDirectionColumnReverse => node.layout.bottom = value
-    | CssFlexDirectionRow => node.layout.left = value
-    | CssFlexDirectionRowReverse => node.layout.right = value
+    | Column => node.layout.top = value
+    | ColumnReverse => node.layout.bottom = value
+    | Row => node.layout.left = value
+    | RowReverse => node.layout.right = value
     };
 
   /**
@@ -371,27 +371,27 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let setLayoutTrailingPositionForAxis node axis value =>
     switch axis {
-    | CssFlexDirectionColumn => node.layout.bottom = value
-    | CssFlexDirectionColumnReverse => node.layout.top = value
-    | CssFlexDirectionRow => node.layout.right = value
-    | CssFlexDirectionRowReverse => node.layout.left = value
+    | Column => node.layout.bottom = value
+    | ColumnReverse => node.layout.top = value
+    | Row => node.layout.right = value
+    | RowReverse => node.layout.left = value
     };
   let resolveDirection node parentDirection => {
     let direction = node.style.direction;
-    if (direction === CssDirectionInherit) {
-      parentDirection === CssDirectionInherit ? CssDirectionLtr : parentDirection
+    if (direction === Inherit) {
+      parentDirection === Inherit ? Ltr : parentDirection
     } else {
       direction
     }
   };
   let resolveAxis flex_direction direction =>
-    if (direction === CssDirectionRtl) {
-      if (flex_direction === CssFlexDirectionRow) {
-        CssFlexDirectionRowReverse
+    if (direction === Rtl) {
+      if (flex_direction === Row) {
+        RowReverse
       } else if (
-        flex_direction === CssFlexDirectionRowReverse
+        flex_direction === RowReverse
       ) {
-        CssFlexDirectionRow
+        Row
       } else {
         flex_direction
       }
@@ -399,13 +399,13 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       flex_direction
     };
   let isRowDirection flexDirection =>
-    flexDirection === CssFlexDirectionRow || flexDirection === CssFlexDirectionRowReverse;
+    flexDirection === Row || flexDirection === RowReverse;
   let isColumnDirection flexDirection =>
-    flexDirection === CssFlexDirectionColumn || flexDirection === CssFlexDirectionColumnReverse;
+    flexDirection === Column || flexDirection === ColumnReverse;
   let getCrossFlexDirection flex_direction direction =>
-    isColumnDirection flex_direction ? resolveAxis CssFlexDirectionRow direction : CssFlexDirectionColumn;
+    isColumnDirection flex_direction ? resolveAxis Row direction : Column;
   let isFlex node =>
-    node.style.positionType === CssPositionRelative && (
+    node.style.positionType === Relative && (
       node.style.flexGrow != zero || node.style.flexShrink != zero
     );
   let getLeadingMargin node axis =>
@@ -458,7 +458,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let getPaddingAndBorderAxis node axis =>
     getLeadingPaddingAndBorder node axis +. getTrailingPaddingAndBorder node axis;
   let getAlignItem node child =>
-    child.style.alignSelf !== CssAlignAuto ? child.style.alignSelf : node.style.alignItems;
+    child.style.alignSelf !== AlignAuto ? child.style.alignSelf : node.style.alignItems;
   let getDimWithMargin node axis =>
     layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +. getTrailingMargin node axis;
   let isStyleDimDefined node axis => {

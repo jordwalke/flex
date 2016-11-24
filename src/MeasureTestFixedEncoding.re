@@ -55,12 +55,12 @@ it
       let measure node width widthMode height heightMode => {
         node.LayoutTypes.context.contents = node.context.contents + 1;
         {
-          LayoutTypes.width: widthMode === LayoutTypes.CssMeasureModeUndefined ? 10 : width,
-          height: heightMode === LayoutTypes.CssMeasureModeUndefined ? 10 : height
+          LayoutTypes.width: widthMode === LayoutTypes.Undefined ? 10 : width,
+          height: heightMode === LayoutTypes.Undefined ? 10 : height
         }
       };
       let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
-      let root_child0_style = {...LayoutSupport.defaultStyle, positionType: CssPositionRelative};
+      let root_child0_style = {...LayoutSupport.defaultStyle, positionType: Relative};
       let childContext = {contents: 0};
       let root_child0 =
         LayoutSupport.createNode
@@ -69,7 +69,7 @@ it
       let root =
         LayoutSupport.createNode
           withChildren::[|root_child0|] andStyle::root_style andMeasure::measure rootContext;
-      Layout.layoutNode root cssUndefined cssUndefined CssDirectionLtr;
+      Layout.layoutNode root cssUndefined cssUndefined Ltr;
       LayoutTestUtils.assertEq 0 "parent-measure-calls" 0 rootContext.contents;
       LayoutTestUtils.assertEq 1 "parent-measure-calls" 1 childContext.contents
     }

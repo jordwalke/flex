@@ -15,7 +15,7 @@ let rec theNullNode = {
   childrenCount: 0,
   style: defaultStyle,
   layout: {
-    direction: CssDirectionInherit,
+    direction: Inherit,
     /* Instead of recomputing the entire layout every single time, we
      * cache some information to break early when nothing changed */
     hasNewLayout: true,

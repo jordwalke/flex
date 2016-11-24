@@ -14,9 +14,9 @@
  * above for details). Each of our measure modes maps to a layout mode
  * from the spec (https://www.w3.org/TR/css3-sizing/#terms):
  *
- *   -.CssMeasureModeUndefined: `max-content`
- *   -.CssMeasureModeExactly: `fill-available`
- *   -.CssMeasureModeAtMost: `fit-content`
+ *   -.Undefined: `max-content`
+ *   -.Exactly: `fill-available`
+ *   -.AtMost: `fit-content`
  *      If infinite space available in that axis, then `max-content.`
  *      Else, `min(max-content size, max(min-content size, fill-available size))`
  *      (Although, we don't support min-content)
@@ -52,9 +52,9 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       isLayoutInsteadOfMeasure ?
         "CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS" :
         "CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS"
-    | CssMeasureModeUndefined => isLayoutInsteadOfMeasure ? "LAY_UNDEFINED" : "UNDEFINED"
-    | CssMeasureModeExactly => isLayoutInsteadOfMeasure ? "LAY_EXACTLY" : "EXACTLY"
-    | CssMeasureModeAtMost => isLayoutInsteadOfMeasure ? "LAY_AT_MOST" : "AT_MOST"
+    | Undefined => isLayoutInsteadOfMeasure ? "LAY_UNDEFINED" : "UNDEFINED"
+    | Exactly => isLayoutInsteadOfMeasure ? "LAY_EXACTLY" : "EXACTLY"
+    | AtMost => isLayoutInsteadOfMeasure ? "LAY_AT_MOST" : "AT_MOST"
     };
   let canUseCachedMeasurement
       (
@@ -79,7 +79,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       (
         cachedLayout.widthMeasureMode == widthMeasureMode &&
         cachedLayout.availableWidth == availableWidth &&
-        heightMeasureMode === CssMeasureModeExactly &&
+        heightMeasureMode === Exactly &&
         availableHeight -. marginColumn == cachedLayout.computedHeight
       ) {
       true
@@ -88,7 +88,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       (
         cachedLayout.heightMeasureMode == heightMeasureMode &&
         cachedLayout.availableHeight == availableHeight &&
-        widthMeasureMode === CssMeasureModeExactly &&
+        widthMeasureMode === Exactly &&
         availableWidth -. marginRow == cachedLayout.computedWidth
       ) {
       true
@@ -143,8 +143,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /* We handle nodes with measure functions specially here because they are the most
      * expensive to measure, so it's worth avoiding redundant measurements if at all possible.*/
     if (node.measure !== dummyMeasure && node.childrenCount === 0) {
-      let marginAxisRow = getMarginAxis node CssFlexDirectionRow;
-      let marginAxisColumn = getMarginAxis node CssFlexDirectionColumn;
+      let marginAxisRow = getMarginAxis node Row;
+      let marginAxisColumn = getMarginAxis node Column;
       /* First, try to use the layout cache.*/
       if (
         canUseCachedMeasurement (
@@ -311,16 +311,16 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let isMainAxisRow = isRowDirection mainAxis;
     let childWidth = {contents: zero};
     let childHeight = {contents: zero};
-    let childWidthMeasureMode = {contents: CssMeasureModeUndefined};
-    let childHeightMeasureMode = {contents: CssMeasureModeUndefined};
-    if (isMainAxisRow && isStyleDimDefined child CssFlexDirectionRow) {
+    let childWidthMeasureMode = {contents: Undefined};
+    let childHeightMeasureMode = {contents: Undefined};
+    if (isMainAxisRow && isStyleDimDefined child Row) {
       child.layout.computedFlexBasis =
-        fmaxf child.style.width (getPaddingAndBorderAxis child CssFlexDirectionRow)
+        fmaxf child.style.width (getPaddingAndBorderAxis child Row)
     } else if (
-      not isMainAxisRow && isStyleDimDefined child CssFlexDirectionColumn
+      not isMainAxisRow && isStyleDimDefined child Column
     ) {
       child.layout.computedFlexBasis =
-        fmaxf child.style.height (getPaddingAndBorderAxis child CssFlexDirectionColumn)
+        fmaxf child.style.height (getPaddingAndBorderAxis child Column)
     } else if (
       not (isUndefined child.style.flexBasis)
     ) {
@@ -330,30 +330,30 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     } else {
       childWidth.contents = cssUndefined;
       childHeight.contents = cssUndefined;
-      childWidthMeasureMode.contents = CssMeasureModeUndefined;
-      childHeightMeasureMode.contents = CssMeasureModeUndefined;
-      if (isStyleDimDefined child CssFlexDirectionRow) {
-        childWidth.contents = child.style.width +. getMarginAxis child CssFlexDirectionRow;
-        childWidthMeasureMode.contents = CssMeasureModeExactly
+      childWidthMeasureMode.contents = Undefined;
+      childHeightMeasureMode.contents = Undefined;
+      if (isStyleDimDefined child Row) {
+        childWidth.contents = child.style.width +. getMarginAxis child Row;
+        childWidthMeasureMode.contents = Exactly
       };
 
       /**
        * Why can't this just be inlined to .height !== cssUndefined.
        */
-      if (isStyleDimDefined child CssFlexDirectionColumn) {
-        childHeight.contents = child.style.height +. getMarginAxis child CssFlexDirectionColumn;
-        childHeightMeasureMode.contents = CssMeasureModeExactly
+      if (isStyleDimDefined child Column) {
+        childHeight.contents = child.style.height +. getMarginAxis child Column;
+        childHeightMeasureMode.contents = Exactly
       };
       if (not isMainAxisRow && node.style.overflow === Scroll || node.style.overflow !== Scroll) {
         if (isUndefined childWidth.contents && not (isUndefined width)) {
           childWidth.contents = width;
-          childWidthMeasureMode.contents = CssMeasureModeAtMost
+          childWidthMeasureMode.contents = AtMost
         }
       };
       if (isMainAxisRow && node.style.overflow === Scroll || node.style.overflow !== Scroll) {
         if (isUndefined childHeight.contents && not (isUndefined height)) {
           childHeight.contents = height;
-          childHeightMeasureMode.contents = CssMeasureModeAtMost
+          childHeightMeasureMode.contents = AtMost
         }
       };
       /*
@@ -364,20 +364,20 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       if (
         not isMainAxisRow &&
         not (isUndefined width) &&
-        not (isStyleDimDefined child CssFlexDirectionRow) &&
-        widthMode === CssMeasureModeExactly && getAlignItem node child === CssAlignStretch
+        not (isStyleDimDefined child Row) &&
+        widthMode === Exactly && getAlignItem node child === AlignStretch
       ) {
         childWidth.contents = width;
-        childWidthMeasureMode.contents = CssMeasureModeExactly
+        childWidthMeasureMode.contents = Exactly
       };
       if (
         isMainAxisRow &&
         not (isUndefined height) &&
-        not (isStyleDimDefined child CssFlexDirectionColumn) &&
-        heightMode === CssMeasureModeExactly && getAlignItem node child === CssAlignStretch
+        not (isStyleDimDefined child Column) &&
+        heightMode === Exactly && getAlignItem node child === AlignStretch
       ) {
         childHeight.contents = height;
-        childHeightMeasureMode.contents = CssMeasureModeExactly
+        childHeightMeasureMode.contents = Exactly
       };
       let _ =
         layoutNodeInternal
@@ -411,15 +411,15 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
 
     /** START_GENERATED **/
     /* re_assert */
-    /*   (isUndefined availableWidth ? widthMeasureMode === CssMeasureModeUndefined : true) */
-    /*   "availableWidth is indefinite so widthMeasureMode must be CssMeasureModeUndefined"; */
+    /*   (isUndefined availableWidth ? widthMeasureMode === Undefined : true) */
+    /*   "availableWidth is indefinite so widthMeasureMode must be Undefined"; */
     /* re_assert */
-    /*   (isUndefined availableHeight ? heightMeasureMode === CssMeasureModeUndefined : true) */
-    /*   "availableHeight is indefinite so heightMeasureMode must be CssMeasureModeUndefined"; */
-    let paddingAndBorderAxisRow = getPaddingAndBorderAxis node CssFlexDirectionRow;
-    let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node CssFlexDirectionColumn;
-    let marginAxisRow = getMarginAxis node CssFlexDirectionRow;
-    let marginAxisColumn = getMarginAxis node CssFlexDirectionColumn;
+    /*   (isUndefined availableHeight ? heightMeasureMode === Undefined : true) */
+    /*   "availableHeight is indefinite so heightMeasureMode must be Undefined"; */
+    let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
+    let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node Column;
+    let marginAxisRow = getMarginAxis node Row;
+    let marginAxisColumn = getMarginAxis node Column;
     let direction = resolveDirection node parentDirection;
     node.layout.direction = direction;
     /* For content (text) nodes, determine the dimensions based on the text
@@ -427,32 +427,32 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     if (node.measure !== dummyMeasure && node.childrenCount === 0) {
       let innerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
       let innerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
-      if (widthMeasureMode === CssMeasureModeExactly && heightMeasureMode === CssMeasureModeExactly) {
-        node.layout.measuredWidth = boundAxis node CssFlexDirectionRow (availableWidth -. marginAxisRow);
+      if (widthMeasureMode === Exactly && heightMeasureMode === Exactly) {
+        node.layout.measuredWidth = boundAxis node Row (availableWidth -. marginAxisRow);
         node.layout.measuredHeight =
-          boundAxis node CssFlexDirectionColumn (availableHeight -. marginAxisColumn)
+          boundAxis node Column (availableHeight -. marginAxisColumn)
       } else if (
         not (isUndefined innerWidth) && innerWidth <= zero ||
         not (isUndefined innerHeight) && innerHeight <= zero
       ) {
-        node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
-        node.layout.measuredHeight = boundAxis node CssFlexDirectionColumn zero
+        node.layout.measuredWidth = boundAxis node Row zero;
+        node.layout.measuredHeight = boundAxis node Column zero
       } else {
         let measureDim = node.measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
         node.layout.measuredWidth =
           boundAxis
             node
-            CssFlexDirectionRow
+            Row
             (
-              widthMeasureMode === CssMeasureModeUndefined || widthMeasureMode === CssMeasureModeAtMost ?
+              widthMeasureMode === Undefined || widthMeasureMode === AtMost ?
                 measureDim.width +. paddingAndBorderAxisRow : availableWidth -. marginAxisRow
             );
         node.layout.measuredHeight =
           boundAxis
             node
-            CssFlexDirectionColumn
+            Column
             (
-              heightMeasureMode === CssMeasureModeUndefined || heightMeasureMode === CssMeasureModeAtMost ?
+              heightMeasureMode === Undefined || heightMeasureMode === AtMost ?
                 measureDim.height +. paddingAndBorderAxisColumn : availableHeight -. marginAxisColumn
             )
       }
@@ -462,17 +462,17 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         node.layout.measuredWidth =
           boundAxis
             node
-            CssFlexDirectionRow
+            Row
             (
-              widthMeasureMode === CssMeasureModeUndefined || widthMeasureMode === CssMeasureModeAtMost ?
+              widthMeasureMode === Undefined || widthMeasureMode === AtMost ?
                 paddingAndBorderAxisRow : availableWidth -. marginAxisRow
             );
         node.layout.measuredHeight =
           boundAxis
             node
-            CssFlexDirectionColumn
+            Column
             (
-              heightMeasureMode === CssMeasureModeUndefined || heightMeasureMode === CssMeasureModeAtMost ?
+              heightMeasureMode === Undefined || heightMeasureMode === AtMost ?
                 paddingAndBorderAxisColumn : availableHeight -. marginAxisColumn
             )
       } else {
@@ -481,44 +481,44 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           if (
             (
               (
-                widthMeasureMode === CssMeasureModeAtMost &&
+                widthMeasureMode === AtMost &&
                 not (isUndefined availableWidth) && availableWidth <= zero
               ) &&
-              heightMeasureMode === CssMeasureModeAtMost
+              heightMeasureMode === AtMost
             ) &&
             not (isUndefined availableHeight) && availableHeight <= zero
           ) {
-            node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
-            node.layout.measuredHeight = boundAxis node CssFlexDirectionColumn zero;
+            node.layout.measuredWidth = boundAxis node Row zero;
+            node.layout.measuredHeight = boundAxis node Column zero;
             shouldContinue.contents = false
           } else if (
-            widthMeasureMode === CssMeasureModeAtMost &&
+            widthMeasureMode === AtMost &&
             not (isUndefined availableWidth) && availableWidth <= zero
           ) {
-            node.layout.measuredWidth = boundAxis node CssFlexDirectionRow zero;
+            node.layout.measuredWidth = boundAxis node Row zero;
             node.layout.measuredHeight =
               boundAxis
                 node
-                CssFlexDirectionColumn
+                Column
                 (isUndefined availableHeight ? zero : availableHeight -. marginAxisColumn);
             shouldContinue.contents = false
           } else if (
-            heightMeasureMode === CssMeasureModeAtMost &&
+            heightMeasureMode === AtMost &&
             not (isUndefined availableHeight) && availableHeight <= zero
           ) {
             node.layout.measuredWidth =
               boundAxis
                 node
-                CssFlexDirectionRow
+                Row
                 (isUndefined availableWidth ? zero : availableWidth -. marginAxisRow);
-            node.layout.measuredHeight = boundAxis node CssFlexDirectionColumn zero;
+            node.layout.measuredHeight = boundAxis node Column zero;
             shouldContinue.contents = false
           } else if (
-            widthMeasureMode === CssMeasureModeExactly && heightMeasureMode === CssMeasureModeExactly
+            widthMeasureMode === Exactly && heightMeasureMode === Exactly
           ) {
-            node.layout.measuredWidth = boundAxis node CssFlexDirectionRow (availableWidth -. marginAxisRow);
+            node.layout.measuredWidth = boundAxis node Row (availableWidth -. marginAxisRow);
             node.layout.measuredHeight =
-              boundAxis node CssFlexDirectionColumn (availableHeight -. marginAxisColumn);
+              boundAxis node Column (availableHeight -. marginAxisColumn);
             shouldContinue.contents = false
           }
         };
@@ -579,7 +579,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               let childDirection = resolveDirection child direction;
               setPosition child childDirection
             };
-            if (child.style.positionType === CssPositionAbsolute) {
+            if (child.style.positionType === Absolute) {
               if (firstAbsoluteChild.contents === theNullNode) {
                 firstAbsoluteChild.contents = child
               };
@@ -629,7 +629,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             while (curIndex.contents < childCount && shouldContinue.contents) {
               child.contents = node.children.(curIndex.contents);
               child.contents.lineIndex = lineCount.contents;
-              if (child.contents.style.positionType !== CssPositionAbsolute) {
+              if (child.contents.style.positionType !== Absolute) {
                 let outerFlexBasis =
                   child.contents.layout.computedFlexBasis +. getMarginAxis child.contents mainAxis;
                 if (
@@ -665,7 +665,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 endOfLineIndex.contents = endOfLineIndex.contents + 1
               }
             };
-            let canSkipFlex = not performLayout && measureModeCrossDim === CssMeasureModeExactly;
+            let canSkipFlex = not performLayout && measureModeCrossDim === Exactly;
             let leadingMainDim = {contents: zero};
             let betweenMainDim = {contents: zero};
             let remainingFreeSpace = {contents: zero};
@@ -786,62 +786,62 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   deltaFreeSpace.contents -. (updatedMainSize.contents -. childFlexBasis.contents);
                 let childWidth = {contents: zero};
                 let childHeight = {contents: zero};
-                let childWidthMeasureMode = {contents: CssMeasureModeUndefined};
-                let childHeightMeasureMode = {contents: CssMeasureModeUndefined};
+                let childWidthMeasureMode = {contents: Undefined};
+                let childHeightMeasureMode = {contents: Undefined};
                 if isMainAxisRow {
                   childWidth.contents =
                     updatedMainSize.contents +.
-                    getMarginAxis currentRelativeChild.contents CssFlexDirectionRow;
-                  childWidthMeasureMode.contents = CssMeasureModeExactly;
+                    getMarginAxis currentRelativeChild.contents Row;
+                  childWidthMeasureMode.contents = Exactly;
                   if (
                     not (isUndefined availableInnerCrossDim) &&
-                    not (isStyleDimDefined currentRelativeChild.contents CssFlexDirectionColumn) &&
-                    heightMeasureMode === CssMeasureModeExactly &&
-                    getAlignItem node currentRelativeChild.contents === CssAlignStretch
+                    not (isStyleDimDefined currentRelativeChild.contents Column) &&
+                    heightMeasureMode === Exactly &&
+                    getAlignItem node currentRelativeChild.contents === AlignStretch
                   ) {
                     childHeight.contents = availableInnerCrossDim;
-                    childHeightMeasureMode.contents = CssMeasureModeExactly
+                    childHeightMeasureMode.contents = Exactly
                   } else if (
-                    not (isStyleDimDefined currentRelativeChild.contents CssFlexDirectionColumn)
+                    not (isStyleDimDefined currentRelativeChild.contents Column)
                   ) {
                     childHeight.contents = availableInnerCrossDim;
                     childHeightMeasureMode.contents =
-                      isUndefined childHeight.contents ? CssMeasureModeUndefined : CssMeasureModeAtMost
+                      isUndefined childHeight.contents ? Undefined : AtMost
                   } else {
                     childHeight.contents =
                       currentRelativeChild.contents.style.height +.
-                      getMarginAxis currentRelativeChild.contents CssFlexDirectionColumn;
-                    childHeightMeasureMode.contents = CssMeasureModeExactly
+                      getMarginAxis currentRelativeChild.contents Column;
+                    childHeightMeasureMode.contents = Exactly
                   }
                 } else {
                   childHeight.contents =
                     updatedMainSize.contents +.
-                    getMarginAxis currentRelativeChild.contents CssFlexDirectionColumn;
-                  childHeightMeasureMode.contents = CssMeasureModeExactly;
+                    getMarginAxis currentRelativeChild.contents Column;
+                  childHeightMeasureMode.contents = Exactly;
                   if (
                     not (isUndefined availableInnerCrossDim) &&
-                    not (isStyleDimDefined currentRelativeChild.contents CssFlexDirectionRow) &&
-                    widthMeasureMode === CssMeasureModeExactly &&
-                    getAlignItem node currentRelativeChild.contents === CssAlignStretch
+                    not (isStyleDimDefined currentRelativeChild.contents Row) &&
+                    widthMeasureMode === Exactly &&
+                    getAlignItem node currentRelativeChild.contents === AlignStretch
                   ) {
                     childWidth.contents = availableInnerCrossDim;
-                    childWidthMeasureMode.contents = CssMeasureModeExactly
+                    childWidthMeasureMode.contents = Exactly
                   } else if (
-                    not (isStyleDimDefined currentRelativeChild.contents CssFlexDirectionRow)
+                    not (isStyleDimDefined currentRelativeChild.contents Row)
                   ) {
                     childWidth.contents = availableInnerCrossDim;
                     childWidthMeasureMode.contents =
-                      isUndefined childWidth.contents ? CssMeasureModeUndefined : CssMeasureModeAtMost
+                      isUndefined childWidth.contents ? Undefined : AtMost
                   } else {
                     childWidth.contents =
                       currentRelativeChild.contents.style.width +.
-                      getMarginAxis currentRelativeChild.contents CssFlexDirectionRow;
-                    childWidthMeasureMode.contents = CssMeasureModeExactly
+                      getMarginAxis currentRelativeChild.contents Row;
+                    childWidthMeasureMode.contents = Exactly
                   }
                 };
                 let requiresStretchLayout =
                   not (isStyleDimDefined currentRelativeChild.contents crossAxis) &&
-                  getAlignItem node currentRelativeChild.contents === CssAlignStretch;
+                  getAlignItem node currentRelativeChild.contents === AlignStretch;
                 let _ =
                   layoutNodeInternal
                     currentRelativeChild.contents
@@ -858,7 +858,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             remainingFreeSpace.contents = originalRemainingFreeSpace +. deltaFreeSpace.contents;
             /* If we are using "at most" rules in the main axis. Calculate the remaining space when
                constraint by the min size defined for the main axis. */
-            if (measureModeMainDim === CssMeasureModeAtMost) {
+            if (measureModeMainDim === AtMost) {
               let minDim = styleMinDimensionForAxis node mainAxis;
               if (not (isUndefined minDim) && minDim >= 0) {
                 remainingFreeSpace.contents =
@@ -868,26 +868,26 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               }
             };
             switch justifyContent {
-            | CssJustifyCenter => leadingMainDim.contents = divideScalarByInt remainingFreeSpace.contents 2
-            | CssJustifyFlexEnd => leadingMainDim.contents = remainingFreeSpace.contents
-            | CssJustifySpaceBetween =>
+            | JustifyCenter => leadingMainDim.contents = divideScalarByInt remainingFreeSpace.contents 2
+            | JustifyFlexEnd => leadingMainDim.contents = remainingFreeSpace.contents
+            | JustifySpaceBetween =>
               if (itemsOnLine.contents > 1) {
                 betweenMainDim.contents =
                   divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1)
               } else {
                 betweenMainDim.contents = zero
               }
-            | CssJustifySpaceAround =>
+            | JustifySpaceAround =>
               betweenMainDim.contents = divideScalarByInt remainingFreeSpace.contents itemsOnLine.contents;
               leadingMainDim.contents = divideScalarByInt betweenMainDim.contents 2
-            | CssJustifyFlexStart => ()
+            | JustifyFlexStart => ()
             };
             let mainDim = {contents: leadingPaddingAndBorderMain +. leadingMainDim.contents};
             let crossDim = {contents: zero};
             for i in startOfLineIndex.contents to (endOfLineIndex.contents - 1) {
               child.contents = node.children.(i);
               if (
-                child.contents.style.positionType === CssPositionAbsolute &&
+                child.contents.style.positionType === Absolute &&
                 isLeadingPosDefinedWithFallback child.contents mainAxis
               ) {
                 if performLayout {
@@ -906,7 +906,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                     mainAxis
                     (layoutPosPositionForAxis child.contents mainAxis +. mainDim.contents)
                 };
-                if (child.contents.style.positionType === CssPositionRelative) {
+                if (child.contents.style.positionType === Relative) {
                   if canSkipFlex {
                     mainDim.contents =
                       mainDim.contents +. betweenMainDim.contents +. getMarginAxis child.contents mainAxis +.
@@ -924,15 +924,15 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             mainDim.contents = mainDim.contents +. trailingPaddingAndBorderMain;
             let containerCrossAxis = {contents: availableInnerCrossDim};
             if (
-              measureModeCrossDim === CssMeasureModeUndefined || measureModeCrossDim === CssMeasureModeAtMost
+              measureModeCrossDim === Undefined || measureModeCrossDim === AtMost
             ) {
               containerCrossAxis.contents =
                 boundAxis node crossAxis (crossDim.contents +. paddingAndBorderAxisCross) -. paddingAndBorderAxisCross;
-              if (measureModeCrossDim === CssMeasureModeAtMost) {
+              if (measureModeCrossDim === AtMost) {
                 containerCrossAxis.contents = fminf containerCrossAxis.contents availableInnerCrossDim
               }
             };
-            if (not isNodeFlexWrap && measureModeCrossDim === CssMeasureModeExactly) {
+            if (not isNodeFlexWrap && measureModeCrossDim === Exactly) {
               crossDim.contents = availableInnerCrossDim
             };
             crossDim.contents =
@@ -944,7 +944,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             if performLayout {
               for i in startOfLineIndex.contents to (endOfLineIndex.contents - 1) {
                 child.contents = node.children.(i);
-                if (child.contents.style.positionType === CssPositionAbsolute) {
+                if (child.contents.style.positionType === Absolute) {
                   if (isLeadingPosDefinedWithFallback child.contents crossAxis) {
                     setLayoutLeadingPositionForAxis
                       child.contents
@@ -963,30 +963,30 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 } else {
                   let leadingCrossDim = {contents: leadingPaddingAndBorderCross};
                   let alignItem = getAlignItem node child.contents;
-                  if (alignItem === CssAlignStretch) {
+                  if (alignItem === AlignStretch) {
                     let childWidth = {contents: zero};
                     let childHeight = {contents: zero};
-                    let childWidthMeasureMode = {contents: CssMeasureModeUndefined};
-                    let childHeightMeasureMode = {contents: CssMeasureModeUndefined};
+                    let childWidthMeasureMode = {contents: Undefined};
+                    let childHeightMeasureMode = {contents: Undefined};
                     childWidth.contents =
                       child.contents.layout.measuredWidth +.
-                      getMarginAxis child.contents CssFlexDirectionRow;
+                      getMarginAxis child.contents Row;
                     childHeight.contents =
                       child.contents.layout.measuredHeight +.
-                      getMarginAxis child.contents CssFlexDirectionColumn;
+                      getMarginAxis child.contents Column;
                     let isCrossSizeDefinite = {contents: false};
                     if isMainAxisRow {
-                      isCrossSizeDefinite.contents = isStyleDimDefined child.contents CssFlexDirectionColumn;
+                      isCrossSizeDefinite.contents = isStyleDimDefined child.contents Column;
                       childHeight.contents = crossDim.contents
                     } else {
-                      isCrossSizeDefinite.contents = isStyleDimDefined child.contents CssFlexDirectionRow;
+                      isCrossSizeDefinite.contents = isStyleDimDefined child.contents Row;
                       childWidth.contents = crossDim.contents
                     };
                     if (not isCrossSizeDefinite.contents) {
                       childWidthMeasureMode.contents =
-                        isUndefined childWidth.contents ? CssMeasureModeUndefined : CssMeasureModeExactly;
+                        isUndefined childWidth.contents ? Undefined : Exactly;
                       childHeightMeasureMode.contents =
-                        isUndefined childHeight.contents ? CssMeasureModeUndefined : CssMeasureModeExactly;
+                        isUndefined childHeight.contents ? Undefined : Exactly;
                       let _ =
                         layoutNodeInternal
                           child.contents
@@ -1000,11 +1000,11 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                       ()
                     }
                   } else if (
-                    alignItem !== CssAlignFlexStart
+                    alignItem !== AlignFlexStart
                   ) {
                     let remainingCrossDim =
                       containerCrossAxis.contents -. getDimWithMargin child.contents crossAxis;
-                    if (alignItem === CssAlignCenter) {
+                    if (alignItem === AlignCenter) {
                       leadingCrossDim.contents =
                         leadingCrossDim.contents +. divideScalarByInt remainingCrossDim 2
                     } else {
@@ -1031,14 +1031,14 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             let crossDimLead = {contents: zero};
             let currentLead = {contents: leadingPaddingAndBorderCross};
             let alignContent = node.style.alignContent;
-            if (alignContent === CssAlignFlexEnd) {
+            if (alignContent === AlignFlexEnd) {
               currentLead.contents = currentLead.contents +. remainingAlignContentDim
             } else if (
-              alignContent === CssAlignCenter
+              alignContent === AlignCenter
             ) {
               currentLead.contents = currentLead.contents +. divideScalarByInt remainingAlignContentDim 2
             } else if (
-              alignContent === CssAlignStretch
+              alignContent === AlignStretch
             ) {
               if (availableInnerCrossDim > totalLineCrossDim.contents) {
                 crossDimLead.contents = divideScalarByInt remainingAlignContentDim lineCount.contents
@@ -1052,7 +1052,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               let shouldContinue = {contents: false};
               while (j.contents < childCount && shouldContinue.contents) {
                 child.contents = node.children.(j.contents);
-                if (child.contents.style.positionType === CssPositionRelative) {
+                if (child.contents.style.positionType === Relative) {
                   if (child.contents.lineIndex !== i) {
                     shouldContinue.contents = false
                   } else if (
@@ -1074,14 +1074,14 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               if performLayout {
                 for j in startIndex to (endIndex.contents - 1) {
                   child.contents = node.children.(j);
-                  if (child.contents.style.positionType === CssPositionRelative) {
+                  if (child.contents.style.positionType === Relative) {
                     switch (getAlignItem node child.contents) {
-                    | CssAlignFlexStart =>
+                    | AlignFlexStart =>
                       setLayoutLeadingPositionForAxis
                         child.contents
                         crossAxis
                         (currentLead.contents +. getLeadingMargin child.contents crossAxis)
-                    | CssAlignFlexEnd =>
+                    | AlignFlexEnd =>
                       setLayoutLeadingPositionForAxis
                         child.contents
                         crossAxis
@@ -1090,18 +1090,18 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                           getTrailingMargin child.contents crossAxis -.
                           layoutMeasuredDimensionForAxis child.contents crossAxis
                         )
-                    | CssAlignCenter =>
+                    | AlignCenter =>
                       let childHeight = layoutMeasuredDimensionForAxis child.contents crossAxis;
                       setLayoutLeadingPositionForAxis
                         child.contents
                         crossAxis
                         (currentLead.contents +. divideScalarByInt (lineHeight.contents -. childHeight) 2)
-                    | CssAlignStretch =>
+                    | AlignStretch =>
                       setLayoutLeadingPositionForAxis
                         child.contents
                         crossAxis
                         (currentLead.contents +. getLeadingMargin child.contents crossAxis)
-                    | CssAlignAuto => raise (Invalid_argument "getAlignItem should never return auto")
+                    | AlignAuto => raise (Invalid_argument "getAlignItem should never return auto")
                     }
                   }
                 }
@@ -1110,15 +1110,15 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             }
           };
           /* STEP 9: COMPUTING FINAL DIMENSIONS */
-          node.layout.measuredWidth = boundAxis node CssFlexDirectionRow (availableWidth -. marginAxisRow);
+          node.layout.measuredWidth = boundAxis node Row (availableWidth -. marginAxisRow);
           node.layout.measuredHeight =
-            boundAxis node CssFlexDirectionColumn (availableHeight -. marginAxisColumn);
+            boundAxis node Column (availableHeight -. marginAxisColumn);
           /* If the user didn't specify a width or height for the node, set the
            * dimensions based on the children. */
-          if (measureModeMainDim === CssMeasureModeUndefined) {
+          if (measureModeMainDim === Undefined) {
             setLayoutMeasuredDimensionForAxis node mainAxis (boundAxis node mainAxis maxLineMainDim.contents)
           } else if (
-            measureModeMainDim === CssMeasureModeAtMost
+            measureModeMainDim === AtMost
           ) {
             setLayoutMeasuredDimensionForAxis
               node
@@ -1133,13 +1133,13 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   paddingAndBorderAxisMain
               )
           };
-          if (measureModeCrossDim === CssMeasureModeUndefined) {
+          if (measureModeCrossDim === Undefined) {
             setLayoutMeasuredDimensionForAxis
               node
               crossAxis
               (boundAxis node crossAxis (totalLineCrossDim.contents +. paddingAndBorderAxisCross))
           } else if (
-            measureModeCrossDim === CssMeasureModeAtMost
+            measureModeCrossDim === AtMost
           ) {
             setLayoutMeasuredDimensionForAxis
               node
@@ -1163,49 +1163,49 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             if performLayout {
               let childWidth = {contents: cssUndefined};
               let childHeight = {contents: cssUndefined};
-              let childWidthMeasureMode = {contents: CssMeasureModeUndefined};
-              let childHeightMeasureMode = {contents: CssMeasureModeUndefined};
-              if (isStyleDimDefined currentAbsoluteChild CssFlexDirectionRow) {
+              let childWidthMeasureMode = {contents: Undefined};
+              let childHeightMeasureMode = {contents: Undefined};
+              if (isStyleDimDefined currentAbsoluteChild Row) {
                 childWidth.contents =
-                  currentAbsoluteChild.style.width +. getMarginAxis currentAbsoluteChild CssFlexDirectionRow
+                  currentAbsoluteChild.style.width +. getMarginAxis currentAbsoluteChild Row
               } else if (
-                isLeadingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionRow &&
-                isTrailingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionRow
+                isLeadingPosDefinedWithFallback currentAbsoluteChild Row &&
+                isTrailingPosDefinedWithFallback currentAbsoluteChild Row
               ) {
                 childWidth.contents =
                   node.layout.measuredWidth -. (
-                    getLeadingBorder node CssFlexDirectionRow +. getTrailingBorder node CssFlexDirectionRow
+                    getLeadingBorder node Row +. getTrailingBorder node Row
                   ) -. (
-                    getLeadingPositionWithFallback currentAbsoluteChild CssFlexDirectionRow +.
-                    getTrailingPositionWithFallback currentAbsoluteChild CssFlexDirectionRow
+                    getLeadingPositionWithFallback currentAbsoluteChild Row +.
+                    getTrailingPositionWithFallback currentAbsoluteChild Row
                   );
-                childWidth.contents = boundAxis currentAbsoluteChild CssFlexDirectionRow childWidth.contents
+                childWidth.contents = boundAxis currentAbsoluteChild Row childWidth.contents
               };
-              if (isStyleDimDefined currentAbsoluteChild CssFlexDirectionColumn) {
+              if (isStyleDimDefined currentAbsoluteChild Column) {
                 childHeight.contents =
                   currentAbsoluteChild.style.height +.
-                  getMarginAxis currentAbsoluteChild CssFlexDirectionColumn
+                  getMarginAxis currentAbsoluteChild Column
               } else if (
                 /* If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined. */
-                isLeadingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionColumn &&
-                isTrailingPosDefinedWithFallback currentAbsoluteChild CssFlexDirectionColumn
+                isLeadingPosDefinedWithFallback currentAbsoluteChild Column &&
+                isTrailingPosDefinedWithFallback currentAbsoluteChild Column
               ) {
                 childHeight.contents =
                   node.layout.measuredHeight -. (
-                    getLeadingBorder node CssFlexDirectionColumn +.
-                    getTrailingBorder node CssFlexDirectionColumn
+                    getLeadingBorder node Column +.
+                    getTrailingBorder node Column
                   ) -. (
-                    getLeadingPositionWithFallback currentAbsoluteChild CssFlexDirectionColumn +.
-                    getTrailingPositionWithFallback currentAbsoluteChild CssFlexDirectionColumn
+                    getLeadingPositionWithFallback currentAbsoluteChild Column +.
+                    getTrailingPositionWithFallback currentAbsoluteChild Column
                   );
                 childHeight.contents =
-                  boundAxis currentAbsoluteChild CssFlexDirectionColumn childHeight.contents
+                  boundAxis currentAbsoluteChild Column childHeight.contents
               };
               if (isUndefined childWidth.contents || isUndefined childHeight.contents) {
                 childWidthMeasureMode.contents =
-                  isUndefined childWidth.contents ? CssMeasureModeUndefined : CssMeasureModeExactly;
+                  isUndefined childWidth.contents ? Undefined : Exactly;
                 childHeightMeasureMode.contents =
-                  isUndefined childHeight.contents ? CssMeasureModeUndefined : CssMeasureModeExactly;
+                  isUndefined childHeight.contents ? Undefined : Exactly;
                 /*
                  * According to the spec, if the main size is not definite and the
                  * child's inline axis is parallel to the main axis (i.e. it's
@@ -1217,7 +1217,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   not (isUndefined availableInnerWidth)
                 ) {
                   childWidth.contents = availableInnerWidth;
-                  childWidthMeasureMode.contents = CssMeasureModeAtMost
+                  childWidthMeasureMode.contents = AtMost
                 };
                 /*
                  * If child has no defined size in the cross axis and is set to stretch, set the cross
@@ -1235,10 +1235,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                     absMeasureString;
                 childWidth.contents =
                   currentAbsoluteChild.layout.measuredWidth +.
-                  getMarginAxis currentAbsoluteChild CssFlexDirectionRow;
+                  getMarginAxis currentAbsoluteChild Row;
                 childHeight.contents =
                   currentAbsoluteChild.layout.measuredHeight +.
-                  getMarginAxis currentAbsoluteChild CssFlexDirectionColumn
+                  getMarginAxis currentAbsoluteChild Column
               };
               let _ =
                 layoutNodeInternal
@@ -1246,8 +1246,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   childWidth.contents
                   childHeight.contents
                   direction
-                  CssMeasureModeExactly
-                  CssMeasureModeExactly
+                  Exactly
+                  Exactly
                   true
                   absLayoutString;
               if (
@@ -1282,9 +1282,9 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           /* STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN */
           if performLayout {
             let needsMainTrailingPos =
-              mainAxis == CssFlexDirectionRowReverse || mainAxis == CssFlexDirectionColumnReverse;
+              mainAxis == RowReverse || mainAxis == ColumnReverse;
             let needsCrossTrailingPos =
-              crossAxis == CssFlexDirectionRowReverse || crossAxis == CssFlexDirectionColumnReverse;
+              crossAxis == RowReverse || crossAxis == ColumnReverse;
             /* Set trailing position if necessary. */
             if (needsMainTrailingPos || needsCrossTrailingPos) {
               for i in 0 to (childCount - 1) {
@@ -1312,31 +1312,31 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /* specified in the style.*/
     let (width, widthMeasureMode) =
       if (not (isUndefined availableWidth)) {
-        (availableWidth, CssMeasureModeExactly)
+        (availableWidth, Exactly)
       } else if (
-        isStyleDimDefined node CssFlexDirectionRow
+        isStyleDimDefined node Row
       ) {
-        (node.style.width +. getMarginAxis node CssFlexDirectionRow, CssMeasureModeExactly)
+        (node.style.width +. getMarginAxis node Row, Exactly)
       } else if (
         node.style.maxWidth >= zero
       ) {
-        (node.style.maxWidth, CssMeasureModeAtMost)
+        (node.style.maxWidth, AtMost)
       } else {
-        (availableWidth, CssMeasureModeUndefined)
+        (availableWidth, Undefined)
       };
     let (height, heightMeasureMode) =
       if (not (isUndefined availableHeight)) {
-        (availableHeight, CssMeasureModeExactly)
+        (availableHeight, Exactly)
       } else if (
-        isStyleDimDefined node CssFlexDirectionColumn
+        isStyleDimDefined node Column
       ) {
-        (node.style.height +. getMarginAxis node CssFlexDirectionColumn, CssMeasureModeExactly)
+        (node.style.height +. getMarginAxis node Column, Exactly)
       } else if (
         node.style.maxHeight >= zero
       ) {
-        (node.style.maxHeight, CssMeasureModeAtMost)
+        (node.style.maxHeight, AtMost)
       } else {
-        (availableHeight, CssMeasureModeUndefined)
+        (availableHeight, Undefined)
       };
     if (
       layoutNodeInternal

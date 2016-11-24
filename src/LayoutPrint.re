@@ -58,93 +58,93 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       Printf.printf "style: {\n";
       indent (level + 2);
       switch node.style.justifyContent {
-      | CssJustifyFlexStart => Printf.printf "justify: 'start',\n"
-      | CssJustifyCenter => Printf.printf "justify: 'center',\n"
-      | CssJustifyFlexEnd => Printf.printf "justify: 'flexend',\n"
-      | CssJustifySpaceBetween => Printf.printf "justify: 'speceBetween',\n"
-      | CssJustifySpaceAround => Printf.printf "justify: 'speceAround',\n"
+      | JustifyFlexStart => Printf.printf "justify: 'start',\n"
+      | JustifyCenter => Printf.printf "justify: 'center',\n"
+      | JustifyFlexEnd => Printf.printf "justify: 'flexend',\n"
+      | JustifySpaceBetween => Printf.printf "justify: 'speceBetween',\n"
+      | JustifySpaceAround => Printf.printf "justify: 'speceAround',\n"
       };
-      if (node.style.flexDirection == CssFlexDirectionColumn) {
+      if (node.style.flexDirection == Column) {
         indent (level + 2);
         Printf.printf "flexDirection: 'column',\n"
       } else if (
-        node.style.flexDirection == CssFlexDirectionColumnReverse
+        node.style.flexDirection == ColumnReverse
       ) {
         indent (level + 2);
         Printf.printf "flexDirection: 'column-reverse',\n"
       } else if (
-        node.style.flexDirection == CssFlexDirectionRow
+        node.style.flexDirection == Row
       ) {
         indent (level + 2);
         Printf.printf "flexDirection: 'row',\n"
       } else if (
-        node.style.flexDirection == CssFlexDirectionRowReverse
+        node.style.flexDirection == RowReverse
       ) {
         indent (level + 2);
         Printf.printf "flexDirection: 'row-reverse',\n"
       };
-      if (node.style.justifyContent == CssJustifyCenter) {
+      if (node.style.justifyContent == JustifyCenter) {
         indent (level + 2);
         Printf.printf "justifyContent: 'center',\n"
       } else if (
-        node.style.justifyContent == CssJustifyFlexEnd
+        node.style.justifyContent == JustifyFlexEnd
       ) {
         indent (level + 2);
         Printf.printf "justifyContent: 'flex-end',\n"
       } else if (
-        node.style.justifyContent == CssJustifySpaceAround
+        node.style.justifyContent == JustifySpaceAround
       ) {
         indent (level + 2);
         Printf.printf "justifyContent: 'space-around',\n"
       } else if (
-        node.style.justifyContent == CssJustifySpaceBetween
+        node.style.justifyContent == JustifySpaceBetween
       ) {
         indent (level + 2);
         Printf.printf "justifyContent: 'space-between',\n"
       };
-      if (node.style.alignItems == CssAlignCenter) {
+      if (node.style.alignItems == AlignCenter) {
         indent (level + 2);
         Printf.printf "alignItems: 'center',\n"
       } else if (
-        node.style.alignItems == CssAlignFlexEnd
+        node.style.alignItems == AlignFlexEnd
       ) {
         indent (level + 2);
         Printf.printf "alignItems: 'flex-end',\n"
       } else if (
-        node.style.alignItems == CssAlignStretch
+        node.style.alignItems == AlignStretch
       ) {
         indent (level + 2);
         Printf.printf "alignItems: 'stretch',\n"
       };
-      if (node.style.alignContent == CssAlignCenter) {
+      if (node.style.alignContent == AlignCenter) {
         indent (level + 2);
         Printf.printf "alignContent: 'center',\n"
       } else if (
-        node.style.alignContent == CssAlignFlexEnd
+        node.style.alignContent == AlignFlexEnd
       ) {
         indent (level + 2);
         Printf.printf "alignContent: 'flex-end',\n"
       } else if (
-        node.style.alignContent == CssAlignStretch
+        node.style.alignContent == AlignStretch
       ) {
         indent (level + 2);
         Printf.printf "alignContent: 'stretch',\n"
       };
-      if (node.style.alignSelf == CssAlignFlexStart) {
+      if (node.style.alignSelf == AlignFlexStart) {
         indent (level + 2);
         Printf.printf "alignSelf: 'flex-start',\n"
       } else if (
-        node.style.alignSelf == CssAlignCenter
+        node.style.alignSelf == AlignCenter
       ) {
         indent (level + 2);
         Printf.printf "alignSelf: 'center',\n"
       } else if (
-        node.style.alignSelf == CssAlignFlexEnd
+        node.style.alignSelf == AlignFlexEnd
       ) {
         indent (level + 2);
         Printf.printf "alignSelf: 'flex-end',\n"
       } else if (
-        node.style.alignSelf == CssAlignStretch
+        node.style.alignSelf == AlignStretch
       ) {
         indent (level + 2);
         Printf.printf "alignSelf: 'stretch',\n"
@@ -186,7 +186,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       print_number_nan (level + 2, "maxHeight", node.style.maxHeight);
       print_number_nan (level + 2, "minWidth", node.style.minWidth);
       print_number_nan (level + 2, "minHeight", node.style.minHeight);
-      if (node.style.positionType == CssPositionAbsolute) {
+      if (node.style.positionType == Absolute) {
         indent (level + 2);
         Printf.printf "position: 'absolute', "
       };
