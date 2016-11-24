@@ -30,6 +30,7 @@ npm run test:byte         # Run the tests in compiled bytecode.
 npm run test:jsc          # Run tests in JavaScriptCore.
 npm run test:jscWithJit   # Run tests in JavaScriptCore with JIT.
 npm run test:v8           # Run tests in v8.
+npm run testMeasure       # Run measurement tests.
 ```
 
 ## Building and running cstub tests 

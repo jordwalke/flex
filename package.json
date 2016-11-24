@@ -36,7 +36,7 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "thisFails": "eval $(dependencyEnv) && nopam && rebuild -pkg core_bench -pkg str -I src ./src/LayoutTest.native -cflags -w,-40 2>&1 | refmterr",
+    "thisFails": "eval $(dependencyEnv) && nopam && rebuild -I src ./src/LayoutTestFixedEncoding.native -cflags -w,-40 2>&1 | refmterr",
     "regenerateReasonSource": "eval $(dependencyEnv) && cd ../../ && grunt transpile",
     "start": "eval $(dependencyEnv) && time ./_build/src/LayoutTest.native",
     "help": "eval $(dependencyEnv) && rebuild -help",
@@ -46,21 +46,22 @@
     "env": "eval $(dependencyEnv) && env",
     "editor": "eval $(dependencyEnv) && eval $EDITOR",
     "build": "eval $(dependencyEnv) && nopam && rebel -show-actions-run-verbose -verbose -show-error-dependency-paths -brief-error-summary -show-buildable-discovery",
-    "test": "./_build/default/src/app.native",
-    "bench": "./_build/default/src/app.native -quota 20",
-    "test:byte": "./_build/byteTarget/src/app.byte",
-    "bench:byte": "./_build/byteTarget/src/app.byte -quota 20",
-    "test:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
-    "bench:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/jsTarget/src/app.js",
-    "test:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/jsTarget/src/app.js",
-    "bench:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/jsTarget/src/app.js",
-    "test:v8": "node ./_build/jsTarget/src/app.js",
-    "bench:v8": "node ./_build/jsTarget/src/app.js -quota 20"
+    "test": "./_build/layoutTestFixedEncodingNative/src/app.native",
+    "bench": "./_build/layoutTestFixedEncodingNative/src/app.native -quota 20",
+    "test:byte": "./_build/layoutTestFixedEncodingByte/src/app.byte",
+    "bench:byte": "./_build/layoutTestFixedEncodingByte/src/app.byte -quota 20",
+    "test:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/layoutTestFixedEncodingJsoo/src/app.js",
+    "bench:jsc": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/layoutTestFixedEncodingJsoo/src/app.js",
+    "test:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out']}; \" -f ./_build/layoutTestFixedEncodingJsoo/src/app.js",
+    "bench:jscWithJit": "/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e \"console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; \" -f ./_build/layoutTestFixedEncodingJsoo/src/app.js",
+    "test:v8": "node ./_build/layoutTestFixedEncodingJsoo/src/app.js",
+    "bench:v8": "node ./_build/layoutTestFixedEncodingJsoo/src/app.js -quota 20",
+    "testMeasure": "./_build/measureTestFixedEncoding/src/app.native"
   },
   "notes": "The below is a temporary rebel config that only works with the hardcoded rebel used in the run scripts",
   "rebel": {
     "targets": [{
-      "target": "default",
+      "target": "layoutTestFixedEncodingNative",
       "engine": "native",
       "entry": "src/LayoutTestFixedEncoding.re",
       "note": "We put -pkg core_bench here because we can't include it in the outer rebel config - it only applies to native target",
@@ -70,7 +71,7 @@
       }
     },
     {
-      "target": "byteTarget",
+      "target": "layoutTestFixedEncodingByte",
       "engine": "byte",
       "entry": "src/LayoutTestFixedEncoding.re",
       "unstable_flags": {
@@ -79,13 +80,23 @@
       }
     },
     {
-      "target": "jsTarget",
+      "target": "layoutTestFixedEncodingJsoo",
       "engine": "jsoo",
       "entry": "src/LayoutTestFixedEncoding.re",
       "unstable_flags": {
          "compile": "-thread -g -verbose -unsafe",
          "link": "-thread -g -verbose",
          "jsoo": "--opt 3"
+      }
+    },
+    {
+      "target": "measureTestFixedEncoding",
+      "engine": "native",
+      "entry": "src/MeasureTestFixedEncoding.re",
+      "note": "We put -pkg core_bench here because we can't include it in the outer rebel config - it only applies to native target",
+      "unstable_flags": {
+         "compile": "-package core_bench -thread -g -verbose -inline 100 -unsafe -S",
+         "link": "-linkpkg -package core_bench -thread -g -verbose -S"
       }
     }]
   }
