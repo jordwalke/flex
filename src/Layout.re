@@ -392,6 +392,98 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     }
   }
   /**
+   * @child The child with absolute position.
+   * @width The available inner width.
+   */
+  and absoluteLayoutChild node child width widthMode direction => {
+    let childWidth = {contents: cssUndefined};
+    let childHeight = {contents: cssUndefined};
+    let childWidthMeasureMode = {contents: Undefined};
+    let childHeightMeasureMode = {contents: Undefined};
+    let mainAxis = resolveAxis node.style.flexDirection direction;
+    let crossAxis = getCrossFlexDirection mainAxis direction;
+    let isMainAxisRow = isRowDirection mainAxis;
+    if (isStyleDimDefined child Row) {
+      childWidth.contents = child.style.width +. getMarginAxis child Row
+    } else if (
+      isLeadingPosDefinedWithFallback child Row && isTrailingPosDefinedWithFallback child Row
+    ) {
+      childWidth.contents =
+        node.layout.measuredWidth -. (getLeadingBorder node Row +. getTrailingBorder node Row) -. (
+          getLeadingPositionWithFallback child Row +. getTrailingPositionWithFallback child Row
+        );
+      childWidth.contents = boundAxis child Row childWidth.contents
+    };
+    if (isStyleDimDefined child Column) {
+      childHeight.contents = child.style.height +. getMarginAxis child Column
+    } else if (
+      /* If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined. */
+      isLeadingPosDefinedWithFallback child Column && isTrailingPosDefinedWithFallback child Column
+    ) {
+      childHeight.contents =
+        node.layout.measuredHeight -. (getLeadingBorder node Column +. getTrailingBorder node Column) -. (
+          getLeadingPositionWithFallback child Column +. getTrailingPositionWithFallback child Column
+        );
+      childHeight.contents = boundAxis child Column childHeight.contents
+    };
+    if (isUndefined childWidth.contents || isUndefined childHeight.contents) {
+      childWidthMeasureMode.contents = isUndefined childWidth.contents ? Undefined : Exactly;
+      childHeightMeasureMode.contents = isUndefined childHeight.contents ? Undefined : Exactly;
+      /*
+       * According to the spec, if the main size is not definite and the
+       * child's inline axis is parallel to the main axis (i.e. it's
+       * horizontal), the child should be sized using "UNDEFINED" in
+       * the main size. Otherwise use "AT_MOST" in the cross axis.
+       */
+      if ((not isMainAxisRow && isUndefined childWidth.contents) && not (isUndefined width)) {
+        childWidth.contents = width;
+        childWidthMeasureMode.contents = AtMost
+      };
+      /*
+       * If child has no defined size in the cross axis and is set to stretch, set the cross
+       * axis to be measured exactly with the available inner width
+       */
+      let _ =
+        layoutNodeInternal
+          child
+          childWidth.contents
+          childHeight.contents
+          direction
+          childWidthMeasureMode.contents
+          childHeightMeasureMode.contents
+          false
+          absMeasureString;
+      childWidth.contents = child.layout.measuredWidth +. getMarginAxis child Row;
+      childHeight.contents = child.layout.measuredHeight +. getMarginAxis child Column
+    };
+    let _ =
+      layoutNodeInternal
+        child childWidth.contents childHeight.contents direction Exactly Exactly true absLayoutString;
+    if (
+      isTrailingPosDefinedWithFallback child mainAxis && not (isLeadingPosDefinedWithFallback child mainAxis)
+    ) {
+      setLayoutLeadingPositionForAxis
+        child
+        mainAxis
+        (
+          layoutMeasuredDimensionForAxis node mainAxis -. layoutMeasuredDimensionForAxis child mainAxis -.
+          getTrailingPositionWithFallback child mainAxis
+        )
+    };
+    if (
+      isTrailingPosDefinedWithFallback child crossAxis &&
+      not (isLeadingPosDefinedWithFallback child crossAxis)
+    ) {
+      setLayoutLeadingPositionForAxis
+        child
+        crossAxis
+        (
+          layoutMeasuredDimensionForAxis node crossAxis -. layoutMeasuredDimensionForAxis child crossAxis -.
+          getTrailingPositionWithFallback child crossAxis
+        )
+    }
+  }
+  /**
    * By default, mathematical operations are floating point.
    */
   and layoutNodeImpl
@@ -650,8 +742,6 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               }
             };
             let canSkipFlex = not performLayout && measureModeCrossDim === Exactly;
-            let leadingMainDim = {contents: zero};
-            let betweenMainDim = {contents: zero};
             let remainingFreeSpace = {contents: zero};
             if (not (isUndefined availableInnerMainDim)) {
               remainingFreeSpace.contents = availableInnerMainDim -. sizeConsumedOnCurrentLine.contents
@@ -847,22 +937,22 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 remainingFreeSpace.contents = zero
               }
             };
-            switch justifyContent {
-            | JustifyCenter => leadingMainDim.contents = divideScalarByInt remainingFreeSpace.contents 2
-            | JustifyFlexEnd => leadingMainDim.contents = remainingFreeSpace.contents
-            | JustifySpaceBetween =>
-              if (itemsOnLine.contents > 1) {
-                betweenMainDim.contents =
-                  divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1)
-              } else {
-                betweenMainDim.contents = zero
-              }
-            | JustifySpaceAround =>
-              betweenMainDim.contents = divideScalarByInt remainingFreeSpace.contents itemsOnLine.contents;
-              leadingMainDim.contents = divideScalarByInt betweenMainDim.contents 2
-            | JustifyFlexStart => ()
-            };
-            let mainDim = {contents: leadingPaddingAndBorderMain +. leadingMainDim.contents};
+            /* No worries, this shouldn't allocate! https://caml.inria.fr/mantis/view.php?id=4800 */
+            let (leadingMainDim, betweenMainDim) =
+              switch justifyContent {
+              | JustifyCenter => (divideScalarByInt remainingFreeSpace.contents 2, zero)
+              | JustifyFlexEnd => (remainingFreeSpace.contents, zero)
+              | JustifySpaceBetween => (
+                  0,
+                  itemsOnLine.contents > 1 ?
+                    divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1) : 0
+                )
+              | JustifySpaceAround =>
+                let betweenMainDim = divideScalarByInt remainingFreeSpace.contents itemsOnLine.contents;
+                (divideScalarByInt betweenMainDim 2, betweenMainDim)
+              | JustifyFlexStart => (0, 0)
+              };
+            let mainDim = {contents: leadingPaddingAndBorderMain +. leadingMainDim};
             let crossDim = {contents: zero};
             for i in startOfLineIndex.contents to (endOfLineIndex.contents - 1) {
               child.contents = node.children.(i);
@@ -889,13 +979,12 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 if (child.contents.style.positionType === Relative) {
                   if canSkipFlex {
                     mainDim.contents =
-                      mainDim.contents +. betweenMainDim.contents +. getMarginAxis child.contents mainAxis +.
+                      mainDim.contents +. betweenMainDim +. getMarginAxis child.contents mainAxis +.
                       child.contents.layout.computedFlexBasis;
                     crossDim.contents = availableInnerCrossDim
                   } else {
                     mainDim.contents =
-                      mainDim.contents +. betweenMainDim.contents +.
-                      getDimWithMargin child.contents mainAxis;
+                      mainDim.contents +. betweenMainDim +. getDimWithMargin child.contents mainAxis;
                     crossDim.contents = fmaxf crossDim.contents (getDimWithMargin child.contents crossAxis)
                   }
                 }
@@ -1132,117 +1221,12 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               )
           };
           let currentAbsoluteChildRef = {contents: firstAbsoluteChild.contents};
-          while (currentAbsoluteChildRef.contents !== theNullNode) {
-            let currentAbsoluteChild = currentAbsoluteChildRef.contents;
-            if performLayout {
-              let childWidth = {contents: cssUndefined};
-              let childHeight = {contents: cssUndefined};
-              let childWidthMeasureMode = {contents: Undefined};
-              let childHeightMeasureMode = {contents: Undefined};
-              if (isStyleDimDefined currentAbsoluteChild Row) {
-                childWidth.contents =
-                  currentAbsoluteChild.style.width +. getMarginAxis currentAbsoluteChild Row
-              } else if (
-                isLeadingPosDefinedWithFallback currentAbsoluteChild Row &&
-                isTrailingPosDefinedWithFallback currentAbsoluteChild Row
-              ) {
-                childWidth.contents =
-                  node.layout.measuredWidth -. (getLeadingBorder node Row +. getTrailingBorder node Row) -. (
-                    getLeadingPositionWithFallback currentAbsoluteChild Row +.
-                    getTrailingPositionWithFallback currentAbsoluteChild Row
-                  );
-                childWidth.contents = boundAxis currentAbsoluteChild Row childWidth.contents
-              };
-              if (isStyleDimDefined currentAbsoluteChild Column) {
-                childHeight.contents =
-                  currentAbsoluteChild.style.height +. getMarginAxis currentAbsoluteChild Column
-              } else if (
-                /* If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined. */
-                isLeadingPosDefinedWithFallback currentAbsoluteChild Column &&
-                isTrailingPosDefinedWithFallback currentAbsoluteChild Column
-              ) {
-                childHeight.contents =
-                  node.layout.measuredHeight -. (
-                    getLeadingBorder node Column +. getTrailingBorder node Column
-                  ) -. (
-                    getLeadingPositionWithFallback currentAbsoluteChild Column +.
-                    getTrailingPositionWithFallback currentAbsoluteChild Column
-                  );
-                childHeight.contents = boundAxis currentAbsoluteChild Column childHeight.contents
-              };
-              if (isUndefined childWidth.contents || isUndefined childHeight.contents) {
-                childWidthMeasureMode.contents = isUndefined childWidth.contents ? Undefined : Exactly;
-                childHeightMeasureMode.contents = isUndefined childHeight.contents ? Undefined : Exactly;
-                /*
-                 * According to the spec, if the main size is not definite and the
-                 * child's inline axis is parallel to the main axis (i.e. it's
-                 * horizontal), the child should be sized using "UNDEFINED" in
-                 * the main size. Otherwise use "AT_MOST" in the cross axis.
-                 */
-                if (
-                  (not isMainAxisRow && isUndefined childWidth.contents) &&
-                  not (isUndefined availableInnerWidth)
-                ) {
-                  childWidth.contents = availableInnerWidth;
-                  childWidthMeasureMode.contents = AtMost
-                };
-                /*
-                 * If child has no defined size in the cross axis and is set to stretch, set the cross
-                 * axis to be measured exactly with the available inner width
-                 */
-                let _ =
-                  layoutNodeInternal
-                    currentAbsoluteChild
-                    childWidth.contents
-                    childHeight.contents
-                    direction
-                    childWidthMeasureMode.contents
-                    childHeightMeasureMode.contents
-                    false
-                    absMeasureString;
-                childWidth.contents =
-                  currentAbsoluteChild.layout.measuredWidth +. getMarginAxis currentAbsoluteChild Row;
-                childHeight.contents =
-                  currentAbsoluteChild.layout.measuredHeight +. getMarginAxis currentAbsoluteChild Column
-              };
-              let _ =
-                layoutNodeInternal
-                  currentAbsoluteChild
-                  childWidth.contents
-                  childHeight.contents
-                  direction
-                  Exactly
-                  Exactly
-                  true
-                  absLayoutString;
-              if (
-                isTrailingPosDefinedWithFallback currentAbsoluteChild mainAxis &&
-                not (isLeadingPosDefinedWithFallback currentAbsoluteChild mainAxis)
-              ) {
-                setLayoutLeadingPositionForAxis
-                  currentAbsoluteChild
-                  mainAxis
-                  (
-                    layoutMeasuredDimensionForAxis node mainAxis -.
-                    layoutMeasuredDimensionForAxis currentAbsoluteChild mainAxis -.
-                    getTrailingPositionWithFallback currentAbsoluteChild mainAxis
-                  )
-              };
-              if (
-                isTrailingPosDefinedWithFallback currentAbsoluteChild crossAxis &&
-                not (isLeadingPosDefinedWithFallback currentAbsoluteChild crossAxis)
-              ) {
-                setLayoutLeadingPositionForAxis
-                  currentAbsoluteChild
-                  crossAxis
-                  (
-                    layoutMeasuredDimensionForAxis node crossAxis -.
-                    layoutMeasuredDimensionForAxis currentAbsoluteChild crossAxis -.
-                    getTrailingPositionWithFallback currentAbsoluteChild crossAxis
-                  )
-              }
-            };
-            currentAbsoluteChildRef.contents = currentAbsoluteChild.nextChild
+          if performLayout {
+            while (currentAbsoluteChildRef.contents !== theNullNode) {
+              absoluteLayoutChild
+                node currentAbsoluteChildRef.contents availableInnerWidth widthMeasureMode direction;
+              currentAbsoluteChildRef.contents = currentAbsoluteChildRef.contents.nextChild
+            }
           };
           /* STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN */
           if performLayout {
