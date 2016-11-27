@@ -821,20 +821,19 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 if (remainingFreeSpace.contents < zero) {
                   flexShrinkScaledFactor.contents =
                     -. currentRelativeChild.contents.style.flexShrink *. childFlexBasis.contents;
+                  /* Is this child able to shrink? */
                   if (flexShrinkScaledFactor.contents != zero) {
-                    updatedMainSize.contents =
-                      boundAxis
-                        currentRelativeChild.contents
-                        mainAxis
-                        (
-                          childFlexBasis.contents +.
-                          /*
-                           * Important to first scale, then divide - to support
-                           * fixed point encoding.
-                           */
-                          flexShrinkScaledFactor.contents *. remainingFreeSpace.contents /.
-                          totalFlexShrinkScaledFactors.contents
-                        )
+                    let childSize =
+                      totalFlexShrinkScaledFactors.contents == zero ?
+                        childFlexBasis.contents +. flexShrinkScaledFactor.contents :
+                        childFlexBasis.contents +.
+                        /*
+                         * Important to first scale, then divide - to support
+                         * fixed point encoding.
+                         */
+                        flexShrinkScaledFactor.contents *. remainingFreeSpace.contents /.
+                        totalFlexShrinkScaledFactors.contents;
+                    updatedMainSize.contents = boundAxis currentRelativeChild.contents mainAxis childSize
                   }
                 } else if (
                   remainingFreeSpace.contents > zero
