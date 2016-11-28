@@ -311,20 +311,22 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let childHeight = {contents: zero};
     let childWidthMeasureMode = {contents: Undefined};
     let childHeightMeasureMode = {contents: Undefined};
-    if (isMainAxisRow && isStyleDimDefined child Row) {
+    if (not (isUndefined child.style.flexBasis) && not (isUndefined (isMainAxisRow ? width : height))) {
+      if (isUndefined child.layout.computedFlexBasis) {
+        child.layout.computedFlexBasis = fmaxf child.style.flexBasis (getPaddingAndBorderAxis child mainAxis)
+      }
+    } else if (
+      isMainAxisRow && isStyleDimDefined child Row
+    ) {
       /* The width is definite, so use that as the flex basis. */
-      child.layout.computedFlexBasis = fmaxf child.style.width (getPaddingAndBorderAxis child Row)
+      child.layout.computedFlexBasis =
+        fmaxf child.style.width (getPaddingAndBorderAxis child Row)
     } else if (
       not isMainAxisRow && isStyleDimDefined child Column
     ) {
       /* The height is definite, so use that as the flex basis. */
-      child.layout.computedFlexBasis = fmaxf child.style.height (getPaddingAndBorderAxis child Column)
-    } else if (
-      not (isUndefined child.style.flexBasis) && not (isUndefined (isMainAxisRow ? width : height))
-    ) {
-      if (isUndefined child.layout.computedFlexBasis) {
-        child.layout.computedFlexBasis = fmaxf child.style.flexBasis (getPaddingAndBorderAxis child mainAxis)
-      }
+      child.layout.computedFlexBasis =
+        fmaxf child.style.height (getPaddingAndBorderAxis child Column)
     } else {
       childWidth.contents = cssUndefined;
       childHeight.contents = cssUndefined;

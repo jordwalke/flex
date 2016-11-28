@@ -493,6 +493,12 @@
    <div style="width: 50px; height: 50px; flex-shrink:1;"></div>
    <div style="width: 50px; height: 50px; flex-shrink:0;"></div>
  </div>
+
+ <div id="flex_basis_overrides_main_size" style="height: 100px; width: 100px;">
+   <div style="height: 20px; flex-grow:1; flex-basis:50px;"></div>
+   <div style="height: 10px; flex-grow:1;"></div>
+   <div style="height: 10px; flex-grow:1;"></div>
+ </div>
   *
   */
 let floatMult = ( *. );
@@ -683,6 +689,8 @@ let start_overrides = "start_overrides";
 let end_overrides = "end_overrides";
 
 let flex_shrink_to_zero = "flex_shrink_to_zero";
+
+let flex_basis_overrides_main_size = "flex_basis_overrides_main_size";
 
 
 /**
@@ -2084,6 +2092,24 @@ if (LayoutTestUtils.runMode === Bench) {
                 LayoutSupport.createNode
                   withChildren::[|root_child0, root_child1, root_child2|] andStyle::root_style ();
               Layout.layoutNode root cssUndefined cssUndefined Ltr;
+              Layout.layoutNode root cssUndefined cssUndefined Rtl;
+              /* flex_basis_overrides_main_size */
+              let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+              let root_child0_style = {
+                ...LayoutSupport.defaultStyle,
+                flexGrow: 1,
+                flexBasis: 5000,
+                height: 2000
+              };
+              let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+              let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1, height: 1000};
+              let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
+              let root_child2_style = {...LayoutSupport.defaultStyle, flexGrow: 1, height: 1000};
+              let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
+              let root =
+                LayoutSupport.createNode
+                  withChildren::[|root_child0, root_child1, root_child2|] andStyle::root_style ();
+              Layout.layoutNode root cssUndefined cssUndefined Ltr;
               Layout.layoutNode root cssUndefined cssUndefined Rtl
             }
           )
@@ -3409,6 +3435,20 @@ if (LayoutTestUtils.runMode === Bench) {
       Layout.layoutNode root cssUndefined cssUndefined Ltr;
       Layout.layoutNode root cssUndefined cssUndefined Rtl
     };
+    let bench_flex_basis_overrides_main_size () => {
+      let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+      let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000, height: 2000};
+      let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+      let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1, height: 1000};
+      let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
+      let root_child2_style = {...LayoutSupport.defaultStyle, flexGrow: 1, height: 1000};
+      let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
+      let root =
+        LayoutSupport.createNode
+          withChildren::[|root_child0, root_child1, root_child2|] andStyle::root_style ();
+      Layout.layoutNode root cssUndefined cssUndefined Ltr;
+      Layout.layoutNode root cssUndefined cssUndefined Rtl
+    };
     let benchmarks = [];
     let benchmarks =
       LayoutTestUtils.shouldRun flex_grow_within_max_width ?
@@ -3827,6 +3867,13 @@ if (LayoutTestUtils.runMode === Bench) {
     let benchmarks =
       LayoutTestUtils.shouldRun flex_shrink_to_zero ?
         [Bench.Test.create name::flex_shrink_to_zero bench_flex_shrink_to_zero, ...benchmarks] : benchmarks;
+    let benchmarks =
+      LayoutTestUtils.shouldRun flex_basis_overrides_main_size ?
+        [
+          Bench.Test.create name::flex_basis_overrides_main_size bench_flex_basis_overrides_main_size,
+          ...benchmarks
+        ] :
+        benchmarks;
     Core.Std.Command.run (Bench.make_command benchmarks)
   }
 } else {
@@ -8811,6 +8858,76 @@ if (LayoutTestUtils.runMode === Bench) {
               ({...root_child0.layout, top: 0, left: 0, width: 5000, height: 5000}, root_child0.layout),
               ({...root_child1.layout, top: 5000, left: 0, width: 5000, height: 0}, root_child1.layout),
               ({...root_child2.layout, top: 5000, left: 0, width: 5000, height: 5000}, root_child2.layout)
+            ]
+        }
+      }
+    );
+  it
+    flex_basis_overrides_main_size
+    (
+      fun () => {
+        let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
+        let root_child0_style = {...LayoutSupport.defaultStyle, flexGrow: 1, flexBasis: 5000, height: 2000};
+        let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
+        let root_child1_style = {...LayoutSupport.defaultStyle, flexGrow: 1, height: 1000};
+        let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
+        let root_child2_style = {...LayoutSupport.defaultStyle, flexGrow: 1, height: 1000};
+        let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
+        let root =
+          LayoutSupport.createNode
+            withChildren::[|root_child0, root_child1, root_child2|] andStyle::root_style ();
+        Layout.layoutNode root cssUndefined cssUndefined Ltr;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 6000 ||
+          root_child1.layout.top != 6000 ||
+          root_child1.layout.left != 0 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 2000 ||
+          root_child2.layout.top != 8000 ||
+          root_child2.layout.left != 0 ||
+          root_child2.layout.width != 10000 || root_child2.layout.height != 2000
+        ) {
+          assertLayouts
+            174
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 6000}, root_child0.layout),
+              ({...root_child1.layout, top: 6000, left: 0, width: 10000, height: 2000}, root_child1.layout),
+              ({...root_child2.layout, top: 8000, left: 0, width: 10000, height: 2000}, root_child2.layout)
+            ]
+        };
+        Layout.layoutNode root cssUndefined cssUndefined Rtl;
+        if (
+          root.layout.top != 0 ||
+          root.layout.left != 0 ||
+          root.layout.width != 10000 ||
+          root.layout.height != 10000 ||
+          root_child0.layout.top != 0 ||
+          root_child0.layout.left != 0 ||
+          root_child0.layout.width != 10000 ||
+          root_child0.layout.height != 6000 ||
+          root_child1.layout.top != 6000 ||
+          root_child1.layout.left != 0 ||
+          root_child1.layout.width != 10000 ||
+          root_child1.layout.height != 2000 ||
+          root_child2.layout.top != 8000 ||
+          root_child2.layout.left != 0 ||
+          root_child2.layout.width != 10000 || root_child2.layout.height != 2000
+        ) {
+          assertLayouts
+            175
+            ({...root.layout, top: 0, left: 0, width: 10000, height: 10000}, root.layout)
+            [
+              ({...root_child0.layout, top: 0, left: 0, width: 10000, height: 6000}, root_child0.layout),
+              ({...root_child1.layout, top: 6000, left: 0, width: 10000, height: 2000}, root_child1.layout),
+              ({...root_child2.layout, top: 8000, left: 0, width: 10000, height: 2000}, root_child2.layout)
             ]
         }
       }
