@@ -563,14 +563,14 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let setPosition node direction => {
     let mainAxis = resolveAxis node.style.flexDirection direction;
     let crossAxis = getCrossFlexDirection mainAxis direction;
+    let relativePositionMain = getRelativePosition node mainAxis;
+    let relativePositionCross = getRelativePosition node crossAxis;
+    setLayoutLeadingPositionForAxis node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
+    setLayoutTrailingPositionForAxis node mainAxis (getTrailingMargin node mainAxis +. relativePositionMain);
     setLayoutLeadingPositionForAxis
-      node mainAxis (getLeadingMargin node mainAxis +. getRelativePosition node mainAxis);
+      node crossAxis (getLeadingMargin node crossAxis +. relativePositionCross);
     setLayoutTrailingPositionForAxis
-      node mainAxis (getTrailingMargin node mainAxis +. getRelativePosition node mainAxis);
-    setLayoutLeadingPositionForAxis
-      node crossAxis (getLeadingMargin node crossAxis +. getRelativePosition node crossAxis);
-    setLayoutTrailingPositionForAxis
-      node crossAxis (getTrailingMargin node crossAxis +. getRelativePosition node crossAxis)
+      node crossAxis (getTrailingMargin node crossAxis +. relativePositionCross)
   };
   let cssNodeStyleGetFlex node =>
     if (node.style.flexGrow > zero) {

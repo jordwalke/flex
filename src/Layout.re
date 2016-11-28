@@ -311,18 +311,20 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let childHeight = {contents: zero};
     let childWidthMeasureMode = {contents: Undefined};
     let childHeightMeasureMode = {contents: Undefined};
+    let isRowStyleDimDefined = isStyleDimDefined child Row;
+    let isColumnStyleDimDefined = isStyleDimDefined child Column;
     if (not (isUndefined child.style.flexBasis) && not (isUndefined (isMainAxisRow ? width : height))) {
       if (isUndefined child.layout.computedFlexBasis) {
         child.layout.computedFlexBasis = fmaxf child.style.flexBasis (getPaddingAndBorderAxis child mainAxis)
       }
     } else if (
-      isMainAxisRow && isStyleDimDefined child Row
+      isMainAxisRow && isRowStyleDimDefined
     ) {
       /* The width is definite, so use that as the flex basis. */
       child.layout.computedFlexBasis =
         fmaxf child.style.width (getPaddingAndBorderAxis child Row)
     } else if (
-      not isMainAxisRow && isStyleDimDefined child Column
+      not isMainAxisRow && isColumnStyleDimDefined
     ) {
       /* The height is definite, so use that as the flex basis. */
       child.layout.computedFlexBasis =
@@ -332,7 +334,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       childHeight.contents = cssUndefined;
       childWidthMeasureMode.contents = Undefined;
       childHeightMeasureMode.contents = Undefined;
-      if (isStyleDimDefined child Row) {
+      if isRowStyleDimDefined {
         childWidth.contents = child.style.width +. getMarginAxis child Row;
         childWidthMeasureMode.contents = Exactly
       };
@@ -340,7 +342,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       /**
        * Why can't this just be inlined to .height !== cssUndefined.
        */
-      if (isStyleDimDefined child Column) {
+      if isColumnStyleDimDefined {
         childHeight.contents = child.style.height +. getMarginAxis child Column;
         childHeightMeasureMode.contents = Exactly
       };
@@ -361,20 +363,17 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
        * stretch, set the cross axis to be measured exactly with the
        * available inner width.
        */
+      let childStretchItem = getAlignItem node child === AlignStretch;
       if (
         not isMainAxisRow &&
-        not (isUndefined width) &&
-        not (isStyleDimDefined child Row) &&
-        widthMode === Exactly && getAlignItem node child === AlignStretch
+        not (isUndefined width) && not isRowStyleDimDefined && widthMode === Exactly && childStretchItem
       ) {
         childWidth.contents = width;
         childWidthMeasureMode.contents = Exactly
       };
       if (
         isMainAxisRow &&
-        not (isUndefined height) &&
-        not (isStyleDimDefined child Column) &&
-        heightMode === Exactly && getAlignItem node child === AlignStretch
+        not (isUndefined height) && not isColumnStyleDimDefined && heightMode === Exactly && childStretchItem
       ) {
         childHeight.contents = height;
         childHeightMeasureMode.contents = Exactly
