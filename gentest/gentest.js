@@ -1292,6 +1292,13 @@ function getComputedStyleInKebabForm(node) {
    <div style="width: 50px; height: 50px; flex-shrink:0;"></div>
  </div>
 
+ <div id="flex_basis_overrides_main_size" style="height: 100px; width: 100px;">
+   <div style="height: 20px; flex-grow:1; flex-basis:50px;"></div>
+   <div style="height: 10px; flex-grow:1;"></div>
+   <div style="height: 10px; flex-grow:1;"></div>
+ </div>
+ 
+
 
 */
 
