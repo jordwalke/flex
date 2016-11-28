@@ -285,7 +285,7 @@
 
  <div id="justify_content_column_flex_start" style="width: 102px; height: 102px; justify-content: flex-start;">
    <div style="height: 10px;"></div>
-   <div style="heigth: 10px;"></div>
+   <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
 
@@ -1640,7 +1640,7 @@ if (LayoutTestUtils.runMode === Bench) {
               let root_style = {...LayoutSupport.defaultStyle, width: 10200, height: 10200};
               let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-              let root_child1_style = LayoutSupport.defaultStyle;
+              let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
               let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
               let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
@@ -2977,7 +2977,7 @@ if (LayoutTestUtils.runMode === Bench) {
       let root_style = {...LayoutSupport.defaultStyle, width: 10200, height: 10200};
       let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-      let root_child1_style = LayoutSupport.defaultStyle;
+      let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
       let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
       let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
@@ -7115,7 +7115,7 @@ if (LayoutTestUtils.runMode === Bench) {
         let root_style = {...LayoutSupport.defaultStyle, width: 10200, height: 10200};
         let root_child0_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child0 = LayoutSupport.createNode withChildren::[||] andStyle::root_child0_style ();
-        let root_child1_style = LayoutSupport.defaultStyle;
+        let root_child1_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child1 = LayoutSupport.createNode withChildren::[||] andStyle::root_child1_style ();
         let root_child2_style = {...LayoutSupport.defaultStyle, height: 1000};
         let root_child2 = LayoutSupport.createNode withChildren::[||] andStyle::root_child2_style ();
@@ -7135,8 +7135,8 @@ if (LayoutTestUtils.runMode === Bench) {
           root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
           root_child1.layout.width != 10200 ||
-          root_child1.layout.height != 0 ||
-          root_child2.layout.top != 1000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
           root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
@@ -7145,8 +7145,8 @@ if (LayoutTestUtils.runMode === Bench) {
             ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
               ({...root_child0.layout, top: 0, left: 0, width: 10200, height: 1000}, root_child0.layout),
-              ({...root_child1.layout, top: 1000, left: 0, width: 10200, height: 0}, root_child1.layout),
-              ({...root_child2.layout, top: 1000, left: 0, width: 10200, height: 1000}, root_child2.layout)
+              ({...root_child1.layout, top: 1000, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         };
         Layout.layoutNode root cssUndefined cssUndefined Rtl;
@@ -7162,8 +7162,8 @@ if (LayoutTestUtils.runMode === Bench) {
           root_child1.layout.top != 1000 ||
           root_child1.layout.left != 0 ||
           root_child1.layout.width != 10200 ||
-          root_child1.layout.height != 0 ||
-          root_child2.layout.top != 1000 ||
+          root_child1.layout.height != 1000 ||
+          root_child2.layout.top != 2000 ||
           root_child2.layout.left != 0 ||
           root_child2.layout.width != 10200 || root_child2.layout.height != 1000
         ) {
@@ -7172,8 +7172,8 @@ if (LayoutTestUtils.runMode === Bench) {
             ({...root.layout, top: 0, left: 0, width: 10200, height: 10200}, root.layout)
             [
               ({...root_child0.layout, top: 0, left: 0, width: 10200, height: 1000}, root_child0.layout),
-              ({...root_child1.layout, top: 1000, left: 0, width: 10200, height: 0}, root_child1.layout),
-              ({...root_child2.layout, top: 1000, left: 0, width: 10200, height: 1000}, root_child2.layout)
+              ({...root_child1.layout, top: 1000, left: 0, width: 10200, height: 1000}, root_child1.layout),
+              ({...root_child2.layout, top: 2000, left: 0, width: 10200, height: 1000}, root_child2.layout)
             ]
         }
       }

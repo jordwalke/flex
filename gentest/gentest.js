@@ -1077,7 +1077,7 @@ function getComputedStyleInKebabForm(node) {
 
  <div id="justify_content_column_flex_start" style="width: 102px; height: 102px; justify-content: flex-start;">
    <div style="height: 10px;"></div>
-   <div style="heigth: 10px;"></div>
+   <div style="height: 10px;"></div>
    <div style="height: 10px;"></div>
  </div>
 
