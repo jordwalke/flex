@@ -724,7 +724,8 @@ function calculateTree(rootDOMNode) {
 }
 
 function getComputedStyleInKebabForm(node) {
-  return [
+  let ret = {};
+  [
     'direction',
     'flex-direction',
     'justify-content',
@@ -753,7 +754,6 @@ function getComputedStyleInKebabForm(node) {
     'height',
     'min-height',
     'max-height',
-
     /**
      * We don't need to *read*.
      */
@@ -766,7 +766,40 @@ function getComputedStyleInKebabForm(node) {
   ].reduce(function(map, key) {
     map[key] = getComputedStyle(node, null).getPropertyValue(key);
     return map;
-  }, {});
+  }, ret);
+
+  /**
+   * getComputedStyle is nuts:
+   * https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
+   * It doesn't always return what you'd expect. In this example, the middle div
+   * is said to have a computed (style) height of zero:
+   *
+   *   <div id="flex_shrink_to_zero" style="height: 75px;">
+   *     <div style="width: 50px; height: 50px; flex-shrink:0;"></div>
+   *     <div style="width: 50px; height: 50px; flex-shrink:1;"></div>
+   *     <div style="width: 50px; height: 50px; flex-shrink:0;"></div>
+   *   </div>
+   *
+   * So we special case width/height/padding and look directly on the element.
+   * Since we know that any of these properties specified on the element must
+   * be the highest precedence, we know it can be the final say.
+   */
+  [
+    'width',
+    'height',
+    'padding-top',
+    'padding-left',
+    'padding-right',
+    'padding-bottom'
+  ].reduce(function(map, key) {
+    let explicitlySetValue = node.style.getPropertyValue(key);
+    if (explicitlySetValue !== '') {
+      // The explicitly set value should take precedence.
+      map[key] = explicitlySetValue;
+    }
+    return map;
+  }, ret);
+  return ret;
 }
 
 
@@ -1132,7 +1165,7 @@ function getComputedStyleInKebabForm(node) {
    <div style="flex-basis: 100px; flex-shrink: 1;"></div>
    <div style="flex-basis: 50px;"></div>
  </div>
- 
+
  <div id="flex_basis_flex_grow_undefined_main" style="width: 100px;">
    <div style="flex-basis: 100px; flex-grow: 1;"></div>
    <div style="flex-basis: 50px;"></div>
@@ -1252,6 +1285,13 @@ function getComputedStyleInKebabForm(node) {
    >
    </div>
  </div>
+
+ <div id="flex_shrink_to_zero" style="height: 75px;">
+   <div style="width: 50px; height: 50px; flex-shrink:0;"></div>
+   <div style="width: 50px; height: 50px; flex-shrink:1;"></div>
+   <div style="width: 50px; height: 50px; flex-shrink:0;"></div>
+ </div>
+
 
 */
 
