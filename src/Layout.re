@@ -1094,18 +1094,16 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             let crossDimLead = {contents: zero};
             let currentLead = {contents: leadingPaddingAndBorderCross};
             let alignContent = node.style.alignContent;
-            if (alignContent === AlignFlexEnd) {
-              currentLead.contents = currentLead.contents +. remainingAlignContentDim
-            } else if (
-              alignContent === AlignCenter
-            ) {
+            switch alignContent {
+            | AlignFlexEnd => currentLead.contents = currentLead.contents +. remainingAlignContentDim
+            | AlignCenter =>
               currentLead.contents = currentLead.contents +. divideScalarByInt remainingAlignContentDim 2
-            } else if (
-              alignContent === AlignStretch
-            ) {
+            | AlignStretch =>
               if (availableInnerCrossDim > totalLineCrossDim.contents) {
                 crossDimLead.contents = divideScalarByInt remainingAlignContentDim lineCount.contents
               }
+            | AlignAuto => ()
+            | AlignFlexStart => ()
             };
             let endIndex = {contents: 0};
             for i in 0 to (lineCount.contents - 1) {
