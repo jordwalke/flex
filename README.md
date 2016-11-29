@@ -35,6 +35,9 @@ npm run testMeasure       # Run measurement tests.
 
 ## Building and running cstub tests 
 ```sh
+cd stub_test
+make gtest
+cd ../
 npm run stubtest
 ```
 
