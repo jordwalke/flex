@@ -89,6 +89,9 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     marginBottom: unitOfM,
     marginStart: unitOfM,
     marginEnd: unitOfM,
+    marginHorizontal: unitOfM,
+    marginVertical: unitOfM,
+    margin: unitOfM,
     width: unitOfM,
     height: unitOfM,
     minWidth: unitOfM,
@@ -107,6 +110,9 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      * End position.
      */
     endd: unitOfM,
+    horizontal: unitOfM,
+    vertical: unitOfM,
+    position: unitOfM,
     /**
      * You should skip all the rules that contain negative values for the
      * following attributes. For example:
@@ -123,12 +129,18 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     paddingBottom: unitOfM,
     paddingStart: unitOfM,
     paddingEnd: unitOfM,
+    paddingHorizontal: unitOfM,
+    paddingVertical: unitOfM,
+    padding: unitOfM,
     borderLeft: unitOfM,
     borderTop: unitOfM,
     borderRight: unitOfM,
     borderBottom: unitOfM,
     borderStart: unitOfM,
-    borderEnd: unitOfM
+    borderEnd: unitOfM,
+    borderHorizontal: unitOfM,
+    borderVertical: unitOfM,
+    border: unitOfM
   };
 
   /**

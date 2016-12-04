@@ -102,8 +102,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /**
      * Properties that start out as zero.
      */
+    /* TODO: Fix / check this. */
     flexGrow: zero,
     flexShrink: zero,
+    /* TODO: Fix / check this */
     flexBasis: cssUndefined,
     marginLeft: zero,
     marginTop: zero,
@@ -122,6 +124,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      */
     width: cssUndefined,
     height: cssUndefined,
+    /* TODO: Fix / check this. (https://github.com/facebook/css-layout) */
     minWidth: cssUndefined,
     minHeight: cssUndefined,
     maxWidth: cssUndefined,
@@ -137,7 +140,27 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     paddingStart: cssUndefined,
     paddingEnd: cssUndefined,
     borderStart: cssUndefined,
-    borderEnd: cssUndefined
+    borderEnd: cssUndefined,
+
+    /**
+     * All of these need to be reevaluated (to see if we really want them at
+     * zero or cssUndefined).
+     */
+    horizontal: cssUndefined,
+    vertical: cssUndefined,
+    position: cssUndefined,
+
+    padding: zero,
+    paddingHorizontal: zero,
+    paddingVertical: zero,
+
+    margin: cssUndefined,
+    marginVertical: cssUndefined,
+    marginHorizontal: cssUndefined,
+
+    borderHorizontal: cssUndefined,
+    borderVertical: cssUndefined,
+    border: cssUndefined
   };
   let rec theNullNode = {
     selfRef: Nativeint.zero,
