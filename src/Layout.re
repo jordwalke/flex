@@ -930,11 +930,11 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             remainingFreeSpace.contents = originalRemainingFreeSpace +. deltaFreeSpace.contents;
             /* If we are using "at most" rules in the main axis. Calculate the remaining space when
                constraint by the min size defined for the main axis. */
-            if (measureModeMainDim === AtMost && remainingFreeSpace.contents > 0) {
+            if (measureModeMainDim === AtMost && remainingFreeSpace.contents > zero) {
               let minDim = styleMinDimensionForAxis node mainAxis;
-              if (not (isUndefined minDim) && minDim >= 0) {
+              if (not (isUndefined minDim) && minDim >= zero) {
                 remainingFreeSpace.contents =
-                  fmaxf 0 (minDim - (availableInnerMainDim -. remainingFreeSpace.contents))
+                  fmaxf zero (minDim -. (availableInnerMainDim -. remainingFreeSpace.contents))
               } else {
                 remainingFreeSpace.contents = zero
               }
@@ -945,14 +945,14 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               | JustifyCenter => (divideScalarByInt remainingFreeSpace.contents 2, zero)
               | JustifyFlexEnd => (remainingFreeSpace.contents, zero)
               | JustifySpaceBetween => (
-                  0,
+                  zero,
                   itemsOnLine.contents > 1 ?
-                    divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1) : 0
+                    divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1) : zero
                 )
               | JustifySpaceAround =>
                 let betweenMainDim = divideScalarByInt remainingFreeSpace.contents itemsOnLine.contents;
                 (divideScalarByInt betweenMainDim 2, betweenMainDim)
-              | JustifyFlexStart => (0, 0)
+              | JustifyFlexStart => (zero, zero)
               };
             let mainDim = {contents: leadingPaddingAndBorderMain +. leadingMainDim};
             let crossDim = {contents: zero};
