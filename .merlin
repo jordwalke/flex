@@ -17,9 +17,10 @@ S src
 
 
 # B stands for build (artifacts). We generate ours into _build
-B ./_build/default/*
-B ./_build/byteTarget/*
-B ./_build/jsTarget/*
+B ./_build/layoutTestFixedEncodingNative/*
+B ./_build/layoutTestFixedEncodingByte/*
+B ./_build/layoutTestFixedEncodingJsoo/*
+B ./_build/measureTestFixedEncoding/*
 
 
 
@@ -33,7 +34,7 @@ B ./_build/jsTarget/*
 # understand our sources. You don't have to understand what these flags are for
 # now; but if you're curious, go check the rebel.ml that generated this
 # .merlin at https://github.com/reasonml/rebel
-FLG -w -30 -w -40 -open Default_Tar -open ByteTarget_Tar -open JsTarget_Tar
+FLG -w -30 -w -40 -open LayoutTestFixedEncodingNative_Tar -open LayoutTestFixedEncodingByte_Tar -open LayoutTestFixedEncodingJsoo_Tar -open MeasureTestFixedEncoding_Tar
 
 
 
