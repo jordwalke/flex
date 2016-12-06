@@ -447,9 +447,9 @@ Callback.register
     fun node ptr => {
       node.context.measureFuncPtr = ptr;
       if (node.context.measureFuncPtr != Nativeint.zero) {
-        node.measure = (fun node w wm h hm => cssMeasureFFI node.selfRef w wm h hm)
+        node.measure = Some (fun node w wm h hm => cssMeasureFFI node.selfRef w wm h hm)
       } else {
-        node.measure = dummyMeasure
+        node.measure = None
       }
     }
   );

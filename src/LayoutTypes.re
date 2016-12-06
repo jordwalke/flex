@@ -181,7 +181,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     layout: cssLayout,
     mutable lineIndex: int,
     mutable nextChild: node,
-    mutable measure: node => unitOfM => measureMode => unitOfM => measureMode => dimensions,
+    mutable measure: option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
     print: option (Node.context => unit),
     mutable children: array node,
     mutable childrenCount: int,

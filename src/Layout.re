@@ -140,7 +140,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /* may be required to resolve all of the flex dimensions.*/
     /* We handle nodes with measure functions specially here because they are the most
      * expensive to measure, so it's worth avoiding redundant measurements if at all possible.*/
-    if (node.measure !== dummyMeasure && node.childrenCount === 0) {
+    switch (node.measure, node.childrenCount) {
+    | (Some m, 0) =>
       let marginAxisRow = getMarginAxis node Row;
       let marginAxisColumn = getMarginAxis node Column;
       /* First, try to use the layout cache.*/
@@ -180,29 +181,32 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           }
         }
       }
-    } else if performLayout {
-      if (
-        layout.cachedLayout.availableWidth == availableWidth &&
-        layout.cachedLayout.availableHeight == availableHeight &&
-        layout.cachedLayout.widthMeasureMode == widthMeasureMode &&
-        layout.cachedLayout.heightMeasureMode == heightMeasureMode
-      ) {
-        cachedResults.contents = Some layout.cachedLayout
-      }
-    } else {
-      let foundCached = {contents: false};
-      for i in 0 to (layout.nextCachedMeasurementsIndex - 1) {
-        /* This is basically the "break" */
-        if (not foundCached.contents) {
-          let cachedMeasurementAtIndex = cachedMeasurementAt layout i;
-          if (
-            cachedMeasurementAtIndex.availableWidth == availableWidth &&
-            cachedMeasurementAtIndex.availableHeight == availableHeight &&
-            cachedMeasurementAtIndex.widthMeasureMode == widthMeasureMode &&
-            cachedMeasurementAtIndex.heightMeasureMode == heightMeasureMode
-          ) {
-            cachedResults.contents = Some cachedMeasurementAtIndex;
-            foundCached.contents = true
+    | (None, _)
+    | (Some _, _) =>
+      if performLayout {
+        if (
+          layout.cachedLayout.availableWidth == availableWidth &&
+          layout.cachedLayout.availableHeight == availableHeight &&
+          layout.cachedLayout.widthMeasureMode == widthMeasureMode &&
+          layout.cachedLayout.heightMeasureMode == heightMeasureMode
+        ) {
+          cachedResults.contents = Some layout.cachedLayout
+        }
+      } else {
+        let foundCached = {contents: false};
+        for i in 0 to (layout.nextCachedMeasurementsIndex - 1) {
+          /* This is basically the "break" */
+          if (not foundCached.contents) {
+            let cachedMeasurementAtIndex = cachedMeasurementAt layout i;
+            if (
+              cachedMeasurementAtIndex.availableWidth == availableWidth &&
+              cachedMeasurementAtIndex.availableHeight == availableHeight &&
+              cachedMeasurementAtIndex.widthMeasureMode == widthMeasureMode &&
+              cachedMeasurementAtIndex.heightMeasureMode == heightMeasureMode
+            ) {
+              cachedResults.contents = Some cachedMeasurementAtIndex;
+              foundCached.contents = true
+            }
           }
         }
       }
@@ -515,7 +519,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     node.layout.direction = direction;
     /* For content (text) nodes, determine the dimensions based on the text
        contents. */
-    if (node.measure !== dummyMeasure && node.childrenCount === 0) {
+    switch (node.measure, node.childrenCount) {
+    | (Some measure, 0) =>
       let innerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
       let innerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
       if (widthMeasureMode === Exactly && heightMeasureMode === Exactly) {
@@ -528,7 +533,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         node.layout.measuredWidth = boundAxis node Row zero;
         node.layout.measuredHeight = boundAxis node Column zero
       } else {
-        let measureDim = node.measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
+        let measureDim = measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
         node.layout.measuredWidth =
           boundAxis
             node
@@ -546,7 +551,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 measureDim.height +. paddingAndBorderAxisColumn : availableHeight -. marginAxisColumn
             )
       }
-    } else {
+    | (None, _)
+    | (Some _, _) =>
       let childCount = Array.length node.children;
       if (childCount === 0) {
         node.layout.measuredWidth =
@@ -947,7 +953,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               | JustifySpaceBetween => (
                   zero,
                   itemsOnLine.contents > 1 ?
-                    divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1) : zero
+                    divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1) :
+                    zero
                 )
               | JustifySpaceAround =>
                 let betweenMainDim = divideScalarByInt remainingFreeSpace.contents itemsOnLine.contents;

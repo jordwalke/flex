@@ -141,7 +141,6 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     paddingEnd: cssUndefined,
     borderStart: cssUndefined,
     borderEnd: cssUndefined,
-
     /**
      * All of these need to be reevaluated (to see if we really want them at
      * zero or cssUndefined).
@@ -149,15 +148,12 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     horizontal: cssUndefined,
     vertical: cssUndefined,
     position: cssUndefined,
-
     padding: zero,
     paddingHorizontal: zero,
     paddingVertical: zero,
-
     margin: cssUndefined,
     marginVertical: cssUndefined,
     marginHorizontal: cssUndefined,
-
     borderHorizontal: cssUndefined,
     borderVertical: cssUndefined,
     border: cssUndefined
@@ -207,7 +203,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      * binding and point nextChild to itself, and interpreting that as NULL.
      */
     nextChild: theNullNode,
-    measure: dummyMeasure,
+    measure: None,
     print: None,
     isDirty: dummyIsDirty,
     context: Node.nullContext
@@ -215,17 +211,19 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   /* Force allocating a new object */
   let createStyle () => {...defaultStyle, direction: Inherit};
   let createLayout () => {...theNullNode.layout, direction: Inherit};
-  let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=dummyMeasure context => {
-    ...theNullNode,
-    children,
-    childrenCount: Array.length children,
-    style,
-    measure: m,
-    /**
-     * We can keep the original style because it's immutable, but layout is not.
-     */
-    layout: {...theNullNode.layout, direction: Inherit},
-    context
+  let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=? context => {
+    {
+      ...theNullNode,
+      children,
+      childrenCount: Array.length children,
+      style,
+      measure: m,
+      /**
+       * We can keep the original style because it's immutable, but layout is not.
+       */
+      layout: {...theNullNode.layout, direction: Inherit},
+      context
+    }
   };
 
   /**
