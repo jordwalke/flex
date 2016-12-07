@@ -56,7 +56,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     } else {
       {LayoutTypes.width: zero, height: zero}
     };
-  let dummyIsDirty context => false;
   /*
      node->style.align_items = AlignStretch;
      node->style.align_content = AlignFlexStart;
@@ -205,7 +204,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     nextChild: theNullNode,
     measure: None,
     print: None,
-    isDirty: dummyIsDirty,
+    isDirty: false,
     context: Node.nullContext
   };
   /* Force allocating a new object */

@@ -125,7 +125,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let layout = node.layout;
     gDepth.contents = gDepth.contents + 1;
     let needToVisitNode =
-      node.isDirty node.context && layout.generationCount != gCurrentGenerationCount.contents ||
+      node.isDirty && layout.generationCount != gCurrentGenerationCount.contents ||
       layout.lastParentDirection != parentDirection;
     if needToVisitNode {
       /* Invalidate the cached results.*/

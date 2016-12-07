@@ -186,7 +186,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     print: option (Node.context => unit),
     mutable children: array node,
     mutable childrenCount: int,
-    isDirty: Node.context => bool,
+    mutable isDirty: bool,
     context: Node.context
   };
 };

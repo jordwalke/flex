@@ -27,7 +27,7 @@ let cssNodeNew ptr => {
   children: [||],
   layout: createLayout (),
   style: createStyle (),
-  isDirty: fun c => true,
+  isDirty: true,
   /* Since context is mutated, every node must have its own new copy */
   context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
 };
