@@ -321,7 +321,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let thisChildFlexBasis = LayoutSupport.cssGetFlexBasis child;
     if (not (isUndefined thisChildFlexBasis) && not (isUndefined (isMainAxisRow ? width : height))) {
       if (isUndefined child.layout.computedFlexBasis) {
-        child.layout.computedFlexBasis = fmaxf thisChildFlexBasis (getPaddingAndBorderAxis child mainAxis)
+        /* TODO: Add experimental flag */
+        child.layout.computedFlexBasis =
+          fmaxf thisChildFlexBasis (getPaddingAndBorderAxis child mainAxis)
       }
     } else if (
       isMainAxisRow && isRowStyleDimDefined
@@ -434,12 +436,12 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    * @width The available inner width.
    */
   and absoluteLayoutChild node child width widthMode direction => {
+    let mainAxis = resolveAxis node.style.flexDirection direction;
+    let crossAxis = getCrossFlexDirection mainAxis direction;
     let childWidth = {contents: cssUndefined};
     let childHeight = {contents: cssUndefined};
     let childWidthMeasureMode = {contents: Undefined};
     let childHeightMeasureMode = {contents: Undefined};
-    let mainAxis = resolveAxis node.style.flexDirection direction;
-    let crossAxis = getCrossFlexDirection mainAxis direction;
     let isMainAxisRow = isRowDirection mainAxis;
     if (isStyleDimDefined child Row) {
       childWidth.contents = child.style.width +. getMarginAxis child Row
@@ -464,6 +466,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         );
       childHeight.contents = boundAxis child Column childHeight.contents
     };
+
+    /**
+     * TODO: Insert some aspect ratio logic here.
+     */
     if (isUndefined childWidth.contents || isUndefined childHeight.contents) {
       childWidthMeasureMode.contents = isUndefined childWidth.contents ? Undefined : Exactly;
       childHeightMeasureMode.contents = isUndefined childHeight.contents ? Undefined : Exactly;
@@ -473,7 +479,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
        * horizontal), the child should be sized using "UNDEFINED" in
        * the main size. Otherwise use "AT_MOST" in the cross axis.
        */
-      if ((not isMainAxisRow && isUndefined childWidth.contents) && not (isUndefined width)) {
+      if (not isMainAxisRow && isUndefined childWidth.contents && widthMode !== Undefined) {
         childWidth.contents = width;
         childWidthMeasureMode.contents = AtMost
       };
@@ -503,6 +509,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         mainAxis
         (
           layoutMeasuredDimensionForAxis node mainAxis -. layoutMeasuredDimensionForAxis child mainAxis -.
+          getTrailingBorder node mainAxis -.
           getTrailingPosition child mainAxis
         )
     };
@@ -512,6 +519,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         crossAxis
         (
           layoutMeasuredDimensionForAxis node crossAxis -. layoutMeasuredDimensionForAxis child crossAxis -.
+          getTrailingBorder node crossAxis -.
           getTrailingPosition child crossAxis
         )
     }
