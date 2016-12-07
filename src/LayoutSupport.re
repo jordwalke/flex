@@ -42,6 +42,193 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let positive_flex_is_auto = false;
   let gCurrentGenerationCount = 0;
   let failOnDummyMeasure = true;
+  /* static const YGEdge leading[4] = { */
+  /*         [YGFlexDirectionColumn] = YGEdgeTop, */
+  /*         [YGFlexDirectionColumnReverse] = YGEdgeBottom, */
+  /*         [YGFlexDirectionRow] = YGEdgeLeft, */
+  /*         [YGFlexDirectionRowReverse] = YGEdgeRight, */
+  /* }; */
+  let fminf a b => isUndefined b || a < b ? a : b;
+  let fmaxf a b => isUndefined b || a > b ? a : b;
+  let leadingEdgeForAxis axis =>
+    switch axis {
+      | Column => Top
+        | ColumnReverse => Bottom
+        | Row => Left
+        | RowReverse => Right
+    };
+  /* static const YGEdge trailing[4] = { */
+  /*         [YGFlexDirectionColumn] = YGEdgeBottom, */
+  /*         [YGFlexDirectionColumnReverse] = YGEdgeTop, */
+  /*         [YGFlexDirectionRow] = YGEdgeRight, */
+  /*         [YGFlexDirectionRowReverse] = YGEdgeLeft, */
+  /* }; */
+  let trailingEdgeForAxis axis =>
+    switch axis {
+      | Column => Bottom
+        | ColumnReverse => Top
+        | Row => Right
+        | RowReverse => Left
+    };
+  /* static const YGEdge pos[4] = { */
+  /*         [YGFlexDirectionColumn] = YGEdgeTop, */
+  /*         [YGFlexDirectionColumnReverse] = YGEdgeBottom, */
+  /*         [YGFlexDirectionRow] = YGEdgeLeft, */
+  /*         [YGFlexDirectionRowReverse] = YGEdgeRight, */
+  /* }; */
+  /* static const YGDimension dim[4] = { */
+  /*         [YGFlexDirectionColumn] = YGDimensionHeight, */
+  /*         [YGFlexDirectionColumnReverse] = YGDimensionHeight, */
+  /*         [YGFlexDirectionRow] = YGDimensionWidth, */
+  /*         [YGFlexDirectionRowReverse] = YGDimensionWidth, */
+  /* }; */
+  let positionForEdge style edge =>
+    switch edge {
+      | Start => style.start
+        | End => style.endd
+        | Left => style.left
+        | Right => style.right
+        | Vertical => style.vertical
+        | Horizontal => style.horizontal
+        | Top => style.top
+        | Bottom => style.bottom
+        | All => style.position
+    };
+  let marginForEdge style edge =>
+    switch edge {
+      | Start => style.marginStart
+        | End => style.marginEnd
+        | Left => style.marginLeft
+        | Right => style.marginRight
+        | Vertical => style.marginVertical
+        | Horizontal => style.marginHorizontal
+        | Top => style.marginTop
+        | Bottom => style.marginBottom
+        | All => style.margin
+    };
+  let borderForEdge style edge =>
+    switch edge {
+      | Start => style.borderStart
+        | End => style.borderEnd
+        | Left => style.borderLeft
+        | Right => style.borderRight
+        | Vertical => style.borderVertical
+        | Horizontal => style.borderHorizontal
+        | Top => style.borderTop
+        | Bottom => style.borderBottom
+        | All => style.border
+    };
+  let paddingForEdge style edge =>
+    switch edge {
+      | Start => style.paddingStart
+        | End => style.paddingEnd
+        | Left => style.paddingLeft
+        | Right => style.paddingRight
+        | Vertical => style.paddingVertical
+        | Horizontal => style.paddingHorizontal
+        | Top => style.paddingTop
+        | Bottom => style.paddingBottom
+        | All => style.padding
+    };
+  let computedEdgeValuePosition style edge defaultValue =>
+    /* Consider passing the default (positionForEdge edge) */
+    if (not (isUndefined (positionForEdge style edge))) {
+      positionForEdge style edge
+    } else if (
+        (edge === Top || edge === Bottom) && not (isUndefined style.vertical)
+        ) {
+      style.vertical
+    } else if (
+        (edge === Left || edge === Right || edge === Start || edge === End) &&
+        not (isUndefined style.horizontal)
+        ) {
+      style.horizontal
+    } else if (
+        not (isUndefined style.position)
+        ) {
+      style.position
+    } else if (
+        edge === Start || edge === End
+        ) {
+      cssUndefined
+    } else {
+      defaultValue
+    };
+  let computedEdgeValueMargin style edge defaultValue => {
+    /* Consider passing the default (marginForEdge edge) */
+    let forEdge = marginForEdge style edge;
+    if (not (isUndefined forEdge)) {
+      forEdge
+    } else if (
+        (edge === Top || edge === Bottom) && not (isUndefined style.marginVertical)
+        ) {
+      style.marginVertical
+    } else if (
+        (edge === Left || edge === Right || edge === Start || edge === End) &&
+        not (isUndefined style.marginHorizontal)
+        ) {
+      style.marginHorizontal
+    } else {
+      let margin = style.margin;
+      if (not (isUndefined margin)) {
+        style.margin
+      } else if (edge === Start || edge === End) {
+        cssUndefined
+      } else {
+        defaultValue
+      }
+    }
+  };
+  let computedEdgeValueBorder style edge defaultValue => {
+    /* Consider passing the default (borderForEdge edge) */
+    let forEdge = borderForEdge style edge;
+    if (not (isUndefined forEdge)) {
+      forEdge
+    } else if (
+        (edge === Top || edge === Bottom) && not (isUndefined style.borderVertical)
+        ) {
+      style.borderVertical
+    } else if (
+        (edge === Left || edge === Right || edge === Start || edge === End) &&
+        not (isUndefined style.borderHorizontal)
+        ) {
+      style.borderHorizontal
+    } else {
+      let border = style.border;
+      if (not (isUndefined border)) {
+        style.border
+      } else if (edge === Start || edge === End) {
+        cssUndefined
+      } else {
+        defaultValue
+      }
+    }
+  };
+  let computedEdgeValuePadding style edge defaultValue => {
+    /* Consider passing the default (borderForEdge edge) */
+    let forEdge = paddingForEdge style edge;
+    if (not (isUndefined forEdge)) {
+      forEdge
+    } else if (
+        (edge === Top || edge === Bottom) && not (isUndefined style.paddingVertical)
+        ) {
+      style.paddingVertical
+    } else if (
+        (edge === Left || edge === Right || edge === Start || edge === End) &&
+        not (isUndefined style.paddingHorizontal)
+        ) {
+      style.paddingHorizontal
+    } else {
+      let padding = style.padding;
+      if (not (isUndefined padding)) {
+        style.padding
+      } else if (edge === Start || edge === End) {
+        cssUndefined
+      } else {
+        defaultValue
+      }
+    }
+  };
 
   /**
    * In the integer encoding of all
@@ -49,10 +236,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let dummyMeasure context width widthMeasureMode height heightMeasureMode =>
     if failOnDummyMeasure {
       raise (
-        Invalid_argument (
-          "A node does not have its measure function " ^ " implemented, yet requires measurement"
-        )
-      )
+          Invalid_argument (
+            "A node does not have its measure function " ^ " implemented, yet requires measurement"
+            )
+          )
     } else {
       {LayoutTypes.width: zero, height: zero}
     };
@@ -69,158 +256,155 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      node->layout.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
      node->layout.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
 
-     // Such that the comparison is always going to be false
-     node->layout.last_parent_direction = (css_direction_t)-1;
-     node->layout.should_update = true;
-     node->layout.next_cached_measurements_index = 0;
+  // Such that the comparison is always going to be false
+  node->layout.last_parent_direction = (css_direction_t)-1;
+  node->layout.should_update = true;
+  node->layout.next_cached_measurements_index = 0;
 
-     node->layout.measured_dimensions[CSS_WIDTH] = CSS_UNDEFINED;
-     node->layout.measured_dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
-     node->layout.cached_layout.width_measure_mode = (css_measure_mode_t)-1;
-     node->layout.cached_layout.height_measure_mode = (css_measure_mode_t)-1;
+  node->layout.measured_dimensions[CSS_WIDTH] = CSS_UNDEFINED;
+  node->layout.measured_dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
+  node->layout.cached_layout.width_measure_mode = (css_measure_mode_t)-1;
+  node->layout.cached_layout.height_measure_mode = (css_measure_mode_t)-1;
 
    */
   let dummyCachedMeasurement = {
-    availableWidth: zero,
-    availableHeight: zero,
-    widthMeasureMode: CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
-    heightMeasureMode: CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
-    computedWidth: zero,
-    computedHeight: zero
+availableWidth: zero,
+                availableHeight: zero,
+                widthMeasureMode: CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
+                heightMeasureMode: CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
+                /* TODO: Fix / check this (should be negative one perhaps?) */
+                computedWidth: zero,
+                computedHeight: zero
   };
   let defaultStyle = {
-    direction: Inherit,
-    flexDirection: Column,
-    justifyContent: JustifyFlexStart,
-    alignContent: AlignFlexStart,
-    alignItems: AlignStretch,
-    alignSelf: AlignAuto,
-    positionType: Relative,
-    flexWrap: CssNoWrap,
-    overflow: Visible,
-    /**
-     * Properties that start out as zero.
-     */
-    /* TODO: Fix / check this. */
-    flexGrow: zero,
-    flexShrink: zero,
-    /* TODO: Fix / check this */
-    flexBasis: cssUndefined,
-    marginLeft: zero,
-    marginTop: zero,
-    marginRight: zero,
-    marginBottom: zero,
-    paddingLeft: zero,
-    paddingTop: zero,
-    paddingRight: zero,
-    paddingBottom: zero,
-    borderLeft: zero,
-    borderTop: zero,
-    borderRight: zero,
-    borderBottom: zero,
-    /**
-     * Properties that start out as undefined.
-     */
-    width: cssUndefined,
-    height: cssUndefined,
-    /* TODO: Fix / check this. (https://github.com/facebook/css-layout) */
-    minWidth: cssUndefined,
-    minHeight: cssUndefined,
-    maxWidth: cssUndefined,
-    maxHeight: cssUndefined,
-    left: cssUndefined,
-    top: cssUndefined,
-    right: cssUndefined,
-    bottom: cssUndefined,
-    start: cssUndefined,
-    endd: cssUndefined,
-    marginStart: cssUndefined,
-    marginEnd: cssUndefined,
-    paddingStart: cssUndefined,
-    paddingEnd: cssUndefined,
-    borderStart: cssUndefined,
-    borderEnd: cssUndefined,
-    /**
-     * All of these need to be reevaluated (to see if we really want them at
-     * zero or cssUndefined).
-     */
-    horizontal: cssUndefined,
-    vertical: cssUndefined,
-    position: cssUndefined,
-    padding: zero,
-    paddingHorizontal: zero,
-    paddingVertical: zero,
-    margin: cssUndefined,
-    marginVertical: cssUndefined,
-    marginHorizontal: cssUndefined,
-    borderHorizontal: cssUndefined,
-    borderVertical: cssUndefined,
-    border: cssUndefined
+direction: Inherit,
+           flexDirection: Column,
+           justifyContent: JustifyFlexStart,
+           alignContent: AlignFlexStart,
+           alignItems: AlignStretch,
+           alignSelf: AlignAuto,
+           positionType: Relative,
+           flexWrap: CssNoWrap,
+           overflow: Visible,
+           /* TODO: What is this flex property and why am I paying for it! */
+           flex: cssUndefined,
+           /* TODO: Fix / check this. */
+           flexGrow: cssUndefined,
+           flexShrink: cssUndefined,
+           /* TODO: Fix / check this */
+           flexBasis: cssUndefined,
+           marginLeft: cssUndefined,
+           marginTop: cssUndefined,
+           marginRight: cssUndefined,
+           marginBottom: cssUndefined,
+           paddingLeft: cssUndefined,
+           paddingTop: cssUndefined,
+           paddingRight: cssUndefined,
+           paddingBottom: cssUndefined,
+           borderLeft: cssUndefined,
+           borderTop: cssUndefined,
+           borderRight: cssUndefined,
+           borderBottom: cssUndefined,
+           width: cssUndefined,
+           height: cssUndefined,
+           /* TODO: Fix / check this. (https://github.com/facebook/css-layout) */
+           minWidth: cssUndefined,
+           minHeight: cssUndefined,
+           maxWidth: cssUndefined,
+           maxHeight: cssUndefined,
+           left: cssUndefined,
+           top: cssUndefined,
+           right: cssUndefined,
+           bottom: cssUndefined,
+           start: cssUndefined,
+           endd: cssUndefined,
+           marginStart: cssUndefined,
+           marginEnd: cssUndefined,
+           paddingStart: cssUndefined,
+           paddingEnd: cssUndefined,
+           borderStart: cssUndefined,
+           borderEnd: cssUndefined,
+           /**
+            * All of these need to be reevaluated (to see if we really want them at
+            * zero or cssUndefined).
+            */
+           horizontal: cssUndefined,
+           vertical: cssUndefined,
+           position: cssUndefined,
+           padding: cssUndefined,
+           paddingHorizontal: cssUndefined,
+           paddingVertical: cssUndefined,
+           margin: cssUndefined,
+           marginVertical: cssUndefined,
+           marginHorizontal: cssUndefined,
+           borderHorizontal: cssUndefined,
+           borderVertical: cssUndefined,
+           border: cssUndefined
   };
   let rec theNullNode = {
-    selfRef: Nativeint.zero,
-    children: [||],
-    childrenCount: 0,
-    style: defaultStyle,
-    layout: {
-      direction: Inherit,
-      /* Instead of recomputing the entire layout every single time, we
-       * cache some information to break early when nothing changed */
-      hasNewLayout: true,
-      generationCount: 0,
-      lastParentDirection: CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
-      nextCachedMeasurementsIndex: 0,
-      /**
-       * Hardcoded to 6 previous measurements.
-       */
-      cachedMeasurement1: dummyCachedMeasurement,
-      cachedMeasurement2: dummyCachedMeasurement,
-      cachedMeasurement3: dummyCachedMeasurement,
-      cachedMeasurement4: dummyCachedMeasurement,
-      cachedMeasurement5: dummyCachedMeasurement,
-      cachedMeasurement6: dummyCachedMeasurement,
-      cachedLayout: dummyCachedMeasurement,
-      /**
-       * Start out as zero.
-       */
-      computedFlexBasis: cssUndefined,
-      left: zero,
-      top: zero,
-      right: zero,
-      bottom: zero,
-      /**
-       * Start out as undefined.
-       */
-      width: cssUndefined,
-      height: cssUndefined,
-      measuredWidth: cssUndefined,
-      measuredHeight: cssUndefined
-    },
-    lineIndex: 0,
-    /**
-     * As a clever trick, to encode "NULL" node, we can create a recursive
-     * binding and point nextChild to itself, and interpreting that as NULL.
-     */
-    nextChild: theNullNode,
-    measure: None,
-    print: None,
-    isDirty: false,
-    context: Node.nullContext
+selfRef: Nativeint.zero,
+         children: [||],
+         childrenCount: 0,
+         style: defaultStyle,
+         layout: {
+direction: Inherit,
+           /* Instead of recomputing the entire layout every single time, we
+            * cache some information to break early when nothing changed */
+           hasNewLayout: true,
+           generationCount: 0,
+           lastParentDirection: CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
+           nextCachedMeasurementsIndex: 0,
+           /**
+            * Hardcoded to 6 previous measurements.
+            */
+           cachedMeasurement1: dummyCachedMeasurement,
+           cachedMeasurement2: dummyCachedMeasurement,
+           cachedMeasurement3: dummyCachedMeasurement,
+           cachedMeasurement4: dummyCachedMeasurement,
+           cachedMeasurement5: dummyCachedMeasurement,
+           cachedMeasurement6: dummyCachedMeasurement,
+           cachedLayout: dummyCachedMeasurement,
+           /**
+            * Start out as zero.
+            */
+           computedFlexBasis: cssUndefined,
+           left: zero,
+           top: zero,
+           right: zero,
+           bottom: zero,
+           /**
+            * Start out as undefined.
+            */
+           width: cssUndefined,
+           height: cssUndefined,
+           measuredWidth: cssUndefined,
+           measuredHeight: cssUndefined
+         },
+lineIndex: 0,
+           /**
+            * As a clever trick, to encode "NULL" node, we can create a recursive
+            * binding and point nextChild to itself, and interpreting that as NULL.
+            */
+           nextChild: theNullNode,
+           measure: None,
+           print: None,
+           isDirty: false,
+           context: Node.nullContext
   };
   /* Force allocating a new object */
   let createStyle () => {...defaultStyle, direction: Inherit};
   let createLayout () => {...theNullNode.layout, direction: Inherit};
   let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=? context => {
     ...theNullNode,
-    children,
-    childrenCount: Array.length children,
-    style,
-    measure: m,
-    /**
-     * We can keep the original style because it's immutable, but layout is not.
-     */
-    layout: {...theNullNode.layout, direction: Inherit},
-    context
+      children,
+      childrenCount: Array.length children,
+      style,
+      measure: m,
+      /**
+       * We can keep the original style because it's immutable, but layout is not.
+       */
+      layout: {...theNullNode.layout, direction: Inherit},
+      context
   };
 
   /**
@@ -228,10 +412,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let layoutMeasuredDimensionForAxis node axis =>
     switch axis {
-    | Column => node.layout.measuredHeight
-    | ColumnReverse => node.layout.measuredHeight
-    | Row => node.layout.measuredWidth
-    | RowReverse => node.layout.measuredWidth
+      | Column => node.layout.measuredHeight
+        | ColumnReverse => node.layout.measuredHeight
+        | Row => node.layout.measuredWidth
+        | RowReverse => node.layout.measuredWidth
     };
 
   /**
@@ -239,10 +423,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let layoutPosPositionForAxis node axis =>
     switch axis {
-    | Column => node.layout.top
-    | ColumnReverse => node.layout.bottom
-    | Row => node.layout.left
-    | RowReverse => node.layout.right
+      | Column => node.layout.top
+        | ColumnReverse => node.layout.bottom
+        | Row => node.layout.left
+        | RowReverse => node.layout.right
     };
 
   /**
@@ -255,10 +439,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let layoutTrailingPositionForAxis node axis =>
     switch axis {
-    | Column => node.layout.bottom
-    | ColumnReverse => node.layout.top
-    | Row => node.layout.right
-    | RowReverse => node.layout.left
+      | Column => node.layout.bottom
+        | ColumnReverse => node.layout.top
+        | Row => node.layout.right
+        | RowReverse => node.layout.left
     };
 
   /**
@@ -266,10 +450,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleDimensionForAxis node axis =>
     switch axis {
-    | Column => node.style.height
-    | ColumnReverse => node.style.height
-    | Row => node.style.width
-    | RowReverse => node.style.width
+      | Column => node.style.height
+        | ColumnReverse => node.style.height
+        | Row => node.style.width
+        | RowReverse => node.style.width
     };
 
   /**
@@ -277,10 +461,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleMinDimensionForAxis node axis =>
     switch axis {
-    | Column => node.style.minHeight
-    | ColumnReverse => node.style.minHeight
-    | Row => node.style.minWidth
-    | RowReverse => node.style.minWidth
+      | Column => node.style.minHeight
+        | ColumnReverse => node.style.minHeight
+        | Row => node.style.minWidth
+        | RowReverse => node.style.minWidth
     };
 
   /**
@@ -288,10 +472,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleLeadingPositionForAxis node axis =>
     switch axis {
-    | Column => node.style.top
-    | ColumnReverse => node.style.bottom
-    | Row => node.style.left
-    | RowReverse => node.style.right
+      | Column => node.style.top
+        | ColumnReverse => node.style.bottom
+        | Row => node.style.left
+        | RowReverse => node.style.right
     };
   let styleLeadingPositionForAxisOrZero node axis => {
     let leadingPos = styleLeadingPositionForAxis node axis;
@@ -299,24 +483,24 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let styleLeadingPaddingForAxis node axis =>
     switch axis {
-    | Column => node.style.paddingTop
-    | ColumnReverse => node.style.paddingBottom
-    | Row => node.style.paddingLeft
-    | RowReverse => node.style.paddingRight
+      | Column => node.style.paddingTop
+        | ColumnReverse => node.style.paddingBottom
+        | Row => node.style.paddingLeft
+        | RowReverse => node.style.paddingRight
     };
   let styleLeadingMarginForAxis node leadingAxis =>
     switch leadingAxis {
-    | Column => node.style.marginTop
-    | ColumnReverse => node.style.marginBottom
-    | Row => node.style.marginLeft
-    | RowReverse => node.style.marginRight
+      | Column => node.style.marginTop
+        | ColumnReverse => node.style.marginBottom
+        | Row => node.style.marginLeft
+        | RowReverse => node.style.marginRight
     };
   let styleLeadingBorderForAxis node leadingAxis =>
     switch leadingAxis {
-    | Column => node.style.borderTop
-    | ColumnReverse => node.style.borderBottom
-    | Row => node.style.borderLeft
-    | RowReverse => node.style.borderRight
+      | Column => node.style.borderTop
+        | ColumnReverse => node.style.borderBottom
+        | Row => node.style.borderLeft
+        | RowReverse => node.style.borderRight
     };
 
   /**
@@ -324,10 +508,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let styleTrailingPositionForAxis node axis =>
     switch axis {
-    | Column => node.style.bottom
-    | ColumnReverse => node.style.top
-    | Row => node.style.right
-    | RowReverse => node.style.left
+      | Column => node.style.bottom
+        | ColumnReverse => node.style.top
+        | Row => node.style.right
+        | RowReverse => node.style.left
     };
   let styleTrailingPositionForAxisOrZero node axis => {
     let leadingPos = styleTrailingPositionForAxis node axis;
@@ -335,24 +519,24 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let styleTrailingPaddingForAxis node axis =>
     switch axis {
-    | Column => node.style.paddingBottom
-    | ColumnReverse => node.style.paddingTop
-    | Row => node.style.paddingRight
-    | RowReverse => node.style.paddingLeft
+      | Column => node.style.paddingBottom
+        | ColumnReverse => node.style.paddingTop
+        | Row => node.style.paddingRight
+        | RowReverse => node.style.paddingLeft
     };
   let styleTrailingMarginForAxis node trailingAxis =>
     switch trailingAxis {
-    | Column => node.style.marginBottom
-    | ColumnReverse => node.style.marginTop
-    | Row => node.style.marginRight
-    | RowReverse => node.style.marginLeft
+      | Column => node.style.marginBottom
+        | ColumnReverse => node.style.marginTop
+        | Row => node.style.marginRight
+        | RowReverse => node.style.marginLeft
     };
   let styleTrailingBorderForAxis node trailingAxis =>
     switch trailingAxis {
-    | Column => node.style.borderBottom
-    | ColumnReverse => node.style.borderTop
-    | Row => node.style.borderRight
-    | RowReverse => node.style.borderLeft
+      | Column => node.style.borderBottom
+        | ColumnReverse => node.style.borderTop
+        | Row => node.style.borderRight
+        | RowReverse => node.style.borderLeft
     };
 
   /**
@@ -360,17 +544,17 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let setDimLayoutDimensionForAxis node axis value =>
     switch axis {
-    | Column => node.layout.height = value
-    | ColumnReverse => node.layout.height = value
-    | Row => node.layout.width = value
-    | RowReverse => node.layout.width = value
+      | Column => node.layout.height = value
+        | ColumnReverse => node.layout.height = value
+        | Row => node.layout.width = value
+        | RowReverse => node.layout.width = value
     };
   let setLayoutMeasuredDimensionForAxis node axis value =>
     switch axis {
-    | Column => node.layout.measuredHeight = value
-    | ColumnReverse => node.layout.measuredHeight = value
-    | Row => node.layout.measuredWidth = value
-    | RowReverse => node.layout.measuredWidth = value
+      | Column => node.layout.measuredHeight = value
+        | ColumnReverse => node.layout.measuredHeight = value
+        | Row => node.layout.measuredWidth = value
+        | RowReverse => node.layout.measuredWidth = value
     };
 
   /**
@@ -378,10 +562,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let setLayoutLeadingPositionForAxis node axis value =>
     switch axis {
-    | Column => node.layout.top = value
-    | ColumnReverse => node.layout.bottom = value
-    | Row => node.layout.left = value
-    | RowReverse => node.layout.right = value
+      | Column => node.layout.top = value
+        | ColumnReverse => node.layout.bottom = value
+        | Row => node.layout.left = value
+        | RowReverse => node.layout.right = value
     };
 
   /**
@@ -389,15 +573,15 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    */
   let setLayoutTrailingPositionForAxis node axis value =>
     switch axis {
-    | Column => node.layout.bottom = value
-    | ColumnReverse => node.layout.top = value
-    | Row => node.layout.right = value
-    | RowReverse => node.layout.left = value
+      | Column => node.layout.bottom = value
+        | ColumnReverse => node.layout.top = value
+        | Row => node.layout.right = value
+        | RowReverse => node.layout.left = value
     };
   let resolveDirection node parentDirection => {
     let direction = node.style.direction;
     if (direction === Inherit) {
-      parentDirection === Inherit ? Ltr : parentDirection
+      parentDirection !== Inherit ? parentDirection : Ltr
     } else {
       direction
     }
@@ -421,62 +605,54 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     isColumnDirection flex_direction ? resolveAxis Row direction : Column;
   let isFlex node =>
     node.style.positionType === Relative && (
-      node.style.flexGrow != zero || node.style.flexShrink != zero
+        node.style.flexGrow != zero || node.style.flexShrink != zero || node.style.flex != zero
     );
   let getLeadingMargin node axis =>
     if (isRowDirection axis && not (isUndefined node.style.marginStart)) {
       node.style.marginStart
     } else {
-      styleLeadingMarginForAxis node axis
+      computedEdgeValueMargin node.style (leadingEdgeForAxis axis) zero
     };
   let getTrailingMargin node axis =>
     if (isRowDirection axis && not (isUndefined node.style.marginEnd)) {
       node.style.marginEnd
     } else {
-      styleTrailingMarginForAxis node axis
+      computedEdgeValueMargin node.style (trailingEdgeForAxis axis) zero
     };
   let getLeadingPadding node axis =>
     if (
-      isRowDirection axis &&
-      not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero
-    ) {
+        isRowDirection axis &&
+        not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero
+       ) {
       node.style.paddingStart
     } else {
-      let leadingPadding = styleLeadingPaddingForAxis node axis;
-      if (leadingPadding >= zero) {
-        leadingPadding
-      } else {
-        zero
-      }
+      fmaxf (computedEdgeValuePadding node.style (leadingEdgeForAxis axis) zero) zero
     };
   let getTrailingPadding node axis =>
     if (
-      isRowDirection axis &&
-      not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero
-    ) {
+        isRowDirection axis &&
+        not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero
+       ) {
       node.style.paddingEnd
     } else {
-      let trailingPadding = styleTrailingPaddingForAxis node axis;
-      trailingPadding >= zero ? trailingPadding : zero
+      fmaxf (computedEdgeValuePadding node.style (trailingEdgeForAxis axis) zero) zero
     };
   let getLeadingBorder node axis =>
     if (
-      isRowDirection axis &&
-      not (isUndefined node.style.borderStart) && node.style.borderStart >= zero
-    ) {
+        isRowDirection axis &&
+        not (isUndefined node.style.borderStart) && node.style.borderStart >= zero
+       ) {
       node.style.borderStart
     } else {
-      let leadingBorder = styleLeadingBorderForAxis node axis;
-      leadingBorder >= zero ? leadingBorder : zero
+      fmaxf (computedEdgeValueBorder node.style (leadingEdgeForAxis axis) zero) zero
     };
   let getTrailingBorder node axis =>
     if (
-      isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero
-    ) {
+        isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero
+       ) {
       node.style.borderEnd
     } else {
-      let trailingBorder = styleTrailingBorderForAxis node axis;
-      trailingBorder >= zero ? trailingBorder : zero
+      fmaxf (computedEdgeValueBorder node.style (trailingEdgeForAxis axis) zero) zero
     };
   let getLeadingPaddingAndBorder node axis =>
     getLeadingPadding node axis +. getLeadingBorder node axis;
@@ -486,7 +662,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let getPaddingAndBorderAxis node axis =>
     getLeadingPaddingAndBorder node axis +. getTrailingPaddingAndBorder node axis;
   let getAlignItem node child =>
-    child.style.alignSelf !== AlignAuto ? child.style.alignSelf : node.style.alignItems;
+    child.style.alignSelf === AlignAuto ? node.style.alignItems : child.style.alignSelf;
   let getDimWithMargin node axis =>
     layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +.
     getTrailingMargin node axis;
@@ -498,40 +674,53 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let value = layoutMeasuredDimensionForAxis node axis;
     not (isUndefined value) && value >= zero
   };
-  let isLeadingPosDefinedWithFallback node axis =>
-    isRowDirection axis && not (isUndefined node.style.start) ||
-    not (isUndefined (styleLeadingPositionForAxis node axis));
-  let isTrailingPosDefinedWithFallback node axis =>
-    isRowDirection axis && not (isUndefined node.style.endd) ||
-    not (isUndefined (styleTrailingPositionForAxis node axis));
+  let isLeadingPosDefined node axis =>
+    isRowDirection axis && not (isUndefined (computedEdgeValuePosition node.style Start cssUndefined)) ||
+    not (isUndefined (computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined));
+  let isTrailingPosDefined node axis =>
+    isRowDirection axis && not (isUndefined (computedEdgeValuePosition node.style End cssUndefined)) ||
+    not (isUndefined (computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined));
 
   /**
    * The C implementation calls this `getLeadingPosition`.
    */
-  let getLeadingPositionWithFallback node axis =>
-    if (isRowDirection axis && not (isUndefined node.style.start)) {
-      node.style.start
+  let getLeadingPosition node axis =>
+    if (isRowDirection axis) {
+      let leadingPosition = computedEdgeValuePosition node.style Start cssUndefined;
+      if (not (isUndefined leadingPosition)) {
+        leadingPosition
+      } else {
+        let leadingPosition = computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
+        isUndefined leadingPosition ? 0 : leadingPosition
+      }
     } else {
-      styleLeadingPositionForAxisOrZero node axis
+      let leadingPosition = computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
+      isUndefined leadingPosition ? zero : leadingPosition
     };
 
   /**
    * The C implementation calls this `getTrailingPosition`.
    */
-  let getTrailingPositionWithFallback node axis =>
-    if (isRowDirection axis && not (isUndefined node.style.endd)) {
-      node.style.endd
+  let getTrailingPosition node axis =>
+    if (isRowDirection axis) {
+      let trailingPosition = computedEdgeValuePosition node.style End cssUndefined;
+      if (not (isUndefined trailingPosition)) {
+        trailingPosition
+      } else {
+        let trailingPosition = computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined;
+        isUndefined trailingPosition ? zero : trailingPosition
+      }
     } else {
-      styleTrailingPositionForAxisOrZero node axis
+      let trailingPosition = computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined;
+      isUndefined trailingPosition ? zero : trailingPosition
     };
-  let normalizePosition position => not (isUndefined position) ? position : zero;
   let boundAxisWithinMinAndMax node axis value => {
     let (min, max) =
       if (isColumnDirection axis) {
         (node.style.minHeight, node.style.maxHeight)
       } else if (
-        isRowDirection axis
-      ) {
+          isRowDirection axis
+          ) {
         (node.style.minWidth, node.style.maxWidth)
       } else {
         (cssUndefined, cssUndefined)
@@ -551,45 +740,43 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       };
     nextNextBoundValue
   };
-  let fminf a b => isUndefined b || a < b ? a : b;
-  let fmaxf a b => isUndefined b || a > b ? a : b;
   /* Like boundAxisWithinMinAndMax but also ensures that the value doesn't go below the
    * padding and border amount. */
   let boundAxis node axis value =>
     fmaxf (boundAxisWithinMinAndMax node axis value) (getPaddingAndBorderAxis node axis);
   /* /* When the user specifically sets a value for width or height */ */
-  /* let setDimensionFromStyle (node, axis) => */
-  /*   /* The parent already computed us a width or height. We just skip it */ */
-  /*   if (isLayoutDimDefined (node, axis)) { */
-  /*     () */
-  /*   } else if */
-  /*     /* We only run if there's a width or height defined */ */
-  /*     (not (isStyleDimDefined (node, axis))) { */
-  /*     () */
-  /*   } else { */
-  /*     /* The dimensions can never be smaller than the padding and border */ */
-  /*     let dimValue = */
-  /*       fmaxf (boundAxis (node, axis, node.style [dim [axis]])) (getPaddingAndBorderAxis (node, axis)); */
-  /*     setDimLayoutDimensionForAxis node dimValue */
-  /*   }; */
+    /* let setDimensionFromStyle (node, axis) => */
+    /*   /* The parent already computed us a width or height. We just skip it */ */
+    /*   if (isLayoutDimDefined (node, axis)) { */
+    /*     () */
+    /*   } else if */
+    /*     /* We only run if there's a width or height defined */ */
+    /*     (not (isStyleDimDefined (node, axis))) { */
+    /*     () */
+    /*   } else { */
+    /*     /* The dimensions can never be smaller than the padding and border */ */
+    /*     let dimValue = */
+    /*       fmaxf (boundAxis (node, axis, node.style [dim [axis]])) (getPaddingAndBorderAxis (node, axis)); */
+    /*     setDimLayoutDimensionForAxis node dimValue */
+    /*   }; */
 
-  /**
-   * Sets trailing position for a child node for a given axis.
-   */
-  let setTrailingPosition node child axis => {
-    let measuredChildDimensionForAxis = layoutMeasuredDimensionForAxis child axis;
-    let childLayoutPosValueForAxis = layoutPosPositionForAxis child axis;
-    let nextValue =
-      layoutMeasuredDimensionForAxis node axis -. measuredChildDimensionForAxis -. childLayoutPosValueForAxis;
-    setLayoutTrailingPositionForAxis child axis nextValue
-  };
+    /**
+     * Sets trailing position for a child node for a given axis.
+     */
+    let setTrailingPosition node child axis => {
+      let measuredChildDimensionForAxis = layoutMeasuredDimensionForAxis child axis;
+      let childLayoutPosValueForAxis = layoutPosPositionForAxis child axis;
+      let nextValue =
+        layoutMeasuredDimensionForAxis node axis -. measuredChildDimensionForAxis -. childLayoutPosValueForAxis;
+      setLayoutTrailingPositionForAxis child axis nextValue
+    };
   /* If both left and right are defined, then use left. Otherwise return */
   /* +left or -right depending on which is defined. */
   let getRelativePosition node axis =>
-    if (isLeadingPosDefinedWithFallback node axis) {
-      getLeadingPositionWithFallback node axis
+    if (isLeadingPosDefined node axis) {
+      getLeadingPosition node axis
     } else {
-      -. getTrailingPositionWithFallback node axis
+      -. getTrailingPosition node axis
     };
 
   /**
@@ -609,12 +796,50 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     setLayoutTrailingPositionForAxis
       node crossAxis (getTrailingMargin node crossAxis +. relativePositionCross)
   };
-  let cssNodeStyleGetFlex node =>
-    if (node.style.flexGrow > zero) {
-      node.style.flexGrow
-    } else if (node.style.flexShrink > zero) {
-      -. node.style.flexShrink
-    } else {
-      zero
+  let cssGetFlexGrow node =>
+    not (isUndefined node.style.flexGrow) ?
+    node.style.flexGrow : not (isUndefined node.style.flex) && node.style.flex > 0 ? node.style.flex : zero;
+  let cssGetFlexShrink node =>
+    not (isUndefined node.style.flexShrink) ?
+    node.style.flexShrink :
+    not (isUndefined node.style.flex) && node.style.flex < 0 ? - node.style.flex : zero;
+  let cssGetFlexBasis node =>
+    not (isUndefined node.style.flexBasis) ?
+    node.style.flexBasis :
+    not (isUndefined node.style.flex) ? node.style.flex > zero ? zero : cssUndefined : cssUndefined;
+
+  /**
+   * We break up YGConstraintMaxSizeForMode into two separate functions so that
+   * we don't have to use references that *leak* out of their scope. Refs that
+   * don't leak out of their scope are optimized. Therefore we create two
+   * functions that simply return a single value each.
+   */
+  let constrainSizeToMaxSizeForMode maxSize mode size =>
+    switch mode {
+      | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS =>
+        raise (Invalid_argument "No clue how this could happen")
+        | Exactly
+        | AtMost => isUndefined maxSize || size < maxSize ? size : maxSize
+        | Undefined =>
+        if (not (isUndefined maxSize)) {
+          maxSize
+        } else {
+          size
+        }
+      /* | Count => size */
+    };
+  let constrainModeToMaxSizeForMode maxSize mode size =>
+    switch mode {
+      | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS =>
+        raise (Invalid_argument "No clue how this could happen")
+        | Exactly
+        | AtMost => mode
+        | Undefined =>
+        if (not (isUndefined maxSize)) {
+          AtMost
+        } else {
+          mode
+        }
+      /* | Count => size */
     };
 };

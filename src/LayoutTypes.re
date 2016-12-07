@@ -1,5 +1,15 @@
 module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   type printOptions = {printLayout: bool, printStyle: bool, printChildren: bool};
+  type edge =
+    | Start
+    | End
+    | Left
+    | Right
+    | Vertical
+    | Horizontal
+    | Top
+    | Bottom
+    | All;
   type direction =
     | CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS /* inherit */
     | Inherit /* 'inherit' */
@@ -63,11 +73,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | CssNoWrap
     | CssWrap;
   type dimensions = {width: unitOfM, height: unitOfM};
-  type specificDirection =
-    | Left
-    | Right
-    | Top
-    | Bottom;
   type coordinates = {left: unitOfM, top: unitOfM};
   /* TODO: Benchmark the immutable version versus mutable version */
   type cssStyle = {
@@ -80,6 +85,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     positionType: positionType,
     flexWrap: wrapType,
     overflow: overflow,
+    flex: unitOfM,
     flexGrow: unitOfM,
     flexShrink: unitOfM,
     flexBasis: unitOfM,

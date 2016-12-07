@@ -311,6 +311,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     layout.generationCount = gCurrentGenerationCount.contents;
     needToVisitNode || cachedResults.contents === None
   }
+  and isExperimentalFeatureEnabled _ => false
   and computeChildFlexBasis node child width widthMode height heightMode direction => {
     let mainAxis = resolveAxis node.style.flexDirection direction;
     let isMainAxisRow = isRowDirection mainAxis;
@@ -320,12 +321,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let childHeightMeasureMode = {contents: Undefined};
     let isRowStyleDimDefined = isStyleDimDefined child Row;
     let isColumnStyleDimDefined = isStyleDimDefined child Column;
-    if (
-      not (isUndefined child.style.flexBasis) && not (isUndefined (isMainAxisRow ? width : height))
-    ) {
+    let thisChildFlexBasis = LayoutSupport.cssGetFlexBasis child;
+    if (not (isUndefined thisChildFlexBasis) && not (isUndefined (isMainAxisRow ? width : height))) {
       if (isUndefined child.layout.computedFlexBasis) {
-        child.layout.computedFlexBasis =
-          fmaxf child.style.flexBasis (getPaddingAndBorderAxis child mainAxis)
+        child.layout.computedFlexBasis = fmaxf thisChildFlexBasis (getPaddingAndBorderAxis child mainAxis)
       }
     } else if (
       isMainAxisRow && isRowStyleDimDefined
@@ -356,6 +355,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         childHeight.contents = child.style.height +. getMarginAxis child Column;
         childHeightMeasureMode.contents = Exactly
       };
+      /* The W3C spec doesn't say anything about the 'overflow' property, */
+      /* but all major browsers appear to implement the following logic. */
       if (not isMainAxisRow && node.style.overflow === Scroll || node.style.overflow !== Scroll) {
         if (isUndefined childWidth.contents && not (isUndefined width)) {
           childWidth.contents = width;
@@ -373,11 +374,14 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
        * stretch, set the cross axis to be measured exactly with the
        * available inner width.
        */
-      let childStretchItem = getAlignItem node child === AlignStretch;
       if (
         not isMainAxisRow &&
         not (isUndefined width) &&
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
         not isRowStyleDimDefined && widthMode === Exactly && childStretchItem
+=======
+        not isRowStyleDimDefined && widthMode === Exactly && getAlignItem node child === AlignStretch
+>>>>>>> [ReLayout] Better compatibility with Yoga.
       ) {
         childWidth.contents = width;
         childWidthMeasureMode.contents = Exactly
@@ -385,11 +389,41 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       if (
         isMainAxisRow &&
         not (isUndefined height) &&
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
         not isColumnStyleDimDefined && heightMode === Exactly && childStretchItem
+=======
+        not isColumnStyleDimDefined && heightMode === Exactly && getAlignItem node child === AlignStretch
+>>>>>>> [ReLayout] Better compatibility with Yoga.
       ) {
         childHeight.contents = height;
         childHeightMeasureMode.contents = Exactly
       };
+      /* if (!YGValueIsUndefined(child->style.aspectRatio)) { */
+      /*   if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) { */
+      /*     child->layout.computedFlexBasis = */
+      /*         fmaxf(childWidth * child->style.aspectRatio, */
+      /*               YGNodePaddingAndBorderForAxis(child, YGFlexDirectionColumn)); */
+      /*     return; */
+      /*   } else if (isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) { */
+      /*     child->layout.computedFlexBasis = */
+      /*         fmaxf(childHeight * child->style.aspectRatio, */
+      /*               YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow)); */
+      /*     return; */
+      /*   } */
+      /* } */
+      childWidth.contents =
+        constrainSizeToMaxSizeForMode
+          child.style.maxWidth childWidthMeasureMode.contents childWidth.contents;
+      childWidthMeasureMode.contents =
+        constrainModeToMaxSizeForMode
+          child.style.maxWidth childWidthMeasureMode.contents childWidth.contents;
+      childHeight.contents =
+        constrainSizeToMaxSizeForMode
+          child.style.maxHeight childHeightMeasureMode.contents childHeight.contents;
+      childHeightMeasureMode.contents =
+        constrainModeToMaxSizeForMode
+          child.style.maxHeight childHeightMeasureMode.contents childHeight.contents;
+      /* Measure the child */
       let _ =
         layoutNodeInternal
           child
@@ -421,11 +455,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     if (isStyleDimDefined child Row) {
       childWidth.contents = child.style.width +. getMarginAxis child Row
     } else if (
-      isLeadingPosDefinedWithFallback child Row && isTrailingPosDefinedWithFallback child Row
+      isLeadingPosDefined child Row && isTrailingPosDefined child Row
     ) {
       childWidth.contents =
         node.layout.measuredWidth -. (getLeadingBorder node Row +. getTrailingBorder node Row) -. (
-          getLeadingPositionWithFallback child Row +. getTrailingPositionWithFallback child Row
+          getLeadingPosition child Row +. getTrailingPosition child Row
         );
       childWidth.contents = boundAxis child Row childWidth.contents
     };
@@ -433,14 +467,19 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       childHeight.contents = child.style.height +. getMarginAxis child Column
     } else if (
       /* If the child doesn't have a specified height, compute the height based on the top/bottom offsets if they're defined. */
-      isLeadingPosDefinedWithFallback child Column && isTrailingPosDefinedWithFallback child Column
+      isLeadingPosDefined child Column && isTrailingPosDefined child Column
     ) {
       childHeight.contents =
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
         node.layout.measuredHeight -. (
           getLeadingBorder node Column +. getTrailingBorder node Column
         ) -. (
           getLeadingPositionWithFallback child Column +.
           getTrailingPositionWithFallback child Column
+=======
+        node.layout.measuredHeight -. (getLeadingBorder node Column +. getTrailingBorder node Column) -. (
+          getLeadingPosition child Column +. getTrailingPosition child Column
+>>>>>>> [ReLayout] Better compatibility with Yoga.
         );
       childHeight.contents = boundAxis child Column childHeight.contents
     };
@@ -476,6 +515,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     };
     let _ =
       layoutNodeInternal
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
         child
         childWidth.contents
         childHeight.contents
@@ -488,26 +528,37 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       isTrailingPosDefinedWithFallback child mainAxis &&
       not (isLeadingPosDefinedWithFallback child mainAxis)
     ) {
+=======
+        child childWidth.contents childHeight.contents direction Exactly Exactly true absLayoutString;
+    if (isTrailingPosDefined child mainAxis && not (isLeadingPosDefined child mainAxis)) {
+>>>>>>> [ReLayout] Better compatibility with Yoga.
       setLayoutLeadingPositionForAxis
         child
         mainAxis
         (
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
           layoutMeasuredDimensionForAxis node mainAxis -.
           layoutMeasuredDimensionForAxis child mainAxis -.
           getTrailingPositionWithFallback child mainAxis
+=======
+          layoutMeasuredDimensionForAxis node mainAxis -. layoutMeasuredDimensionForAxis child mainAxis -.
+          getTrailingPosition child mainAxis
+>>>>>>> [ReLayout] Better compatibility with Yoga.
         )
     };
-    if (
-      isTrailingPosDefinedWithFallback child crossAxis &&
-      not (isLeadingPosDefinedWithFallback child crossAxis)
-    ) {
+    if (isTrailingPosDefined child crossAxis && not (isLeadingPosDefined child crossAxis)) {
       setLayoutLeadingPositionForAxis
         child
         crossAxis
         (
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
           layoutMeasuredDimensionForAxis node crossAxis -.
           layoutMeasuredDimensionForAxis child crossAxis -.
           getTrailingPositionWithFallback child crossAxis
+=======
+          layoutMeasuredDimensionForAxis node crossAxis -. layoutMeasuredDimensionForAxis child crossAxis -.
+          getTrailingPosition child crossAxis
+>>>>>>> [ReLayout] Better compatibility with Yoga.
         )
     }
   }
@@ -762,10 +813,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   itemsOnLine.contents = itemsOnLine.contents + 1;
                   if (isFlex child.contents) {
                     totalFlexGrowFactors.contents =
-                      totalFlexGrowFactors.contents +. child.contents.style.flexGrow;
+                      totalFlexGrowFactors.contents +. cssGetFlexGrow child.contents;
                     totalFlexShrinkScaledFactors.contents =
                       totalFlexShrinkScaledFactors.contents +.
-                      -. child.contents.style.flexShrink *. child.contents.layout.computedFlexBasis
+                      -. cssGetFlexShrink child.contents *. child.contents.layout.computedFlexBasis
                   };
                   if (firstRelativeChild.contents === theNullNode) {
                     firstRelativeChild.contents = child.contents
@@ -808,7 +859,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 childFlexBasis.contents = currentRelativeChild.contents.layout.computedFlexBasis;
                 if (remainingFreeSpace.contents < zero) {
                   flexShrinkScaledFactor.contents =
-                    -. currentRelativeChild.contents.style.flexShrink *. childFlexBasis.contents;
+                    -. cssGetFlexShrink currentRelativeChild.contents *. childFlexBasis.contents;
                   if (flexShrinkScaledFactor.contents != zero) {
                     baseMainSize.contents =
                       childFlexBasis.contents +.
@@ -832,7 +883,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 } else if (
                   remainingFreeSpace.contents > zero
                 ) {
-                  flexGrowFactor.contents = currentRelativeChild.contents.style.flexGrow;
+                  flexGrowFactor.contents = cssGetFlexGrow currentRelativeChild.contents;
                   if (flexGrowFactor.contents != zero) {
                     baseMainSize.contents =
                       childFlexBasis.contents +.
@@ -868,7 +919,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 let updatedMainSize = {contents: childFlexBasis.contents};
                 if (remainingFreeSpace.contents < zero) {
                   flexShrinkScaledFactor.contents =
-                    -. currentRelativeChild.contents.style.flexShrink *. childFlexBasis.contents;
+                    -. cssGetFlexShrink currentRelativeChild.contents *. childFlexBasis.contents;
                   /* Is this child able to shrink? */
                   if (flexShrinkScaledFactor.contents != zero) {
                     let childSize =
@@ -887,7 +938,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 } else if (
                   remainingFreeSpace.contents > zero
                 ) {
-                  flexGrowFactor.contents = currentRelativeChild.contents.style.flexGrow;
+                  flexGrowFactor.contents = cssGetFlexGrow currentRelativeChild.contents;
                   if (flexGrowFactor.contents != zero) {
                     updatedMainSize.contents =
                       boundAxis
@@ -1010,16 +1061,19 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             for i in startOfLineIndex.contents to (endOfLineIndex.contents - 1) {
               child.contents = node.children.(i);
               if (
-                child.contents.style.positionType === Absolute &&
-                isLeadingPosDefinedWithFallback child.contents mainAxis
+                child.contents.style.positionType === Absolute && isLeadingPosDefined child.contents mainAxis
               ) {
                 if performLayout {
                   setLayoutLeadingPositionForAxis
                     child.contents
                     mainAxis
                     (
+<<<<<<< d1e792bcbc905f421e1167e733656260f0345bb8
                       getLeadingPositionWithFallback child.contents mainAxis +.
                       getLeadingBorder node mainAxis +.
+=======
+                      getLeadingPosition child.contents mainAxis +. getLeadingBorder node mainAxis +.
+>>>>>>> [ReLayout] Better compatibility with Yoga.
                       getLeadingMargin child.contents mainAxis
                     )
                 }
@@ -1069,13 +1123,12 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               for i in startOfLineIndex.contents to (endOfLineIndex.contents - 1) {
                 child.contents = node.children.(i);
                 if (child.contents.style.positionType === Absolute) {
-                  if (isLeadingPosDefinedWithFallback child.contents crossAxis) {
+                  if (isLeadingPosDefined child.contents crossAxis) {
                     setLayoutLeadingPositionForAxis
                       child.contents
                       crossAxis
                       (
-                        getLeadingPositionWithFallback child.contents crossAxis +.
-                        getLeadingBorder node crossAxis +.
+                        getLeadingPosition child.contents crossAxis +. getLeadingBorder node crossAxis +.
                         getLeadingMargin child.contents crossAxis
                       )
                   } else {
