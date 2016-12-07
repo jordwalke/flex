@@ -1,15 +1,15 @@
-let module Node = {
+module Node = {
   type context = {mutable measureFuncPtr: nativeint, mutable contextPtr: nativeint};
   let nullContext = {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero};
 };
 
-let module Encoding = FixedEncoding;
+module Encoding = FixedEncoding;
 
-let module LayoutTypes = LayoutTypes.Create Node Encoding;
+module LayoutTypes = LayoutTypes.Create Node Encoding;
 
-let module LayoutSupport = LayoutSupport.Create Node Encoding;
+module LayoutSupport = LayoutSupport.Create Node Encoding;
 
-let module Layout = Layout.Create Node Encoding;
+module Layout = Layout.Create Node Encoding;
 
 open LayoutSupport;
 
@@ -27,6 +27,7 @@ let cssNodeNew ptr => {
   children: [||],
   layout: createLayout (),
   style: createStyle (),
+  isDirty: fun c => true,
   /* Since context is mutated, every node must have its own new copy */
   context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
 };
@@ -91,7 +92,8 @@ type cssEdge =
   | CSSEdgeAll;
 
 /* New Layout */
-Callback.register "CSSNodeSetHasNewLayout" (fun node hasNewLayout => node.hasNewLayout = hasNewLayout);
+Callback.register
+  "CSSNodeSetHasNewLayout" (fun node hasNewLayout => node.hasNewLayout = hasNewLayout);
 
 Callback.register "CSSNodeGetHasNewLayout" (fun node => node.hasNewLayout);
 
@@ -100,11 +102,13 @@ Callback.register "CSSNodeStyleSetWidth" (fun node width => node.style = {...nod
 
 Callback.register "CSSNodeStyleGetWidth" (fun node => node.style.width);
 
-Callback.register "CSSNodeStyleSetHeight" (fun node height => node.style = {...node.style, height});
+Callback.register
+  "CSSNodeStyleSetHeight" (fun node height => node.style = {...node.style, height});
 
 Callback.register "CSSNodeStyleGetHeight" (fun node => node.style.height);
 
-Callback.register "CSSNodeStyleSetFlexGrow" (fun node flexGrow => node.style = {...node.style, flexGrow});
+Callback.register
+  "CSSNodeStyleSetFlexGrow" (fun node flexGrow => node.style = {...node.style, flexGrow});
 
 Callback.register "CSSNodeStyleGetFlexGrow" (fun node => node.style.flexGrow);
 
@@ -113,12 +117,14 @@ Callback.register
 
 Callback.register "CSSNodeStyleGetFlexShrink" (fun node => node.style.flexShrink);
 
-Callback.register "CSSNodeStyleSetFlexWrap" (fun node flexWrap => node.style = {...node.style, flexWrap});
+Callback.register
+  "CSSNodeStyleSetFlexWrap" (fun node flexWrap => node.style = {...node.style, flexWrap});
 
 Callback.register "CSSNodeStyleGetFlexWrap" (fun node => node.style.flexWrap);
 
 Callback.register
-  "CSSNodeStyleSetJustifyContent" (fun node justifyContent => node.style = {...node.style, justifyContent});
+  "CSSNodeStyleSetJustifyContent"
+  (fun node justifyContent => node.style = {...node.style, justifyContent});
 
 Callback.register "CSSNodeStyleGetJustifyContent" (fun node => node.style.justifyContent);
 
@@ -128,47 +134,57 @@ Callback.register
 Callback.register "CSSNodeStyleGetAlignItems" (fun node => node.style.alignItems);
 
 Callback.register
-  "CSSNodeStyleSetAlignContent" (fun node alignContent => node.style = {...node.style, alignContent});
+  "CSSNodeStyleSetAlignContent"
+  (fun node alignContent => node.style = {...node.style, alignContent});
 
 Callback.register "CSSNodeStyleGetAlignContent" (fun node => node.style.alignContent);
 
-Callback.register "CSSNodeStyleSetAlignSelf" (fun node alignSelf => node.style = {...node.style, alignSelf});
+Callback.register
+  "CSSNodeStyleSetAlignSelf" (fun node alignSelf => node.style = {...node.style, alignSelf});
 
 Callback.register "CSSNodeStyleGetAlignSelf" (fun node => node.style.alignSelf);
 
-Callback.register "CSSNodeStyleSetMaxWidth" (fun node maxWidth => node.style = {...node.style, maxWidth});
+Callback.register
+  "CSSNodeStyleSetMaxWidth" (fun node maxWidth => node.style = {...node.style, maxWidth});
 
 Callback.register "CSSNodeStyleGetMaxWidth" (fun node => node.style.maxWidth);
 
-Callback.register "CSSNodeStyleSetMaxHeight" (fun node maxHeight => node.style = {...node.style, maxHeight});
+Callback.register
+  "CSSNodeStyleSetMaxHeight" (fun node maxHeight => node.style = {...node.style, maxHeight});
 
 Callback.register "CSSNodeStyleGetMaxHeight" (fun node => node.style.maxHeight);
 
-Callback.register "CSSNodeStyleSetMinWidth" (fun node minWidth => node.style = {...node.style, minWidth});
+Callback.register
+  "CSSNodeStyleSetMinWidth" (fun node minWidth => node.style = {...node.style, minWidth});
 
 Callback.register "CSSNodeStyleGetMinWidth" (fun node => node.style.minWidth);
 
-Callback.register "CSSNodeStyleSetMinHeight" (fun node minHeight => node.style = {...node.style, minHeight});
+Callback.register
+  "CSSNodeStyleSetMinHeight" (fun node minHeight => node.style = {...node.style, minHeight});
 
 Callback.register "CSSNodeStyleGetMinHeight" (fun node => node.style.minHeight);
 
 Callback.register "CSSNodeStyleGetDirection" (fun node => node.style.direction);
 
-Callback.register "CSSNodeStyleSetDirection" (fun node direction => node.style = {...node.style, direction});
+Callback.register
+  "CSSNodeStyleSetDirection" (fun node direction => node.style = {...node.style, direction});
 
 Callback.register "CSSNodeStyleGetFlexDirection" (fun node => node.style.flexDirection);
 
 Callback.register
-  "CSSNodeStyleSetPositionType" (fun node positionType => node.style = {...node.style, positionType});
+  "CSSNodeStyleSetPositionType"
+  (fun node positionType => node.style = {...node.style, positionType});
 
 Callback.register "CSSNodeStyleGetPositionType" (fun node => node.style.positionType);
 
 Callback.register
-  "CSSNodeStyleSetFlexDirection" (fun node flexDirection => node.style = {...node.style, flexDirection});
+  "CSSNodeStyleSetFlexDirection"
+  (fun node flexDirection => node.style = {...node.style, flexDirection});
 
 Callback.register "CSSNodeStyleGetOverflow" (fun node => node.style.overflow);
 
-Callback.register "CSSNodeStyleSetFlexBasis" (fun node flexBasis => node.style = {...node.style, flexBasis});
+Callback.register
+  "CSSNodeStyleSetFlexBasis" (fun node flexBasis => node.style = {...node.style, flexBasis});
 
 Callback.register "CSSNodeStyleGetFlexBasis" (fun node => node.style.flexBasis);
 
@@ -197,7 +213,8 @@ Callback.register
     }
   );
 
-Callback.register "CSSNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
+Callback.register
+  "CSSNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
 
 Callback.register
   "CSSNodeStyleSetPadding"
@@ -321,9 +338,17 @@ Callback.register
       | CSSEdgeStart => node.style = {...node.style, start: v}
       | CSSEdgeEnd => node.style = {...node.style, endd: v}
       | CSSEdgeHorizontal =>
-        node.style = {...node.style, left: setIfZero node.style.left v, right: setIfZero node.style.right v}
+        node.style = {
+          ...node.style,
+          left: setIfZero node.style.left v,
+          right: setIfZero node.style.right v
+        }
       | CSSEdgeVertical =>
-        node.style = {...node.style, top: setIfZero node.style.top v, bottom: setIfZero node.style.bottom v}
+        node.style = {
+          ...node.style,
+          top: setIfZero node.style.top v,
+          bottom: setIfZero node.style.bottom v
+        }
       | CSSEdgeAll =>
         node.style = {
           ...node.style,
