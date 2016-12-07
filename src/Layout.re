@@ -497,7 +497,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let _ =
       layoutNodeInternal
         child childWidth.contents childHeight.contents direction Exactly Exactly true absLayoutString;
-    if (isTrailingPosDefined child mainAxis && not (isLeadingPosDefinedWithFallback child mainAxis)) {
+    if (isTrailingPosDefined child mainAxis && not (isLeadingPosDefined child mainAxis)) {
       setLayoutLeadingPositionForAxis
         child
         mainAxis
