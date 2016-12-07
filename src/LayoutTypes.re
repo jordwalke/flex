@@ -1,4 +1,4 @@
-let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
+module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   type printOptions = {printLayout: bool, printStyle: bool, printChildren: bool};
   type direction =
     | CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS /* inherit */
@@ -181,7 +181,8 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     layout: cssLayout,
     mutable lineIndex: int,
     mutable nextChild: node,
-    mutable measure: option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
+    mutable measure:
+      option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
     print: option (Node.context => unit),
     mutable children: array node,
     mutable childrenCount: int,

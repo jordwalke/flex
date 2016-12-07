@@ -1,4 +1,4 @@
-let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
+module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
 
   /**
    * Copyright (c) 2014, Facebook, Inc.
@@ -36,7 +36,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    * So we can replace:
    * `!blah(x,y)` with `not <| blah(x,y)` with the same precedence.
    */
-  let module LayoutTypes = LayoutTypes.Create Node Encoding;
+  module LayoutTypes = LayoutTypes.Create Node Encoding;
   open LayoutTypes;
   open HardCodedEncoding;
   let positive_flex_is_auto = false;
@@ -212,18 +212,16 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let createStyle () => {...defaultStyle, direction: Inherit};
   let createLayout () => {...theNullNode.layout, direction: Inherit};
   let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=? context => {
-    {
-      ...theNullNode,
-      children,
-      childrenCount: Array.length children,
-      style,
-      measure: m,
-      /**
-       * We can keep the original style because it's immutable, but layout is not.
-       */
-      layout: {...theNullNode.layout, direction: Inherit},
-      context
-    }
+    ...theNullNode,
+    children,
+    childrenCount: Array.length children,
+    style,
+    measure: m,
+    /**
+     * We can keep the original style because it's immutable, but layout is not.
+     */
+    layout: {...theNullNode.layout, direction: Inherit},
+    context
   };
 
   /**
@@ -418,11 +416,14 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       flex_direction
     };
   let isRowDirection flexDirection => flexDirection === Row || flexDirection === RowReverse;
-  let isColumnDirection flexDirection => flexDirection === Column || flexDirection === ColumnReverse;
+  let isColumnDirection flexDirection =>
+    flexDirection === Column || flexDirection === ColumnReverse;
   let getCrossFlexDirection flex_direction direction =>
     isColumnDirection flex_direction ? resolveAxis Row direction : Column;
   let isFlex node =>
-    node.style.positionType === Relative && (node.style.flexGrow != zero || node.style.flexShrink != zero);
+    node.style.positionType === Relative && (
+      node.style.flexGrow != zero || node.style.flexShrink != zero
+    );
   let getLeadingMargin node axis =>
     if (isRowDirection axis && not (isUndefined node.style.marginStart)) {
       node.style.marginStart
@@ -436,7 +437,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       styleTrailingMarginForAxis node axis
     };
   let getLeadingPadding node axis =>
-    if (isRowDirection axis && not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero) {
+    if (
+      isRowDirection axis &&
+      not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero
+    ) {
       node.style.paddingStart
     } else {
       let leadingPadding = styleLeadingPaddingForAxis node axis;
@@ -447,35 +451,46 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       }
     };
   let getTrailingPadding node axis =>
-    if (isRowDirection axis && not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero) {
+    if (
+      isRowDirection axis &&
+      not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero
+    ) {
       node.style.paddingEnd
     } else {
       let trailingPadding = styleTrailingPaddingForAxis node axis;
       trailingPadding >= zero ? trailingPadding : zero
     };
   let getLeadingBorder node axis =>
-    if (isRowDirection axis && not (isUndefined node.style.borderStart) && node.style.borderStart >= zero) {
+    if (
+      isRowDirection axis &&
+      not (isUndefined node.style.borderStart) && node.style.borderStart >= zero
+    ) {
       node.style.borderStart
     } else {
       let leadingBorder = styleLeadingBorderForAxis node axis;
       leadingBorder >= zero ? leadingBorder : zero
     };
   let getTrailingBorder node axis =>
-    if (isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero) {
+    if (
+      isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero
+    ) {
       node.style.borderEnd
     } else {
       let trailingBorder = styleTrailingBorderForAxis node axis;
       trailingBorder >= zero ? trailingBorder : zero
     };
-  let getLeadingPaddingAndBorder node axis => getLeadingPadding node axis +. getLeadingBorder node axis;
-  let getTrailingPaddingAndBorder node axis => getTrailingPadding node axis +. getTrailingBorder node axis;
+  let getLeadingPaddingAndBorder node axis =>
+    getLeadingPadding node axis +. getLeadingBorder node axis;
+  let getTrailingPaddingAndBorder node axis =>
+    getTrailingPadding node axis +. getTrailingBorder node axis;
   let getMarginAxis node axis => getLeadingMargin node axis +. getTrailingMargin node axis;
   let getPaddingAndBorderAxis node axis =>
     getLeadingPaddingAndBorder node axis +. getTrailingPaddingAndBorder node axis;
   let getAlignItem node child =>
     child.style.alignSelf !== AlignAuto ? child.style.alignSelf : node.style.alignItems;
   let getDimWithMargin node axis =>
-    layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +. getTrailingMargin node axis;
+    layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +.
+    getTrailingMargin node axis;
   let isStyleDimDefined node axis => {
     let value = styleDimensionForAxis node axis;
     not (isUndefined value) && value >= zero
@@ -586,8 +601,10 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let crossAxis = getCrossFlexDirection mainAxis direction;
     let relativePositionMain = getRelativePosition node mainAxis;
     let relativePositionCross = getRelativePosition node crossAxis;
-    setLayoutLeadingPositionForAxis node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
-    setLayoutTrailingPositionForAxis node mainAxis (getTrailingMargin node mainAxis +. relativePositionMain);
+    setLayoutLeadingPositionForAxis
+      node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
+    setLayoutTrailingPositionForAxis
+      node mainAxis (getTrailingMargin node mainAxis +. relativePositionMain);
     setLayoutLeadingPositionForAxis
       node crossAxis (getLeadingMargin node crossAxis +. relativePositionCross);
     setLayoutTrailingPositionForAxis
