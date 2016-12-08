@@ -3,11 +3,14 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   /**
    * It's okay to shadow existing modules, even though you can't export two
    * modules with the same name.
+   *
+   * But it is incorrect that we even generate this module here, as it is a
+   * second *instance* of the LayoutSupport module for a given encoding/node.
+   * There should be at most one, and that should be shared by reference.
    */
-  let module LayoutTypes = LayoutTypes.Create Node Encoding;
-  let module LayoutSupport = LayoutSupport.Create Node Encoding;
-  open LayoutTypes;
-  open LayoutSupport;
+  let module LayoutSupport_TODO_REMOVE_ME = LayoutSupport.Create Node Encoding;
+  open LayoutSupport_TODO_REMOVE_ME.LayoutTypes;
+  open LayoutSupport_TODO_REMOVE_ME;
   /* open Encoding; */
   open HardCodedEncoding;
   let shouldFilter = true;
@@ -149,7 +152,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         indent (level + 2);
         Printf.printf "alignSelf: 'stretch',\n"
       };
-      print_number_nan (level + 2, "flex", LayoutSupport.cssGetFlexGrow node);
+      print_number_nan (level + 2, "flex", cssGetFlexGrow node);
       if (node.style.overflow == Hidden) {
         indent (level + 2);
         Printf.printf "overflow: 'hidden',\n"

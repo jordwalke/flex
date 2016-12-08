@@ -7,11 +7,9 @@ module Encoding = FixedEncoding;
 
 module LayoutTypes = LayoutTypes.Create Node Encoding;
 
-module LayoutSupport = LayoutSupport.Create Node Encoding;
-
 module Layout = Layout.Create Node Encoding;
 
-open LayoutSupport;
+open Layout.LayoutSupport;
 
 open LayoutTypes;
 

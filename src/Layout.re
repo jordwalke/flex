@@ -22,10 +22,9 @@
  *      (Although, we don't support min-content)
  */
 module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
-  module LayoutTypes = LayoutTypes.Create Node Encoding;
   module LayoutSupport = LayoutSupport.Create Node Encoding;
   module LayoutPrint = LayoutPrint.Create Node Encoding;
-  open LayoutTypes;
+  open LayoutSupport.LayoutTypes;
   open LayoutSupport;
   /* open Encoding; */
   open HardCodedEncoding;

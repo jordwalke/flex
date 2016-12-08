@@ -553,6 +553,7 @@ window.printTest = function(testData, useFloats, LTRContainer, RTLContainer) {
     'let module Encoding = ' + (useFloats ? 'FloatEncoding;' : 'FixedEncoding;'),
     'let module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;',
     'let module Layout = Layout.Create Node Encoding;',
+    'module LayoutSupport = Layout.LayoutSupport;',
     'open LayoutTestUtils;',
     'open Encoding;',
     '{testNameLines}',

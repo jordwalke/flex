@@ -35,6 +35,8 @@ module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;
 
 module Layout = Layout.Create Node Encoding;
 
+module LayoutSupport = Layout.LayoutSupport;
+
 open LayoutTestUtils;
 
 open Encoding;

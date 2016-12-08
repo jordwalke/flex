@@ -1,6 +1,5 @@
 let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let module LayoutTypes = LayoutTypes.Create Node Encoding;
-  let module LayoutSupport = LayoutSupport.Create Node Encoding;
   let module LayoutPrint = LayoutPrint.Create Node Encoding;
   let round num => int_of_float (floor (num +. 0.5));
   /* open Encoding; */
