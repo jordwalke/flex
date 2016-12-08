@@ -1,3 +1,5 @@
+let nodeWithNoMeasureStr = "Passed node with no measurement function";
+
 module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
 
   /**
@@ -855,5 +857,51 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         mode
       }
     /* | Count => size */
+    };
+  let nodeWithMeasureFuncSetMeasuredDimensions
+      node
+      availableWidth
+      availableHeight
+      widthMeasureMode
+      heightMeasureMode =>
+    switch node.measure {
+    | None => raise (Invalid_argument nodeWithNoMeasureStr)
+    | Some measure =>
+      let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
+      let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node Column;
+      let marginAxisRow = getMarginAxis node Row;
+      let marginAxisColumn = getMarginAxis node Column;
+      let innerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
+      let innerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
+      if (widthMeasureMode === Exactly && heightMeasureMode === Exactly) {
+        /* Don't bother sizing the text if both dimensions are already defined. */
+        node.layout.measuredWidth = boundAxis node Row (availableWidth - marginAxisRow);
+        node.layout.measuredHeight = boundAxis node Column (availableHeight - marginAxisColumn)
+      } else if (
+        innerWidth <= 0 || innerHeight <= 0
+      ) {
+        /* Don't bother sizing text if there's no horizontal or vertical space.  */
+        node.layout.measuredWidth = boundAxis node Row 0;
+        node.layout.measuredHeight = boundAxis node Column 0
+      } else {
+        /* Measure the text under the current constraints */
+        let measuredSize = measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
+        node.layout.measuredWidth =
+          boundAxis
+            node
+            Row
+            (
+              widthMeasureMode === Undefined || widthMeasureMode === AtMost ?
+                measuredSize.width + paddingAndBorderAxisRow : availableWidth - marginAxisRow
+            );
+        node.layout.measuredHeight =
+          boundAxis
+            node
+            Column
+            (
+              heightMeasureMode === Undefined || heightMeasureMode === AtMost ?
+                measuredSize.height + paddingAndBorderAxisColumn : availableHeight - marginAxisColumn
+            )
+      }
     };
 };
