@@ -67,7 +67,7 @@
       "entry": "src/LayoutTestFixedEncoding.re",
       "unstable_flags": {
         "compile": "-thread -g -verbose -inline 100 -unsafe -S",
-        "link": "-thread -linkpkg -g -verbose -S"
+        "link": "-thread -noassert -linkpkg -g -verbose -S"
       }
     },
     {
@@ -76,7 +76,7 @@
       "entry": "src/LayoutTestFixedEncoding.re",
       "unstable_flags": {
         "compile": "-thread -g -unsafe -verbose",
-        "link": "-thread -g -verbose"
+        "link": "-thread -noassert -g -verbose"
       }
     },
     {
