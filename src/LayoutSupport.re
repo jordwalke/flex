@@ -603,8 +603,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       flex_direction
     };
   let isRowDirection flexDirection => flexDirection === Row || flexDirection === RowReverse;
-  let isColumnDirection flexDirection =>
-    flexDirection === Column || flexDirection === ColumnReverse;
+  let isColumnDirection flexDirection => flexDirection === Column || flexDirection === ColumnReverse;
   let getCrossFlexDirection flex_direction direction =>
     isColumnDirection flex_direction ? resolveAxis Row direction : Column;
   let isFlex node =>
@@ -624,52 +623,38 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       computedEdgeValueMargin node.style (trailingEdgeForAxis axis) zero
     };
   let getLeadingPadding node axis =>
-    if (
-      isRowDirection axis &&
-      not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero
-    ) {
+    if (isRowDirection axis && not (isUndefined node.style.paddingStart) && node.style.paddingStart >= zero) {
       node.style.paddingStart
     } else {
       fmaxf (computedEdgeValuePadding node.style (leadingEdgeForAxis axis) zero) zero
     };
   let getTrailingPadding node axis =>
-    if (
-      isRowDirection axis &&
-      not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero
-    ) {
+    if (isRowDirection axis && not (isUndefined node.style.paddingEnd) && node.style.paddingEnd >= zero) {
       node.style.paddingEnd
     } else {
       fmaxf (computedEdgeValuePadding node.style (trailingEdgeForAxis axis) zero) zero
     };
   let getLeadingBorder node axis =>
-    if (
-      isRowDirection axis &&
-      not (isUndefined node.style.borderStart) && node.style.borderStart >= zero
-    ) {
+    if (isRowDirection axis && not (isUndefined node.style.borderStart) && node.style.borderStart >= zero) {
       node.style.borderStart
     } else {
       fmaxf (computedEdgeValueBorder node.style (leadingEdgeForAxis axis) zero) zero
     };
   let getTrailingBorder node axis =>
-    if (
-      isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero
-    ) {
+    if (isRowDirection axis && not (isUndefined node.style.borderEnd) && node.style.borderEnd >= zero) {
       node.style.borderEnd
     } else {
       fmaxf (computedEdgeValueBorder node.style (trailingEdgeForAxis axis) zero) zero
     };
-  let getLeadingPaddingAndBorder node axis =>
-    getLeadingPadding node axis +. getLeadingBorder node axis;
-  let getTrailingPaddingAndBorder node axis =>
-    getTrailingPadding node axis +. getTrailingBorder node axis;
+  let getLeadingPaddingAndBorder node axis => getLeadingPadding node axis +. getLeadingBorder node axis;
+  let getTrailingPaddingAndBorder node axis => getTrailingPadding node axis +. getTrailingBorder node axis;
   let getMarginAxis node axis => getLeadingMargin node axis +. getTrailingMargin node axis;
   let getPaddingAndBorderAxis node axis =>
     getLeadingPaddingAndBorder node axis +. getTrailingPaddingAndBorder node axis;
   let getAlignItem node child =>
     child.style.alignSelf === AlignAuto ? node.style.alignItems : child.style.alignSelf;
   let getDimWithMargin node axis =>
-    layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +.
-    getTrailingMargin node axis;
+    layoutMeasuredDimensionForAxis node axis +. getLeadingMargin node axis +. getTrailingMargin node axis;
   let isStyleDimDefined node axis => {
     let value = styleDimensionForAxis node axis;
     not (isUndefined value) && value >= zero
@@ -679,17 +664,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     not (isUndefined value) && value >= zero
   };
   let isLeadingPosDefined node axis =>
-    isRowDirection axis &&
-    not (isUndefined (computedEdgeValuePosition node.style Start cssUndefined)) ||
-    not (
-      isUndefined (computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined)
-    );
+    isRowDirection axis && not (isUndefined (computedEdgeValuePosition node.style Start cssUndefined)) ||
+    not (isUndefined (computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined));
   let isTrailingPosDefined node axis =>
-    isRowDirection axis &&
-    not (isUndefined (computedEdgeValuePosition node.style End cssUndefined)) ||
-    not (
-      isUndefined (computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined)
-    );
+    isRowDirection axis && not (isUndefined (computedEdgeValuePosition node.style End cssUndefined)) ||
+    not (isUndefined (computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined));
 
   /**
    * The C implementation calls this `getLeadingPosition`.
@@ -700,13 +679,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       if (not (isUndefined leadingPosition)) {
         leadingPosition
       } else {
-        let leadingPosition =
-          computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
+        let leadingPosition = computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
         isUndefined leadingPosition ? 0 : leadingPosition
       }
     } else {
-      let leadingPosition =
-        computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
+      let leadingPosition = computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
       isUndefined leadingPosition ? zero : leadingPosition
     };
 
@@ -719,13 +696,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       if (not (isUndefined trailingPosition)) {
         trailingPosition
       } else {
-        let trailingPosition =
-          computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined;
+        let trailingPosition = computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined;
         isUndefined trailingPosition ? zero : trailingPosition
       }
     } else {
-      let trailingPosition =
-        computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined;
+      let trailingPosition = computedEdgeValuePosition node.style (trailingEdgeForAxis axis) cssUndefined;
       isUndefined trailingPosition ? zero : trailingPosition
     };
   let boundAxisWithinMinAndMax node axis value => {
@@ -801,10 +776,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let crossAxis = getCrossFlexDirection mainAxis direction;
     let relativePositionMain = getRelativePosition node mainAxis;
     let relativePositionCross = getRelativePosition node crossAxis;
-    setLayoutLeadingPositionForAxis
-      node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
-    setLayoutTrailingPositionForAxis
-      node mainAxis (getTrailingMargin node mainAxis +. relativePositionMain);
+    setLayoutLeadingPositionForAxis node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
+    setLayoutTrailingPositionForAxis node mainAxis (getTrailingMargin node mainAxis +. relativePositionMain);
     setLayoutLeadingPositionForAxis
       node crossAxis (getLeadingMargin node crossAxis +. relativePositionCross);
     setLayoutTrailingPositionForAxis
@@ -812,8 +785,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let cssGetFlexGrow node =>
     not (isUndefined node.style.flexGrow) ?
-      node.style.flexGrow :
-      not (isUndefined node.style.flex) && node.style.flex > 0 ? node.style.flex : zero;
+      node.style.flexGrow : not (isUndefined node.style.flex) && node.style.flex > 0 ? node.style.flex : zero;
   let cssGetFlexShrink node =>
     not (isUndefined node.style.flexShrink) ?
       node.style.flexShrink :
@@ -821,8 +793,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let cssGetFlexBasis node =>
     not (isUndefined node.style.flexBasis) ?
       node.style.flexBasis :
-      not (isUndefined node.style.flex) ?
-        node.style.flex > zero ? zero : cssUndefined : cssUndefined;
+      not (isUndefined node.style.flex) ? node.style.flex > zero ? zero : cssUndefined : cssUndefined;
 
   /**
    * We break up YGConstraintMaxSizeForMode into two separate functions so that
@@ -903,5 +874,50 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 measuredSize.height + paddingAndBorderAxisColumn : availableHeight - marginAxisColumn
             )
       }
+    };
+
+  /**
+   * For nodes with no children, use the available values if they were
+   * provided, or the minimum size as indicated by the padding and border
+   * sizes.
+   */
+  let emptyContainerSetMeasuredDimensions
+      node
+      availableWidth
+      availableHeight
+      widthMeasureMode
+      heightMeasureMode => {
+    let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
+    let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node Column;
+    let marginAxisRow = getMarginAxis node Row;
+    let marginAxisColumn = getMarginAxis node Column;
+    let boundWidthBy =
+      widthMeasureMode === Undefined || widthMeasureMode === AtMost ?
+        paddingAndBorderAxisRow : availableWidth -. marginAxisRow;
+    node.layout.measuredWidth = boundAxis node Row boundWidthBy;
+    let boundHeightBy =
+      heightMeasureMode === Undefined || heightMeasureMode === AtMost ?
+        paddingAndBorderAxisColumn : availableHeight -. marginAxisColumn;
+    node.layout.measuredHeight = boundAxis node Column boundHeightBy
+  };
+  let fixedSizeSetMeasuredDimensions node availableWidth availableHeight widthMeasureMode heightMeasureMode =>
+    if (
+      widthMeasureMode === AtMost && availableWidth <= zero ||
+      heightMeasureMode === AtMost && availableHeight <= zero ||
+      widthMeasureMode === Exactly && heightMeasureMode === Exactly
+    ) {
+      let marginAxisColumn = getMarginAxis node Column;
+      let marginAxisRow = getMarginAxis node Row;
+      let boundWidthBy =
+        isUndefined availableWidth || widthMeasureMode === AtMost && availableWidth < zero ?
+          zero : availableWidth -. marginAxisRow;
+      node.layout.measuredWidth = boundAxis node Row boundWidthBy;
+      let boundHeightBy =
+        isUndefined availableHeight || heightMeasureMode === AtMost && availableHeight < zero ?
+          zero : availableHeight -. marginAxisColumn;
+      node.layout.measuredHeight = boundAxis node Column boundHeightBy;
+      true
+    } else {
+      false
     };
 };
