@@ -359,13 +359,13 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       /**
        * Hardcoded to 6 previous measurements.
        */
-      cachedMeasurement1: createCacheMeasurement (),
-      cachedMeasurement2: createCacheMeasurement (),
-      cachedMeasurement3: createCacheMeasurement (),
-      cachedMeasurement4: createCacheMeasurement (),
-      cachedMeasurement5: createCacheMeasurement (),
-      cachedMeasurement6: createCacheMeasurement (),
-      cachedLayout: createCacheMeasurement (),
+      cachedMeasurement1: dummyCachedMeasurement,
+      cachedMeasurement2: dummyCachedMeasurement,
+      cachedMeasurement3: dummyCachedMeasurement,
+      cachedMeasurement4: dummyCachedMeasurement,
+      cachedMeasurement5: dummyCachedMeasurement,
+      cachedMeasurement6: dummyCachedMeasurement,
+      cachedLayout: dummyCachedMeasurement,
       /**
        * Start out as zero.
        */
