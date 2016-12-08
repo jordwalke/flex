@@ -1339,6 +1339,13 @@ function getExpectedResults(testData, computedKeyPathSoFar) {
    <div style="height: 10px; flex-grow:1;"></div>
  </div>
 
+<div id="flex_grow_shrink_at_most" style="height: 100px; width: 100px;">
+  <div>
+    <div style="flex-grow:1; flex-shrink:1;"></div>
+  </div>
+</div>
+ 
+
 */
 
 
