@@ -96,32 +96,32 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     switch i {
     /* Lazily allocate measurement entry by doing referential equality check  */
     | 0 =>
-      if (layout.cachedMeasurement1 == dummyCachedMeasurement) {
+      if (layout.cachedMeasurement1 === dummyCachedMeasurement) {
         layout.cachedMeasurement1 = createCacheMeasurement ()
       };
       layout.cachedMeasurement1
     | 1 =>
-      if (layout.cachedMeasurement2 == dummyCachedMeasurement) {
+      if (layout.cachedMeasurement2 === dummyCachedMeasurement) {
         layout.cachedMeasurement2 = createCacheMeasurement ()
       };
       layout.cachedMeasurement2
     | 2 =>
-      if (layout.cachedMeasurement3 == dummyCachedMeasurement) {
+      if (layout.cachedMeasurement3 === dummyCachedMeasurement) {
         layout.cachedMeasurement3 = createCacheMeasurement ()
       };
       layout.cachedMeasurement3
     | 3 =>
-      if (layout.cachedMeasurement4 == dummyCachedMeasurement) {
+      if (layout.cachedMeasurement4 === dummyCachedMeasurement) {
         layout.cachedMeasurement4 = createCacheMeasurement ()
       };
       layout.cachedMeasurement4
     | 4 =>
-      if (layout.cachedMeasurement5 == dummyCachedMeasurement) {
+      if (layout.cachedMeasurement5 === dummyCachedMeasurement) {
         layout.cachedMeasurement5 = createCacheMeasurement ()
       };
       layout.cachedMeasurement5
     | 5 =>
-      if (layout.cachedMeasurement6 == dummyCachedMeasurement) {
+      if (layout.cachedMeasurement6 === dummyCachedMeasurement) {
         layout.cachedMeasurement6 = createCacheMeasurement ()
       };
       layout.cachedMeasurement6
