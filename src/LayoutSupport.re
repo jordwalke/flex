@@ -815,7 +815,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       }
     /* | Count => size */
     };
-  let constrainModeToMaxSizeForMode maxSize mode size =>
+  let constrainModeToMaxSizeForMode maxSize mode =>
     switch mode {
     | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS =>
       raise (Invalid_argument "No clue how this could happen")

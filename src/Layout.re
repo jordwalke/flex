@@ -423,14 +423,12 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         constrainSizeToMaxSizeForMode
           child.style.maxWidth childWidthMeasureMode.contents childWidth.contents;
       childWidthMeasureMode.contents =
-        constrainModeToMaxSizeForMode
-          child.style.maxWidth childWidthMeasureMode.contents childWidth.contents;
+        constrainModeToMaxSizeForMode child.style.maxWidth childWidthMeasureMode.contents;
       childHeight.contents =
         constrainSizeToMaxSizeForMode
           child.style.maxHeight childHeightMeasureMode.contents childHeight.contents;
       childHeightMeasureMode.contents =
-        constrainModeToMaxSizeForMode
-          child.style.maxHeight childHeightMeasureMode.contents childHeight.contents;
+        constrainModeToMaxSizeForMode child.style.maxHeight childHeightMeasureMode.contents;
       /* Measure the child */
       let _ =
         layoutNodeInternal
@@ -557,10 +555,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     assert (isUndefined availableWidth ? widthMeasureMode === Undefined : true);
     assert (isUndefined availableHeight ? heightMeasureMode === Undefined : true);
     let direction = resolveDirection node parentDirection;
-    let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
-    let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node Column;
-    let marginAxisRow = getMarginAxis node Row;
-    let marginAxisColumn = getMarginAxis node Column;
     if (node.layout.direction !== direction) {
       node.layout.direction = direction
     };
@@ -588,19 +582,61 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         let isNodeFlexWrap = node.style.flexWrap === CssWrap;
         let firstAbsoluteChild = {contents: theNullNode};
         let currentAbsoluteChildRef = {contents: theNullNode};
+
+        /** Padding and border. */
         let leadingPaddingAndBorderMain = getLeadingPaddingAndBorder node mainAxis;
         let trailingPaddingAndBorderMain = getTrailingPaddingAndBorder node mainAxis;
         let leadingPaddingAndBorderCross = getLeadingPaddingAndBorder node crossAxis;
+
+        /** Padding/border axis */
         let paddingAndBorderAxisMain = getPaddingAndBorderAxis node mainAxis;
         let paddingAndBorderAxisCross = getPaddingAndBorderAxis node crossAxis;
+
+        /** Measure mode */
         let measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
         let measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
+
+        /** Padding/border/ margin row/column axis */
+        let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
+        let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node Column;
+        let marginAxisRow = getMarginAxis node Row;
+        let marginAxisColumn = getMarginAxis node Column;
+
+        /** STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS */
         let availableInnerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
         let availableInnerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
         let availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
         let availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
         let child = {contents: theNullNode};
         let childCount = node.childrenCount;
+
+        /**
+         * If there is only one child with flexGrow + flexShrink it means we
+         * can set the computedFlexBasis to 0 instead of measuring and
+         * shrinking / flexing the child to exactly match the remaining space.
+         */
+        let singleFlexChild = {contents: theNullNode};
+        if (
+          isMainAxisRow && widthMeasureMode == Exactly || not isMainAxisRow && heightMeasureMode == Exactly
+        ) {
+          let shouldContinue = {contents: true};
+          let i = {contents: 0};
+          while (shouldContinue.contents && i.contents < childCount) {
+            let child = node.children.(i.contents);
+            if (singleFlexChild.contents !== theNullNode) {
+              if (isFlex child) {
+                /* There is already a flexible child, abort. */
+                singleFlexChild.contents = theNullNode;
+                shouldContinue.contents = false
+              }
+            } else if (
+              cssGetFlexGrow child > zero && cssGetFlexShrink child > zero
+            ) {
+              singleFlexChild.contents = child
+            };
+            i.contents = i.contents + 1
+          }
+        };
         /* STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM */
 
         /**
@@ -645,6 +681,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             let previousAbsoluteChild = currentAbsoluteChildRef.contents;
             /* If there was a prev absolute, set its `nextChild` to `child`. */
             if (previousAbsoluteChild !== theNullNode) {
+              /* TODO: only set nextChild when it would differ. */
               previousAbsoluteChild.nextChild = child
             };
             currentAbsoluteChildRef.contents = child
@@ -668,6 +705,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         };
         if (currentAbsoluteChildRef.contents !== theNullNode) {
           /* Set `child.nextChild` to null in case it's the last absolute */
+          /* TODO: only set nextChild when it would differ. */
           currentAbsoluteChildRef.contents.nextChild = theNullNode
         };
         /* STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES */
@@ -677,33 +715,53 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         let totalLineCrossDim = {contents: zero};
         let maxLineMainDim = {contents: zero};
         while (endOfLineIndex.contents < childCount) {
+          /* Number of items on the current line. May be different than the
+           * difference between start and end indicates because we skip over
+           * absolute-positioned items. */
           let itemsOnLine = {contents: 0};
+          /* sizeConsumedOnCurrentLine is accumulation of the dimensions and
+           * margin of all the children on the current line. This will be used
+           * in order to either set the dimensions of the node if none already
+           * exist or to compute the remaining space left for the flexible
+           * children. */
           let sizeConsumedOnCurrentLine = {contents: zero};
           let totalFlexGrowFactors = {contents: zero};
           let totalFlexShrinkScaledFactors = {contents: zero};
           let curIndex = {contents: startOfLineIndex.contents};
+
+          /** Maintain a linked list of the child nodes that can shrink and/or grow. */
           let firstRelativeChild = {contents: theNullNode};
           let currentRelativeChild = {contents: theNullNode};
           let shouldContinue = {contents: true};
+          /* Add items to the current line until it's full or we run out of items. */
           while (curIndex.contents < childCount && shouldContinue.contents) {
             child.contents = node.children.(curIndex.contents);
+            /* TODO: only set nextChild when it would differ. (But consider
+             * effects on initial render) */
             child.contents.lineIndex = lineCount.contents;
             if (child.contents.style.positionType !== Absolute) {
               let outerFlexBasis =
                 child.contents.layout.computedFlexBasis +. getMarginAxis child.contents mainAxis;
-              if (
-                (
-                  sizeConsumedOnCurrentLine.contents +. outerFlexBasis > availableInnerMainDim && isNodeFlexWrap
-                ) &&
-                itemsOnLine.contents > 0
-              ) {
-                shouldContinue.contents = false
+              /* If this is a multi-line flow and this item pushes us over the
+               * available size, we've hit the end of the current line. Break
+               * out of the loop and lay out the current line. */
+              /* #different: Perform isNodeFlexWrap first! */
+              let isEndOfLine =
+                isNodeFlexWrap &&
+                sizeConsumedOnCurrentLine.contents +. outerFlexBasis > availableInnerMainDim &&
+                itemsOnLine.contents > 0;
+              if isEndOfLine {
+                /* There must be *no* increments in this code path */
+                shouldContinue.contents =
+                  false
               } else {
                 sizeConsumedOnCurrentLine.contents = sizeConsumedOnCurrentLine.contents +. outerFlexBasis;
                 itemsOnLine.contents = itemsOnLine.contents + 1;
                 if (isFlex child.contents) {
                   totalFlexGrowFactors.contents =
                     totalFlexGrowFactors.contents +. cssGetFlexGrow child.contents;
+                  /* Unlike the grow factor, the shrink factor is scaled
+                   * relative to the child dimension. */
                   totalFlexShrinkScaledFactors.contents =
                     totalFlexShrinkScaledFactors.contents +.
                     -. cssGetFlexShrink child.contents *. child.contents.layout.computedFlexBasis
@@ -720,71 +778,115 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 endOfLineIndex.contents = endOfLineIndex.contents + 1
               }
             } else {
+              /* The increment is repeated in a strange way because it's
+               * transcribed from a C loop with a break. */
               curIndex.contents = curIndex.contents + 1;
               endOfLineIndex.contents = endOfLineIndex.contents + 1
             }
           };
+          /* If we don't need to measure the cross axis, we can skip the entire
+           * flex step. */
           let canSkipFlex = not performLayout && measureModeCrossDim === Exactly;
+
+          /**
+           * In order to position the elements in the main axis, we have two
+           * controls. The space between the beginning and the first element
+           * and the space between each two elements.
+           *
+           * - leadingMainDim
+           * - betweenMainDim
+           */
+
+          /** STEP 5: RESOLVING FLEXIBLE LENGTHS ON MAIN AXIS
+           * Calculate the remaining available space that needs to be
+           * allocated. If the main dimension size isn't known, it is computed
+           * based on the line length, so there's no more space left to
+           * distribute. */
           let remainingFreeSpace = {contents: zero};
           if (not (isUndefined availableInnerMainDim)) {
             remainingFreeSpace.contents = availableInnerMainDim -. sizeConsumedOnCurrentLine.contents
           } else if (
             sizeConsumedOnCurrentLine.contents < zero
           ) {
-            remainingFreeSpace.contents = -. sizeConsumedOnCurrentLine.contents
+            /* availableInnerMainDim is indefinite which means the node is
+             * being sized based on its content. sizeConsumedOnCurrentLine is
+             * negative which means the node will allocate 0 pixels for its
+             * content. Consequently, remainingFreeSpace is 0 -
+             * sizeConsumedOnCurrentLine. */
+            remainingFreeSpace.contents =
+              -. sizeConsumedOnCurrentLine.contents
           };
           let originalRemainingFreeSpace = remainingFreeSpace.contents;
           let deltaFreeSpace = {contents: zero};
           if (not canSkipFlex) {
-            let childFlexBasis = {contents: zero};
-            let flexShrinkScaledFactor = {contents: zero};
-            let flexGrowFactor = {contents: zero};
-            let baseMainSize = {contents: zero};
-            let boundMainSize = {contents: zero};
+            /* Do two passes over the flex items to figure out how to
+             * distribute the remaining space.  The first pass finds the items
+             * whose min/max constraints trigger, freezes them at those sizes,
+             * and excludes those sizes from the remaining space. The second
+             * pass sets the size of each flexible item. It distributes the
+             * remaining space amongst the items whose min/max constraints
+             * didn't trigger in pass 1. For the other items, it sets their
+             * sizes by forcing their min/max constraints to trigger again.
+             *
+             * This two pass approach for resolving min/max constraints
+             * deviates from the spec. The spec
+             * (https://www.w3.org/TR/YG-flexbox-1/#resolve-flexible-lengths)
+             * describes a process that needs to be repeated a variable number
+             * of times. The algorithm implemented here won't handle all cases
+             * but it was simpler to implement and it mitigates performance
+             * concerns because we know exactly how many passes it'll do. */
             let deltaFlexShrinkScaledFactors = {contents: zero};
             let deltaFlexGrowFactors = {contents: zero};
             currentRelativeChild.contents = firstRelativeChild.contents;
             while (currentRelativeChild.contents !== theNullNode) {
-              childFlexBasis.contents = currentRelativeChild.contents.layout.computedFlexBasis;
+              let childFlexBasis = currentRelativeChild.contents.layout.computedFlexBasis;
               if (remainingFreeSpace.contents < zero) {
-                flexShrinkScaledFactor.contents =
-                  -. cssGetFlexShrink currentRelativeChild.contents *. childFlexBasis.contents;
-                if (flexShrinkScaledFactor.contents != zero) {
-                  baseMainSize.contents =
-                    childFlexBasis.contents +.
+                let flexShrinkScaledFactor =
+                  -. cssGetFlexShrink currentRelativeChild.contents *. childFlexBasis;
+                /* Is this child able to shrink? */
+                if (flexShrinkScaledFactor != zero) {
+                  let baseMainSize =
+                    childFlexBasis +.
                     /*
                      * Important to first scale, then divide - to support fixed
                      * point encoding.
                      */
-                    flexShrinkScaledFactor.contents *. remainingFreeSpace.contents /.
+                    flexShrinkScaledFactor *. remainingFreeSpace.contents /.
                     totalFlexShrinkScaledFactors.contents;
-                  boundMainSize.contents =
-                    boundAxis currentRelativeChild.contents mainAxis baseMainSize.contents;
-                  if (baseMainSize.contents != boundMainSize.contents) {
-                    deltaFreeSpace.contents =
-                      deltaFreeSpace.contents -. (boundMainSize.contents -. childFlexBasis.contents);
+                  let boundMainSize = boundAxis currentRelativeChild.contents mainAxis baseMainSize;
+                  if (baseMainSize != boundMainSize) {
+                    /* By excluding this item's size and flex factor from
+                     * remaining, this item's min/max constraints should also
+                     * trigger in the second pass resulting in the item's size
+                     * calculation being identical in the first and second
+                     * passes. */
+                    deltaFreeSpace.contents = deltaFreeSpace.contents -. (boundMainSize -. childFlexBasis);
                     deltaFlexShrinkScaledFactors.contents =
-                      deltaFlexShrinkScaledFactors.contents -. flexShrinkScaledFactor.contents
+                      deltaFlexShrinkScaledFactors.contents -. flexShrinkScaledFactor
                   }
                 }
               } else if (
                 remainingFreeSpace.contents > zero
               ) {
-                flexGrowFactor.contents = cssGetFlexGrow currentRelativeChild.contents;
-                if (flexGrowFactor.contents != zero) {
-                  baseMainSize.contents =
-                    childFlexBasis.contents +.
+                let flexGrowFactor = cssGetFlexGrow currentRelativeChild.contents;
+                /* Is this child able to grow? */
+                if (flexGrowFactor != zero) {
+                  let baseMainSize =
+                    childFlexBasis +.
                     /*
                      * Important to first scale, then divide - to support fixed
                      * point encoding.
                      */
-                    flexGrowFactor.contents *. remainingFreeSpace.contents /. totalFlexGrowFactors.contents;
-                  boundMainSize.contents =
-                    boundAxis currentRelativeChild.contents mainAxis baseMainSize.contents;
-                  if (baseMainSize.contents != boundMainSize.contents) {
-                    deltaFreeSpace.contents =
-                      deltaFreeSpace.contents -. (boundMainSize.contents -. childFlexBasis.contents);
-                    deltaFlexGrowFactors.contents = deltaFlexGrowFactors.contents -. flexGrowFactor.contents
+                    flexGrowFactor *. remainingFreeSpace.contents /. totalFlexGrowFactors.contents;
+                  let boundMainSize = boundAxis currentRelativeChild.contents mainAxis baseMainSize;
+                  if (baseMainSize != boundMainSize) {
+                    /* By excluding this item's size and flex factor from
+                     * remaining, this item's min/max constraints should also
+                     * trigger in the second pass resulting in the item's size
+                     * calculation being identical in the first and second
+                     * passes. */
+                    deltaFreeSpace.contents = deltaFreeSpace.contents -. (boundMainSize -. childFlexBasis);
+                    deltaFlexGrowFactors.contents = deltaFlexGrowFactors.contents -. flexGrowFactor
                   }
                 }
               };
@@ -794,50 +896,51 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               totalFlexShrinkScaledFactors.contents +. deltaFlexShrinkScaledFactors.contents;
             totalFlexGrowFactors.contents = totalFlexGrowFactors.contents +. deltaFlexGrowFactors.contents;
             remainingFreeSpace.contents = remainingFreeSpace.contents +. deltaFreeSpace.contents;
+
+            /** Second pass: resolve the sizes of the flexible items */
             deltaFreeSpace.contents = zero;
             currentRelativeChild.contents = firstRelativeChild.contents;
             while (currentRelativeChild.contents !== theNullNode) {
-              childFlexBasis.contents = currentRelativeChild.contents.layout.computedFlexBasis;
-              let updatedMainSize = {contents: childFlexBasis.contents};
+              let childFlexBasis = currentRelativeChild.contents.layout.computedFlexBasis;
+              let updatedMainSize = {contents: childFlexBasis};
               if (remainingFreeSpace.contents < zero) {
-                flexShrinkScaledFactor.contents =
-                  -. cssGetFlexShrink currentRelativeChild.contents *. childFlexBasis.contents;
+                let flexShrinkScaledFactor =
+                  -. cssGetFlexShrink currentRelativeChild.contents *. childFlexBasis;
                 /* Is this child able to shrink? */
-                if (flexShrinkScaledFactor.contents != zero) {
+                if (flexShrinkScaledFactor != zero) {
                   let childSize =
                     totalFlexShrinkScaledFactors.contents == zero ?
-                      childFlexBasis.contents +. flexShrinkScaledFactor.contents :
-                      childFlexBasis.contents +.
+                      childFlexBasis +. flexShrinkScaledFactor :
+                      childFlexBasis +.
                       /*
                        * Important to first scale, then divide - to support
                        * fixed point encoding.
                        */
-                      flexShrinkScaledFactor.contents *. remainingFreeSpace.contents /.
+                      flexShrinkScaledFactor *. remainingFreeSpace.contents /.
                       totalFlexShrinkScaledFactors.contents;
                   updatedMainSize.contents = boundAxis currentRelativeChild.contents mainAxis childSize
                 }
               } else if (
                 remainingFreeSpace.contents > zero
               ) {
-                flexGrowFactor.contents = cssGetFlexGrow currentRelativeChild.contents;
-                if (flexGrowFactor.contents != zero) {
+                let flexGrowFactor = cssGetFlexGrow currentRelativeChild.contents;
+                if (flexGrowFactor != zero) {
                   updatedMainSize.contents =
                     boundAxis
                       currentRelativeChild.contents
                       mainAxis
                       (
-                        childFlexBasis.contents +.
+                        childFlexBasis +.
                         /*
                          * Important to first scale, then divide - to support
                          * fixed point encoding.
                          */
-                        flexGrowFactor.contents *. remainingFreeSpace.contents /.
-                        totalFlexGrowFactors.contents
+                        flexGrowFactor *. remainingFreeSpace.contents /. totalFlexGrowFactors.contents
                       )
                 }
               };
               deltaFreeSpace.contents =
-                deltaFreeSpace.contents -. (updatedMainSize.contents -. childFlexBasis.contents);
+                deltaFreeSpace.contents -. (updatedMainSize.contents -. childFlexBasis);
               let childWidth = {contents: zero};
               let childHeight = {contents: zero};
               let childWidthMeasureMode = {contents: Undefined};
@@ -889,9 +992,45 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   childWidthMeasureMode.contents = Exactly
                 }
               };
+              /* TODO: #aspectRatio */
+              /* if (not (isUndefined currentRelativeChild.contents.style.aspectRatio)) { */
+              /*   if (isMainAxisRow && childHeightMeasureMode.contents !== Exactly) { */
+              /*     childHeight.contents = */
+              /*       fmaxf */
+              /*         (childWidth.contents *. currentRelativeChild.style.aspectRatio) */
+              /*         (getPaddingAndBorderAxis currentRelativeChild.contents Column); */
+              /*     childHeightMeasureMode.contents = Exactly */
+              /*   } else if ( */
+              /*     not isMainAxisRow && childWidthMeasureMode.contents !== Exactly */
+              /*   ) { */
+              /*     childWidth.contents = */
+              /*       fmaxf */
+              /*         (childHeight.contents *. currentRelativeChild.contents.style.aspectRatio) */
+              /*         (getPaddingAndBorderAxis currentRelativeChild.contents Row); */
+              /*     childWidthMeasureMode.contents = Exactly */
+              /*   } */
+              /* }; */
+              childWidth.contents =
+                constrainSizeToMaxSizeForMode
+                  currentRelativeChild.contents.style.maxWidth
+                  childWidthMeasureMode.contents
+                  childWidth.contents;
+              childWidthMeasureMode.contents =
+                constrainModeToMaxSizeForMode
+                  currentRelativeChild.contents.style.maxWidth childWidthMeasureMode.contents;
+              childHeight.contents =
+                constrainSizeToMaxSizeForMode
+                  currentRelativeChild.contents.style.maxHeight
+                  childHeightMeasureMode.contents
+                  childHeight.contents;
+              childHeightMeasureMode.contents =
+                constrainModeToMaxSizeForMode
+                  currentRelativeChild.contents.style.maxHeight childHeightMeasureMode.contents;
               let requiresStretchLayout =
                 not (isStyleDimDefined currentRelativeChild.contents crossAxis) &&
                 getAlignItem node currentRelativeChild.contents === AlignStretch;
+              /* Recursively call the layout algorithm for this child with the
+               * updated main size. */
               let _ =
                 layoutNodeInternal
                   currentRelativeChild.contents
@@ -906,8 +1045,16 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             }
           };
           remainingFreeSpace.contents = originalRemainingFreeSpace +. deltaFreeSpace.contents;
-          /* If we are using "at most" rules in the main axis. Calculate the remaining space when
-             constraint by the min size defined for the main axis. */
+
+          /** STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
+           * At this point, all the children have their dimensions set in the
+           * main axis.  Their dimensions are also set in the cross axis with
+           * the exception of items that are aligned "stretch". We need to
+           * compute these stretch values and set the final positions. */
+
+          /** If we are using "at most" rules in the main axis. Calculate the
+           * remaining space when constraint by the min size defined for the
+           * main axis. */
           if (measureModeMainDim === AtMost && remainingFreeSpace.contents > zero) {
             let minDim = styleMinDimensionForAxis node mainAxis;
             if (not (isUndefined minDim) && minDim >= zero) {
@@ -941,6 +1088,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               child.contents.style.positionType === Absolute && isLeadingPosDefined child.contents mainAxis
             ) {
               if performLayout {
+                /* In case the child is position absolute and has left/top
+                 * being defined, we override the position to whatever the user
+                 * said (and margin/border). */
                 setLayoutLeadingPositionForAxis
                   child.contents
                   mainAxis
@@ -949,39 +1099,59 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                     getLeadingMargin child.contents mainAxis
                   )
               }
-            } else {
+            } else if
+              /* Now that we placed the element, we need to update the
+               * variables.  We need to do that only for relative elements.
+               * Absolute elements do not take part in that phase. */
+              (child.contents.style.positionType === Relative) {
               if performLayout {
                 setLayoutLeadingPositionForAxis
                   child.contents
                   mainAxis
                   (layoutPosPositionForAxis child.contents mainAxis +. mainDim.contents)
               };
-              if (child.contents.style.positionType === Relative) {
-                if canSkipFlex {
-                  mainDim.contents =
-                    mainDim.contents +. betweenMainDim +. getMarginAxis child.contents mainAxis +.
-                    child.contents.layout.computedFlexBasis;
-                  crossDim.contents = availableInnerCrossDim
-                } else {
-                  mainDim.contents =
-                    mainDim.contents +. betweenMainDim +. getDimWithMargin child.contents mainAxis;
-                  crossDim.contents = fmaxf crossDim.contents (getDimWithMargin child.contents crossAxis)
-                }
+              if canSkipFlex {
+                /* If we skipped the flex step, then we can't rely on the
+                 * measuredDims because they weren't computed. This means we
+                 * can't call YGNodeDimWithMargin. */
+                mainDim.contents =
+                  mainDim.contents +. betweenMainDim +. getMarginAxis child.contents mainAxis +.
+                  child.contents.layout.computedFlexBasis;
+                crossDim.contents = availableInnerCrossDim
+              } else {
+                /* The main dimension is the sum of all the elements dimension
+                 * plus the spacing. */
+                mainDim.contents =
+                  mainDim.contents +. betweenMainDim +. getDimWithMargin child.contents mainAxis;
+                /* The cross dimension is the max of the elements dimension
+                 * since there can only be one element in that cross dimension.
+                 * */
+                crossDim.contents = fmaxf crossDim.contents (getDimWithMargin child.contents crossAxis)
               }
+            } else if performLayout {
+              setLayoutLeadingPositionForAxis
+                child.contents
+                mainAxis
+                (
+                  layoutPosPositionForAxis child.contents mainAxis +. getLeadingBorder child.contents mainAxis +. leadingMainDim
+                )
             }
           };
           mainDim.contents = mainDim.contents +. trailingPaddingAndBorderMain;
           let containerCrossAxis = {contents: availableInnerCrossDim};
           if (measureModeCrossDim === Undefined || measureModeCrossDim === AtMost) {
+            /* Compute the cross axis from the max cross dimension of the children. */
             containerCrossAxis.contents =
               boundAxis node crossAxis (crossDim.contents +. paddingAndBorderAxisCross) -. paddingAndBorderAxisCross;
             if (measureModeCrossDim === AtMost) {
               containerCrossAxis.contents = fminf containerCrossAxis.contents availableInnerCrossDim
             }
           };
+          /* If there's no flex wrap, the cross dimension is defined by the container. */
           if (not isNodeFlexWrap && measureModeCrossDim === Exactly) {
             crossDim.contents = availableInnerCrossDim
           };
+          /* Clamp to the min/max size specified on the container. */
           crossDim.contents =
             boundAxis node crossAxis (crossDim.contents +. paddingAndBorderAxisCross) -. paddingAndBorderAxisCross;
           /*
@@ -992,6 +1162,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             for i in startOfLineIndex.contents to (endOfLineIndex.contents - 1) {
               child.contents = node.children.(i);
               if (child.contents.style.positionType === Absolute) {
+                /* If the child is absolutely positioned and has a
+                 * top/left/bottom/right set, override all the previously
+                 * computed positions to set it correctly. */
                 if (isLeadingPosDefined child.contents crossAxis) {
                   setLayoutLeadingPositionForAxis
                     child.contents
@@ -1004,39 +1177,54 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   setLayoutLeadingPositionForAxis
                     child.contents
                     crossAxis
-                    (leadingPaddingAndBorderCross +. getLeadingMargin child.contents crossAxis)
+                    (getLeadingBorder node crossAxis +. getLeadingMargin child.contents crossAxis)
                 }
               } else {
                 let leadingCrossDim = {contents: leadingPaddingAndBorderCross};
+                /* For a relative children, we're either using alignItems
+                 * (parent) or alignSelf (child) in order to determine the
+                 * position in the cross axis */
                 let alignItem = getAlignItem node child.contents;
+                /* If the child uses align stretch, we need to lay it out one
+                 * more time, this time forcing the cross-axis size to be the
+                 * computed cross size for the current line. */
                 if (alignItem === AlignStretch) {
-                  let childWidth = {contents: zero};
-                  let childHeight = {contents: zero};
-                  let childWidthMeasureMode = {contents: Undefined};
-                  let childHeightMeasureMode = {contents: Undefined};
-                  childWidth.contents =
-                    child.contents.layout.measuredWidth +. getMarginAxis child.contents Row;
-                  childHeight.contents =
-                    child.contents.layout.measuredHeight +. getMarginAxis child.contents Column;
-                  let isCrossSizeDefinite = {contents: false};
-                  if isMainAxisRow {
-                    isCrossSizeDefinite.contents = isStyleDimDefined child.contents Column;
-                    childHeight.contents = crossDim.contents
-                  } else {
-                    isCrossSizeDefinite.contents = isStyleDimDefined child.contents Row;
-                    childWidth.contents = crossDim.contents
-                  };
-                  if (not isCrossSizeDefinite.contents) {
-                    childWidthMeasureMode.contents = isUndefined childWidth.contents ? Undefined : Exactly;
-                    childHeightMeasureMode.contents = isUndefined childHeight.contents ? Undefined : Exactly;
+                  let isCrossSizeDefinite =
+                    isMainAxisRow && isStyleDimDefined child.contents Column ||
+                    not isMainAxisRow && isStyleDimDefined child.contents Row;
+                  let childWidthMeasureMode = Exactly;
+                  let childHeightMeasureMode = Exactly;
+                  let (childHeight, childWidth) =
+                    if isMainAxisRow {
+                      (
+                        crossDim.contents,
+                        child.contents.layout.measuredWidth +. getMarginAxis child.contents Row
+                      )
+                    } else {
+                      (
+                        child.contents.layout.measuredHeight +. getMarginAxis child.contents Column,
+                        crossDim.contents
+                      )
+                    };
+                  let childWidth =
+                    constrainSizeToMaxSizeForMode
+                      child.contents.style.maxWidth childWidthMeasureMode childWidth;
+                  let childHeight =
+                    constrainSizeToMaxSizeForMode
+                      child.contents.style.maxHeight childHeightMeasureMode childHeight;
+                  /* If the child defines a definite size for its cross axis,
+                   * there's no need to stretch. */
+                  if (not isCrossSizeDefinite) {
+                    let childWidthMeasureMode = isUndefined childWidth ? Undefined : Exactly;
+                    let childHeightMeasureMode = isUndefined childHeight ? Undefined : Exactly;
                     let _ =
                       layoutNodeInternal
                         child.contents
-                        childWidth.contents
-                        childHeight.contents
+                        childWidth
+                        childHeight
                         direction
-                        childWidthMeasureMode.contents
-                        childHeightMeasureMode.contents
+                        childWidthMeasureMode
+                        childHeightMeasureMode
                         true
                         stretchString;
                     ()
@@ -1057,8 +1245,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   child.contents
                   crossAxis
                   (
-                    layoutPosPositionForAxis child.contents crossAxis +. totalLineCrossDim.contents +.
-                    leadingCrossDim.contents
+                    layoutPosPositionForAxis child.contents crossAxis +. (
+                      totalLineCrossDim.contents +. leadingCrossDim.contents
+                    )
                   )
               }
             }
@@ -1068,6 +1257,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           lineCount.contents = lineCount.contents + 1;
           startOfLineIndex.contents = endOfLineIndex.contents
         };
+
+        /** STEP 8: MULTI-LINE CONTENT ALIGNMENT */
         if (lineCount.contents > 1 && performLayout && not (isUndefined availableInnerCrossDim)) {
           let remainingAlignContentDim = availableInnerCrossDim -. totalLineCrossDim.contents;
           let crossDimLead = {contents: zero};
@@ -1198,25 +1389,26 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         };
         let currentAbsoluteChildRef = {contents: firstAbsoluteChild.contents};
         if performLayout {
+          /* STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN */
           while (currentAbsoluteChildRef.contents !== theNullNode) {
             absoluteLayoutChild
               node currentAbsoluteChildRef.contents availableInnerWidth widthMeasureMode direction;
             currentAbsoluteChildRef.contents = currentAbsoluteChildRef.contents.nextChild
-          }
-        };
-        /* STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN */
-        if performLayout {
-          let needsMainTrailingPos = mainAxis == RowReverse || mainAxis == ColumnReverse;
-          let needsCrossTrailingPos = crossAxis == RowReverse || crossAxis == ColumnReverse;
-          /* Set trailing position if necessary. */
-          if (needsMainTrailingPos || needsCrossTrailingPos) {
-            for i in 0 to (childCount - 1) {
-              let child = node.children.(i);
-              if needsMainTrailingPos {
-                setTrailingPosition node child mainAxis
-              };
-              if needsCrossTrailingPos {
-                setTrailingPosition node child crossAxis
+          };
+          /* STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN */
+          if performLayout {
+            let needsMainTrailingPos = mainAxis == RowReverse || mainAxis == ColumnReverse;
+            let needsCrossTrailingPos = crossAxis == RowReverse || crossAxis == ColumnReverse;
+            /* Set trailing position if necessary. */
+            if (needsMainTrailingPos || needsCrossTrailingPos) {
+              for i in 0 to (childCount - 1) {
+                let child = node.children.(i);
+                if needsMainTrailingPos {
+                  setTrailingPosition node child mainAxis
+                };
+                if needsCrossTrailingPos {
+                  setTrailingPosition node child crossAxis
+                }
               }
             }
           }
