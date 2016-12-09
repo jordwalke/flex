@@ -164,6 +164,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /* Instead of recomputing the entire layout every single time, we
      * cache some information to break early when nothing changed */
     mutable generationCount: int,
+    mutable computedFlexBasisGeneration: int,
     mutable lastParentDirection: direction,
     mutable computedFlexBasis: unitOfM,
     mutable nextCachedMeasurementsIndex: int,

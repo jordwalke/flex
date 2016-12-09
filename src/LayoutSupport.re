@@ -356,6 +356,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       /* Instead of recomputing the entire layout every single time, we
        * cache some information to break early when nothing changed */
       generationCount: 0,
+      computedFlexBasisGeneration: 0,
       lastParentDirection: CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
       nextCachedMeasurementsIndex: 0,
       /**

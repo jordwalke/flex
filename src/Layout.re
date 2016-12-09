@@ -336,10 +336,12 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let isColumnStyleDimDefined = isStyleDimDefined child Column;
     let thisChildFlexBasis = LayoutSupport.cssGetFlexBasis child;
     if (not (isUndefined thisChildFlexBasis) && not (isUndefined (isMainAxisRow ? width : height))) {
-      if (isUndefined child.layout.computedFlexBasis) {
-        /* TODO: Add experimental flag */
-        child.layout.computedFlexBasis =
-          fmaxf thisChildFlexBasis (getPaddingAndBorderAxis child mainAxis)
+      if (
+        isUndefined child.layout.computedFlexBasis ||
+        isExperimentalFeatureEnabled () &&
+        child.layout.computedFlexBasisGeneration !== gCurrentGenerationCount.contents
+      ) {
+        child.layout.computedFlexBasis = fmaxf thisChildFlexBasis (getPaddingAndBorderAxis child mainAxis)
       }
     } else if (
       isMainAxisRow && isRowStyleDimDefined
@@ -443,7 +445,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         fmaxf
           (isMainAxisRow ? child.layout.measuredWidth : child.layout.measuredHeight)
           (getPaddingAndBorderAxis child mainAxis)
-    }
+    };
+    child.layout.computedFlexBasisGeneration = gCurrentGenerationCount.contents
   }
   /**
    * @child The child with absolute position.
@@ -660,6 +663,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
          */
         for i in 0 to (childCount - 1) {
           let child = node.children.(i);
+          assert (child !== theNullNode);
           if performLayout {
             /* This is strange. We set the layout values to some intermediate
              * ones based purely on the style (essentially marginLeft + left).
@@ -684,6 +688,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
               previousAbsoluteChild.nextChild = child
             };
             currentAbsoluteChildRef.contents = child
+          } else if (
+            child === singleFlexChild.contents
+          ) {
+            child.layout.computedFlexBasisGeneration = gCurrentGenerationCount.contents;
+            child.layout.computedFlexBasis = zero
           } else {
             /**
              * We compute the flex basis for each child, then just read it out
