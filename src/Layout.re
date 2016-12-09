@@ -1205,6 +1205,12 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                         crossDim.contents
                       )
                     };
+                  /* Strangely, in Yoga, we don't even use the
+                   * `childWidthMeasureMode`/`childHeightMeasureMode`, so it's
+                   * a good thing that we ended up breaking the
+                   * `YGConstrainMaxSizeForMode` function into two functions
+                   * (one for determining dim, the other for determining the
+                   * mode) */
                   let childWidth =
                     constrainSizeToMaxSizeForMode
                       child.contents.style.maxWidth childWidthMeasureMode childWidth;
