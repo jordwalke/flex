@@ -163,7 +163,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable direction: direction,
     /* Instead of recomputing the entire layout every single time, we
      * cache some information to break early when nothing changed */
-    mutable hasNewLayout: bool,
     mutable generationCount: int,
     mutable lastParentDirection: direction,
     mutable computedFlexBasis: unitOfM,
@@ -187,8 +186,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     layout: cssLayout,
     mutable lineIndex: int,
     mutable nextChild: node,
-    mutable measure:
-      option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
+    mutable hasNewLayout: bool,
+    mutable measure: option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
     print: option (Node.context => unit),
     mutable children: array node,
     mutable childrenCount: int,

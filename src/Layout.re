@@ -154,7 +154,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       /* Invalidate the cached results.*/
       layout.nextCachedMeasurementsIndex = 0;
       layout.cachedLayout.widthMeasureMode = CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS;
-      layout.cachedLayout.heightMeasureMode = CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS
+      layout.cachedLayout.heightMeasureMode = CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS;
+      layout.cachedLayout.computedWidth = negativeOne;
+      layout.cachedLayout.computedHeight = negativeOne
     };
     let cachedResults = ref None;
     /* Determine whether the results are already cached. We maintain a separate*/
@@ -164,8 +166,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /* may be required to resolve all of the flex dimensions.*/
     /* We handle nodes with measure functions specially here because they are the most
      * expensive to measure, so it's worth avoiding redundant measurements if at all possible.*/
-    switch (node.measure, node.childrenCount) {
-    | (Some m, 0) =>
+    if (node.measure !== None) {
       let marginAxisRow = getMarginAxis node Row;
       let marginAxisColumn = getMarginAxis node Column;
       /* First, try to use the layout cache.*/
@@ -205,32 +206,29 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           }
         }
       }
-    | (None, _)
-    | (Some _, _) =>
-      if performLayout {
-        if (
-          layout.cachedLayout.availableWidth == availableWidth &&
-          layout.cachedLayout.availableHeight == availableHeight &&
-          layout.cachedLayout.widthMeasureMode == widthMeasureMode &&
-          layout.cachedLayout.heightMeasureMode == heightMeasureMode
-        ) {
-          cachedResults.contents = Some layout.cachedLayout
-        }
-      } else {
-        let foundCached = {contents: false};
-        for i in 0 to (layout.nextCachedMeasurementsIndex - 1) {
-          /* This is basically the "break" */
-          if (not foundCached.contents) {
-            let cachedMeasurementAtIndex = cachedMeasurementAt layout i;
-            if (
-              cachedMeasurementAtIndex.availableWidth == availableWidth &&
-              cachedMeasurementAtIndex.availableHeight == availableHeight &&
-              cachedMeasurementAtIndex.widthMeasureMode == widthMeasureMode &&
-              cachedMeasurementAtIndex.heightMeasureMode == heightMeasureMode
-            ) {
-              cachedResults.contents = Some cachedMeasurementAtIndex;
-              foundCached.contents = true
-            }
+    } else if performLayout {
+      if (
+        layout.cachedLayout.availableWidth == availableWidth &&
+        layout.cachedLayout.availableHeight == availableHeight &&
+        layout.cachedLayout.widthMeasureMode == widthMeasureMode &&
+        layout.cachedLayout.heightMeasureMode == heightMeasureMode
+      ) {
+        cachedResults.contents = Some layout.cachedLayout
+      }
+    } else {
+      let foundCached = {contents: false};
+      for i in 0 to (layout.nextCachedMeasurementsIndex - 1) {
+        /* This is basically the "break" */
+        if (not foundCached.contents) {
+          let cachedMeasurementAtIndex = cachedMeasurementAt layout i;
+          if (
+            cachedMeasurementAtIndex.availableWidth == availableWidth &&
+            cachedMeasurementAtIndex.availableHeight == availableHeight &&
+            cachedMeasurementAtIndex.widthMeasureMode == widthMeasureMode &&
+            cachedMeasurementAtIndex.heightMeasureMode == heightMeasureMode
+          ) {
+            cachedResults.contents = Some cachedMeasurementAtIndex;
+            foundCached.contents = true
           }
         }
       }
@@ -319,7 +317,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     if performLayout {
       node.layout.width = node.layout.measuredWidth;
       node.layout.height = node.layout.measuredHeight;
-      layout.hasNewLayout = true
+      node.hasNewLayout = true;
+      node.isDirty = false
     };
     gDepth.contents = gDepth.contents - 1;
     layout.generationCount = gCurrentGenerationCount.contents;
@@ -1387,28 +1386,26 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 paddingAndBorderAxisCross
             )
         };
-        let currentAbsoluteChildRef = {contents: firstAbsoluteChild.contents};
         if performLayout {
           /* STEP 10: SIZING AND POSITIONING ABSOLUTE CHILDREN */
+          let currentAbsoluteChildRef = {contents: firstAbsoluteChild.contents};
           while (currentAbsoluteChildRef.contents !== theNullNode) {
             absoluteLayoutChild
               node currentAbsoluteChildRef.contents availableInnerWidth widthMeasureMode direction;
             currentAbsoluteChildRef.contents = currentAbsoluteChildRef.contents.nextChild
           };
           /* STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN */
-          if performLayout {
-            let needsMainTrailingPos = mainAxis == RowReverse || mainAxis == ColumnReverse;
-            let needsCrossTrailingPos = crossAxis == RowReverse || crossAxis == ColumnReverse;
-            /* Set trailing position if necessary. */
-            if (needsMainTrailingPos || needsCrossTrailingPos) {
-              for i in 0 to (childCount - 1) {
-                let child = node.children.(i);
-                if needsMainTrailingPos {
-                  setTrailingPosition node child mainAxis
-                };
-                if needsCrossTrailingPos {
-                  setTrailingPosition node child crossAxis
-                }
+          let needsMainTrailingPos = mainAxis == RowReverse || mainAxis == ColumnReverse;
+          let needsCrossTrailingPos = crossAxis == RowReverse || crossAxis == ColumnReverse;
+          /* Set trailing position if necessary. */
+          if (needsMainTrailingPos || needsCrossTrailingPos) {
+            for i in 0 to (childCount - 1) {
+              let child = node.children.(i);
+              if needsMainTrailingPos {
+                setTrailingPosition node child mainAxis
+              };
+              if needsCrossTrailingPos {
+                setTrailingPosition node child crossAxis
               }
             }
           }

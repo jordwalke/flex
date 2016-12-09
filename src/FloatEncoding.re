@@ -8,6 +8,8 @@ let zero = 0.0;
 
 let divideScalarByInt (f: float) (i: int) => f /. float_of_int i;
 
+let (+=) reference add => reference.contents = reference.contents +. add;
+
 let (-.) = (-.);
 
 let (+.) = (+.);

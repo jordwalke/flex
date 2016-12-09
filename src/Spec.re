@@ -9,6 +9,7 @@ module type Encoding = {
   let cssUndefined: scalar;
   let isUndefined: scalar => bool;
   let zero: scalar;
+  let negativeOne: scalar;
   let divideScalarByInt: scalar => int => scalar;
   let scalarToFloat: scalar => float;
   let (-.): scalar => scalar => scalar;

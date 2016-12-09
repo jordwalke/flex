@@ -275,8 +275,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     widthMeasureMode: CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
     heightMeasureMode: CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
     /* TODO: Fix / check this (should be negative one perhaps?) */
-    computedWidth: zero,
-    computedHeight: zero
+    computedWidth: negativeOne,
+    computedHeight: negativeOne
   };
   let defaultStyle = {
     direction: Inherit,
@@ -350,11 +350,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     children: [||],
     childrenCount: 0,
     style: defaultStyle,
+    hasNewLayout: true,
     layout: {
       direction: Inherit,
       /* Instead of recomputing the entire layout every single time, we
        * cache some information to break early when nothing changed */
-      hasNewLayout: true,
       generationCount: 0,
       lastParentDirection: CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS,
       nextCachedMeasurementsIndex: 0,
@@ -753,10 +753,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    * Sets trailing position for a child node for a given axis.
    */
   let setTrailingPosition node child axis => {
-    let measuredChildDimensionForAxis = layoutMeasuredDimensionForAxis child axis;
+    let size = layoutMeasuredDimensionForAxis child axis;
     let childLayoutPosValueForAxis = layoutPosPositionForAxis child axis;
-    let nextValue =
-      layoutMeasuredDimensionForAxis node axis -. measuredChildDimensionForAxis -. childLayoutPosValueForAxis;
+    let nextValue = layoutMeasuredDimensionForAxis node axis -. size -. childLayoutPosValueForAxis;
     setLayoutTrailingPositionForAxis child axis nextValue
   };
   /* If both left and right are defined, then use left. Otherwise return */

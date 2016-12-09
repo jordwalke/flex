@@ -13,6 +13,8 @@ let isUndefined num => num === cssUndefined;
 
 let zero = 0;
 
+let negativeOne = (-1);
+
 let divideScalarByInt = (/);
 
 let unitsPerPixel = 100.0;
