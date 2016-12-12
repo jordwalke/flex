@@ -17,7 +17,7 @@
   "homepage": "https://github.com/jordwalke/re-layout",
   "dependencies": {
     "@opam-alpha/ocaml": "4.02.3",
-    "dependency-env": "https://github.com/npm-ml/dependency-env.git",
+    "dependency-env": "https://github.com/reasonml/dependency-env.git",
     "js_of_ocaml-bin": "git+https://github.com/reasonml/js_of_ocaml-bin.git",
     "@opam-alpha/merlin": "2.5.0",
     "nopam": "https://github.com/reasonml/nopam.git",
