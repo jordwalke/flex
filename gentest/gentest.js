@@ -1237,6 +1237,21 @@ function getExpectedResults(testData, computedKeyPathSoFar) {
    <div style="flex-basis: 50px;"></div>
  </div>
 
+ <div id="flex_basis_flex_grow_undefined_main_w_margin_top" style="width: 100px; margin-top:10px;">
+   <div style=" flex-grow: 1; flex-basis: 100px;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
+ <div id="flex_basis_flex_grow_undefined_main_w_margin_bottom" style="width: 100px; margin-bottom:10px;">
+   <div style=" flex-grow: 1; flex-basis: 100px;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
+ <div id="flex_basis_flex_grow_undefined_main_w_margin_left" style="width: 100px; margin-left:10px;">
+   <div style=" flex-grow: 1; flex-basis: 100px;"></div>
+   <div style="flex-basis: 50px;"></div>
+ </div>
+
  <div id="jwalke_border_width_only_start" style=" align-items: center; justify-content: center; width: 100px; height: 100px; border-start-width: 10px; border-top-width: 10px; border-bottom-width: 20px;">
    <div style="height: 10px; width: 10px;"></div>
  </div>
@@ -1346,7 +1361,16 @@ function getExpectedResults(testData, computedKeyPathSoFar) {
   </div>
 </div>
  
-
+<div id='testName' style='align_items:auto; padding-start: 48px; padding-end:48px; width:1408px; flex-direction: row;'>
+  <div style=''>
+    <div style=''></div>
+  </div>
+  <div style=''>
+    <div style=''>
+      <div style=''></div>
+    </div>
+  </div>
+</div>
 */
 
 
