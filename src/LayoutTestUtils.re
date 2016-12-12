@@ -1,6 +1,6 @@
-let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
-  let module LayoutTypes = LayoutTypes.Create Node Encoding;
-  let module LayoutPrint = LayoutPrint.Create Node Encoding;
+module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
+  module LayoutTypes = LayoutTypes.Create Node Encoding;
+  module LayoutPrint = LayoutPrint.Create Node Encoding;
   let round num => int_of_float (floor (num +. 0.5));
   /* open Encoding; */
   open HardCodedEncoding;
@@ -181,18 +181,26 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     if (
       hasMismatchedLayout [(expectedContainerLayout, observedContainerLayout), ...childExpectedAndObserved]
     ) {
-      let text = mismatchText (expectedContainerLayout, observedContainerLayout) childExpectedAndObserved;
-      let expectedDiagram =
-        renderDiagram expectedContainerLayout (List.map fst childExpectedAndObserved) 'E' 'e';
-      let observedDiagram =
-        renderDiagram observedContainerLayout (List.map snd childExpectedAndObserved) 'O' 'o';
-      let title = "Test " ^ string_of_int testNum ^ ":\n";
-      let expected = "\nEXPECTED\n========\n" ^ expectedDiagram;
-      let observed = "\nOBSERVED\n========\n" ^ observedDiagram;
-      failures.contents = [
-        (currentTestName.contents, title ^ text ^ expected ^ observed),
-        ...failures.contents
-      ]
+      try {
+        let text = mismatchText (expectedContainerLayout, observedContainerLayout) childExpectedAndObserved;
+        let expectedDiagram =
+          renderDiagram expectedContainerLayout (List.map fst childExpectedAndObserved) 'E' 'e';
+        let observedDiagram =
+          renderDiagram observedContainerLayout (List.map snd childExpectedAndObserved) 'O' 'o';
+        let title = "Test " ^ string_of_int testNum ^ ":\n";
+        let expected = "\nEXPECTED\n========\n" ^ expectedDiagram;
+        let observed = "\nOBSERVED\n========\n" ^ observedDiagram;
+        failures.contents = [
+          (currentTestName.contents, title ^ text ^ expected ^ observed),
+          ...failures.contents
+        ]
+      } {
+      | _ =>
+        let title = "Test " ^ string_of_int testNum ^ ":\n";
+        let text = mismatchText (expectedContainerLayout, observedContainerLayout) childExpectedAndObserved;
+        let err = "\nERROR PRINTING DIAGRAMS\n========\n";
+        failures.contents = [(currentTestName.contents, title ^ text ^ err), ...failures.contents]
+      }
     }
   };
 };
