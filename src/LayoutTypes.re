@@ -1,14 +1,14 @@
 module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   type printOptions = {printLayout: bool, printStyle: bool, printChildren: bool};
   type edge =
+    | Left
+    | Top
+    | Right
+    | Bottom
     | Start
     | End
-    | Left
-    | Right
-    | Vertical
     | Horizontal
-    | Top
-    | Bottom
+    | Vertical
     | All;
   type direction =
     | CSS_DIRECTION_NEGATIVE_ONE_WHATEVER_THAT_MEANS /* inherit */
