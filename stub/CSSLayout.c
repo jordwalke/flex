@@ -3,6 +3,7 @@
 #include <caml/alloc.h>
 #include <caml/fail.h>
 #include <caml/callback.h>
+#include <android/log.h>
 #include <assert.h>
 #include <stdio.h>
 #include "CSSLayout.h"
@@ -432,6 +433,12 @@ CSSDirection CSSNodeLayoutGetDirection(const CSSNodeRef node) {
     return CamlValToCSSDirection(caml_callback(*closure, *node));
 }
 
+
+CAMLprim value logcat(value txt) {
+  __android_log_print(ANDROID_LOG_ERROR, "REASON", String_val(txt));
+  return Val_unit;
+}
+
 // This is a special case for OCaml functions that have more than 5 parameters, in such cases you have to provide 2 C functions
 
 // This defines a stub api for ocaml to call back, it then passes control to the C function pointer
@@ -459,6 +466,7 @@ CAMLprim value cssMeasureFFI(value node, value w, value wm, value h, value hm) {
     height = floatToCamlVal(s.height);
     CAMLreturn(caml_callback2(*getMeasurement, width, height));
 }
+
 
 CAMLprim value cssMeasureFFI_bytecode(value * argv, int argn) {
     return cssMeasureFFI(argv[0], argv[1], argv[2], argv[3], argv[4]);

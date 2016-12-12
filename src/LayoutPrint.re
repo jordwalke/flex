@@ -1,4 +1,4 @@
-let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
+module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
 
   /**
    * It's okay to shadow existing modules, even though you can't export two
@@ -8,7 +8,7 @@ let module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    * second *instance* of the LayoutSupport module for a given encoding/node.
    * There should be at most one, and that should be shared by reference.
    */
-  let module LayoutSupport_TODO_REMOVE_ME = LayoutSupport.Create Node Encoding;
+  module LayoutSupport_TODO_REMOVE_ME = LayoutSupport.Create Node Encoding;
   open LayoutSupport_TODO_REMOVE_ME.LayoutTypes;
   open LayoutSupport_TODO_REMOVE_ME;
   /* open Encoding; */
