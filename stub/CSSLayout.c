@@ -73,7 +73,7 @@ bridgeEnumToCamlVal(CSSDirection, 1)
 bridgeEnumToCamlVal(CSSEdge, 0)
 bridgeEnumToCamlVal(CSSFlexDirection, 0)
 bridgeEnumToCamlVal(CSSMeasureMode, 0)
-bridgeEnumToCamlVal(CSSWrapType, 0)
+bridgeEnumToCamlVal(CSSWrap, 0)
 bridgeEnumToCamlVal(CSSPositionType, 0)
 bridgeEnumToCamlVal(CSSOverflow, 0)
 
@@ -369,7 +369,7 @@ defineNodeStyle(CSSDirection, Direction)
 
 defineNodeStyle(CSSPositionType, PositionType)
 
-defineNodeStyle(CSSWrapType, FlexWrap)
+defineNodeStyle(CSSWrap, FlexWrap)
 
 defineNodeStyle(CSSFlexDirection, FlexDirection)
 
