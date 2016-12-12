@@ -1309,10 +1309,14 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                       (
                         layoutMeasuredDimensionForAxis child.contents crossAxis +.
                         getMarginAxis child.contents crossAxis
-                      )
+                      );
+                  j.contents = j.contents + 1
+                } else {
+                  j.contents = j.contents + 1
                 }
-              };
-              j.contents = j.contents + 1
+              } else {
+                j.contents = j.contents + 1
+              }
             };
             endIndex.contents = j.contents;
             lineHeight.contents = lineHeight.contents +. crossDimLead.contents;
