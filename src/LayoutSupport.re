@@ -72,6 +72,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | Row => Right
     | RowReverse => Left
     };
+  let debugLog txt => Printf.printf "%s\n%!" txt;
   /* static const YGEdge pos[4] = { */
   /*         [YGFlexDirectionColumn] = YGEdgeTop, */
   /*         [YGFlexDirectionColumnReverse] = YGEdgeBottom, */
@@ -723,7 +724,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         boundValue
       };
     let nextNextBoundValue =
-      if (not (isUndefined min) && min >= zero && nextBoundValue < min) {
+      if (not (isUndefined min) && min >= zero && isDefined nextBoundValue && nextBoundValue < min) {
         min
       } else {
         nextBoundValue
@@ -849,7 +850,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         node.layout.measuredWidth = boundAxis node Row (availableWidth - marginAxisRow);
         node.layout.measuredHeight = boundAxis node Column (availableHeight - marginAxisColumn)
       } else if (
-        innerWidth <= 0 || innerHeight <= 0
+        not (isUndefined innerWidth) && innerWidth <= 0 || not (isUndefined innerHeight) && innerHeight <= 0
       ) {
         /* Don't bother sizing text if there's no horizontal or vertical space.  */
         node.layout.measuredWidth = boundAxis node Row 0;
@@ -902,8 +903,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let fixedSizeSetMeasuredDimensions node availableWidth availableHeight widthMeasureMode heightMeasureMode =>
     if (
-      widthMeasureMode === AtMost && availableWidth <= zero ||
-      heightMeasureMode === AtMost && availableHeight <= zero ||
+      widthMeasureMode === AtMost && isDefined availableWidth && availableWidth <= zero ||
+      heightMeasureMode === AtMost && isDefined availableHeight && availableHeight <= zero ||
       widthMeasureMode === Exactly && heightMeasureMode === Exactly
     ) {
       let marginAxisColumn = getMarginAxis node Column;

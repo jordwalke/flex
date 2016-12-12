@@ -8,6 +8,7 @@ module type Encoding = {
   type scalar;
   let cssUndefined: scalar;
   let isUndefined: scalar => bool;
+  let isDefined: scalar => bool;
   let zero: scalar;
   let negativeOne: scalar;
   let divideScalarByInt: scalar => int => scalar;

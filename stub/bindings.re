@@ -249,14 +249,11 @@ Callback.register
 Callback.register
   "CSSNodeStyleGetPosition" (fun node edge => computedEdgeValuePosition node.style edge cssUndefined);
 
-Callback.register
-  "CSSNodeStyleGetMargin" (fun node edge => computedEdgeValueMargin node.style edge cssUndefined);
+Callback.register "CSSNodeStyleGetMargin" (fun node edge => computedEdgeValueMargin node.style edge 0);
 
-Callback.register
-  "CSSNodeStyleGetBorder" (fun node edge => computedEdgeValueBorder node.style edge cssUndefined);
+Callback.register "CSSNodeStyleGetBorder" (fun node edge => computedEdgeValueBorder node.style edge 0);
 
-Callback.register
-  "CSSNodeStyleGetPadding" (fun node edge => computedEdgeValuePadding node.style edge cssUndefined);
+Callback.register "CSSNodeStyleGetPadding" (fun node edge => computedEdgeValuePadding node.style edge 0);
 
 /* Layout */
 Callback.register "CSSNodeLayoutGetWidth" (fun node => node.layout.width);

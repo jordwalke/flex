@@ -4,6 +4,8 @@ let cssUndefined = min_int;
 
 let isUndefined num => num === cssUndefined;
 
+let isDefined num => num != cssUndefined;
+
 let zero = 0;
 
 let negativeOne = (-1);

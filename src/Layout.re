@@ -814,7 +814,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           if (not (isUndefined availableInnerMainDim)) {
             remainingFreeSpace.contents = availableInnerMainDim -. sizeConsumedOnCurrentLine.contents
           } else if (
-            sizeConsumedOnCurrentLine.contents < zero
+            isDefined sizeConsumedOnCurrentLine.contents && sizeConsumedOnCurrentLine.contents < zero
           ) {
             /* availableInnerMainDim is indefinite which means the node is
              * being sized based on its content. sizeConsumedOnCurrentLine is
@@ -1434,6 +1434,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     }
   };
   let layoutNode node availableWidth availableHeight parentDirection => {
+    debugLog "entering layout";
     /* Increment the generation count. This will force the recursive routine to visit*/
     /* all dirty nodes at least once. Subsequent visits will be skipped if the input*/
     /* parameters don't change.*/
