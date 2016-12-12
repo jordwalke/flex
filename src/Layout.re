@@ -1107,11 +1107,12 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                     getLeadingMargin child.contents mainAxis
                   )
               }
-            } else if
+            } else if (
+              child.contents.style.positionType === Relative
+            ) {
               /* Now that we placed the element, we need to update the
                * variables.  We need to do that only for relative elements.
                * Absolute elements do not take part in that phase. */
-              (child.contents.style.positionType === Relative) {
               if performLayout {
                 setLayoutLeadingPositionForAxis
                   child.contents
