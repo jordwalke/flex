@@ -9,7 +9,7 @@ type scalar = int;
 
 let cssUndefined = min_int;
 
-let isUndefined num => num === cssUndefined;
+let isUndefined num => num == cssUndefined;
 
 let isDefined num => num != cssUndefined;
 
@@ -23,9 +23,9 @@ let unitsPerPixel = 100.0;
 
 let scalarToFloat (f: int) => float_of_int f /. unitsPerPixel;
 
-let (-.) = (-);
+let (-.) a b => a == cssUndefined || b == cssUndefined ? cssUndefined : a - b;
 
-let (+.) = (+);
+let (+.) a b => a == cssUndefined || b == cssUndefined ? cssUndefined : a + b;
 
 let (/.) = (/);
 
