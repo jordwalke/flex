@@ -369,7 +369,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       cachedMeasurement4: dummyCachedMeasurement,
       cachedMeasurement5: dummyCachedMeasurement,
       cachedMeasurement6: dummyCachedMeasurement,
-      cachedLayout: createCacheMeasurement (),
+      cachedLayout: dummyCachedMeasurement,
       /**
        * Start out as zero.
        */
@@ -398,8 +398,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     context: Node.nullContext
   };
   /* Force allocating a new object */
-  let createStyle () => {...defaultStyle, direction: Inherit};
-  let createLayout () => {...theNullNode.layout, direction: Inherit};
+  let createLayout () => {
+    ...theNullNode.layout,
+    direction: Inherit,
+    cachedLayout: createCacheMeasurement ()
+  };
   let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=? context => {
     ...theNullNode,
     children,
@@ -409,7 +412,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /**
      * We can keep the original style because it's immutable, but layout is not.
      */
-    layout: {...theNullNode.layout, direction: Inherit},
+    layout: createLayout (),
     context
   };
 

@@ -241,7 +241,6 @@ let cssNodeNew ptr => {
   selfRef: ptr,
   children: [||],
   layout: createLayout (),
-  style: createStyle (),
   isDirty: true,
   /* Since context is mutated, every node must have its own new copy */
   context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
