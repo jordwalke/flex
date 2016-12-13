@@ -1361,7 +1361,7 @@ function getExpectedResults(testData, computedKeyPathSoFar) {
   </div>
 </div>
  
-<div id='testName' style='align_items:auto; padding-start: 48px; padding-end:48px; width:1408px; flex-direction: row;'>
+<div id='bugRepro' style='align-items:auto; padding-start: 48px; padding-end:48px; width:1408px; flex-direction: row;'>
   <div style=''>
     <div style=''></div>
   </div>
