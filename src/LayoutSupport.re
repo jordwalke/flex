@@ -1,7 +1,5 @@
 let nodeWithNoMeasureStr = "Passed node with no measurement function";
 
-external logcat : string => unit = "logcat";
-
 module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
 
   /**
@@ -851,7 +849,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       let innerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
       let innerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
       if (widthMeasureMode === Exactly && heightMeasureMode === Exactly) {
-        logcat "demension already defined";
         /* Don't bother sizing the text if both dimensions are already defined. */
         node.layout.measuredWidth = boundAxis node Row (availableWidth - marginAxisRow);
         node.layout.measuredHeight = boundAxis node Column (availableHeight - marginAxisColumn)
@@ -864,7 +861,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       } else {
         /* Measure the text under the current constraints */
         let measuredSize = measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
-        logcat (Printf.sprintf "measured size w %d h %d" measuredSize.width measuredSize.height);
         node.layout.measuredWidth =
           boundAxis
             node

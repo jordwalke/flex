@@ -1,7 +1,5 @@
 type scalar = int;
 
-external logcat : string => unit = "logcat";
-
 let cssUndefined = min_int;
 
 let isUndefined num => num == cssUndefined;
