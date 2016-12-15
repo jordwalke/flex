@@ -256,6 +256,7 @@ void YGSetExperimentalFeatureEnabled(YGExperimentalFeature feature, bool enabled
     // TODO: implement this
     return;
 }
+
 bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature) {
     // TODO: implement this
     return false;
@@ -404,6 +405,16 @@ defineNodeStyle(float, FlexShrink);
 defineNodeStyle(float, FlexBasis);
 
 defineNodeStyle(float, Flex);
+
+void YGNodeStyleSetAspectRatio(const YGNodeRef node, float v) {
+    // TODO: implement this
+    return;
+}
+
+float YGNodeStyleGetAspectRatio(const YGNodeRef node) {
+    // TODO: implement this
+    return 1.f;
+}
 
 
 /* Layout */
