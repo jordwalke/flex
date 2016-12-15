@@ -832,6 +832,28 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           };
           let originalRemainingFreeSpace = remainingFreeSpace.contents;
           let deltaFreeSpace = {contents: zero};
+
+          /**
+           * For the following markup, there is a bug.
+           *
+           * The `computedFlexBasis` of the first child is `20000`, and the
+           * `computedFlexBasis` of the second is `18000` (which is the total
+           * `20000` - `2 * 10`(padding)). That computed flex basis is likely
+           * wrong (or not?) but it leaves `originalRemainingFreeSpace` =
+           * `-2000`. If correct, it's not getting distributed to the second
+           * child because the second child only has `flexGrow` (not shrink).
+           * But I *don't* think it's correct. If no flex basis/width is
+           * explicitly set in the style, I think it should look at te
+           * width/height as described here:
+           * https://developer.mozilla.org/en-US/docs/Web/CSS/flex-basis
+           *
+           *  <div id='bugRepro2_simplified' style='padding-start: 10px; padding-end:10px; width:200px; flex-direction: row;'>
+           *    <div style='justify-content:flex-start; width:20px;'></div>
+           *    <div style='min-height: 0px; flex-direction: row; flex-grow: 1;'>
+           *      <div style='flex-grow: 1;'> </div>
+           *    </div>
+           *  </div>
+           */
           if (not canSkipFlex) {
             /* Do two passes over the flex items to figure out how to
              * distribute the remaining space.  The first pass finds the items
@@ -1452,6 +1474,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       } else if (isStyleDimDefined node Row) {
         (node.style.width +. getMarginAxis node Row, Exactly)
       } else if (
+        /* TODO: #correctness: This should guard for undefined case. */
         node.style.maxWidth >= zero
       ) {
         (node.style.maxWidth, AtMost)
@@ -1466,6 +1489,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       ) {
         (node.style.height +. getMarginAxis node Column, Exactly)
       } else if (
+        /* TODO: #correctness: This should guard for undefined case. */
         node.style.maxHeight >= zero
       ) {
         (node.style.maxHeight, AtMost)
