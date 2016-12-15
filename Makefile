@@ -37,7 +37,9 @@ android: $(BUILDDIR)/librelayout$(EXTDLL)
 
 android64: $(BUILDDIR)/librelayout$(EXTDLL)
 
-sharedlib: $(BUILDDIR)/librelayout.so
+sharedlib: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
+	ocamlfind opt -o $(BUILDDIR)/librelayout.so -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(PACKAGES) $^
+	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/%.re: %.re
 	cp $< $@
@@ -54,11 +56,6 @@ $(BUILDDIR)/%.re: %.ml
 $(BUILDDIR)/%.o: %.c
 	ocamlfind $(TOOLCHAIN) opt -ccopt -std=c11 -g -c $< -o $@
 	mv $(notdir $@) $@
-
-$(BUILDDIR)/librelayout.so: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind opt -a $@ -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(PACKAGES) $^
-	# ocamlfind $(TOOLCHAIN) opt -o $(BUILDDIR)/librelayout$(EXTDLL) -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
-	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/librelayout$(EXTDLL): $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
 	ocamlfind $(TOOLCHAIN) opt -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
