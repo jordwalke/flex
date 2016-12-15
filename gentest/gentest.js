@@ -1371,6 +1371,16 @@ function getExpectedResults(testData, computedKeyPathSoFar) {
     </div>
   </div>
 </div>
+
+
+<div id='bugRepro2' style='padding-start: 10px; padding-end:10px; width:200px; flex-direction: row;'>
+  <div style='justify-content:flex-start; width:20px;'>
+  </div>
+  <div style='min-height: 0px; flex-direction: row; flex-grow: 1;'>
+    <div style='flex-grow: 1;'> </div>
+  </div>
+</div>
+
 */
 
 
