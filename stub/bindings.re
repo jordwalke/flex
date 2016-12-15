@@ -78,86 +78,86 @@ let cssNodeGetChild node i =>
 let cssNodeCalculateLayout node aw ah pd => Layout.layoutNode node aw ah pd;
 
 /* New Layout */
-Callback.register "CSSNodeSetHasNewLayout" (fun node hasNewLayout => node.hasNewLayout = hasNewLayout);
+Callback.register "YGNodeSetHasNewLayout" (fun node hasNewLayout => node.hasNewLayout = hasNewLayout);
 
-Callback.register "CSSNodeGetHasNewLayout" (fun node => node.hasNewLayout);
+Callback.register "YGNodeGetHasNewLayout" (fun node => node.hasNewLayout);
 
 /* Style */
-Callback.register "CSSNodeStyleSetWidth" (fun node width => node.style = {...node.style, width});
+Callback.register "YGNodeStyleSetWidth" (fun node width => node.style = {...node.style, width});
 
-Callback.register "CSSNodeStyleGetWidth" (fun node => node.style.width);
+Callback.register "YGNodeStyleGetWidth" (fun node => node.style.width);
 
-Callback.register "CSSNodeStyleSetHeight" (fun node height => node.style = {...node.style, height});
+Callback.register "YGNodeStyleSetHeight" (fun node height => node.style = {...node.style, height});
 
-Callback.register "CSSNodeStyleGetHeight" (fun node => node.style.height);
+Callback.register "YGNodeStyleGetHeight" (fun node => node.style.height);
 
-Callback.register "CSSNodeStyleSetFlexGrow" (fun node flexGrow => node.style = {...node.style, flexGrow});
+Callback.register "YGNodeStyleSetFlexGrow" (fun node flexGrow => node.style = {...node.style, flexGrow});
 
-Callback.register "CSSNodeStyleGetFlexGrow" cssGetFlexGrow;
-
-Callback.register
-  "CSSNodeStyleSetFlexShrink" (fun node flexShrink => node.style = {...node.style, flexShrink});
-
-Callback.register "CSSNodeStyleGetFlexShrink" cssGetFlexShrink;
-
-Callback.register "CSSNodeStyleSetFlexWrap" (fun node flexWrap => node.style = {...node.style, flexWrap});
-
-Callback.register "CSSNodeStyleGetFlexWrap" (fun node => node.style.flexWrap);
+Callback.register "YGNodeStyleGetFlexGrow" cssGetFlexGrow;
 
 Callback.register
-  "CSSNodeStyleSetJustifyContent" (fun node justifyContent => node.style = {...node.style, justifyContent});
+  "YGNodeStyleSetFlexShrink" (fun node flexShrink => node.style = {...node.style, flexShrink});
 
-Callback.register "CSSNodeStyleGetJustifyContent" (fun node => node.style.justifyContent);
+Callback.register "YGNodeStyleGetFlexShrink" cssGetFlexShrink;
 
-Callback.register
-  "CSSNodeStyleSetAlignItems" (fun node alignItems => node.style = {...node.style, alignItems});
+Callback.register "YGNodeStyleSetFlexWrap" (fun node flexWrap => node.style = {...node.style, flexWrap});
 
-Callback.register "CSSNodeStyleGetAlignItems" (fun node => node.style.alignItems);
-
-Callback.register
-  "CSSNodeStyleSetAlignContent" (fun node alignContent => node.style = {...node.style, alignContent});
-
-Callback.register "CSSNodeStyleGetAlignContent" (fun node => node.style.alignContent);
-
-Callback.register "CSSNodeStyleSetAlignSelf" (fun node alignSelf => node.style = {...node.style, alignSelf});
-
-Callback.register "CSSNodeStyleGetAlignSelf" (fun node => node.style.alignSelf);
-
-Callback.register "CSSNodeStyleSetMaxWidth" (fun node maxWidth => node.style = {...node.style, maxWidth});
-
-Callback.register "CSSNodeStyleGetMaxWidth" (fun node => node.style.maxWidth);
-
-Callback.register "CSSNodeStyleSetMaxHeight" (fun node maxHeight => node.style = {...node.style, maxHeight});
-
-Callback.register "CSSNodeStyleGetMaxHeight" (fun node => node.style.maxHeight);
-
-Callback.register "CSSNodeStyleSetMinWidth" (fun node minWidth => node.style = {...node.style, minWidth});
-
-Callback.register "CSSNodeStyleGetMinWidth" (fun node => node.style.minWidth);
-
-Callback.register "CSSNodeStyleSetMinHeight" (fun node minHeight => node.style = {...node.style, minHeight});
-
-Callback.register "CSSNodeStyleGetMinHeight" (fun node => node.style.minHeight);
-
-Callback.register "CSSNodeStyleGetDirection" (fun node => node.style.direction);
-
-Callback.register "CSSNodeStyleSetDirection" (fun node direction => node.style = {...node.style, direction});
-
-Callback.register "CSSNodeStyleGetFlexDirection" (fun node => node.style.flexDirection);
+Callback.register "YGNodeStyleGetFlexWrap" (fun node => node.style.flexWrap);
 
 Callback.register
-  "CSSNodeStyleSetPositionType" (fun node positionType => node.style = {...node.style, positionType});
+  "YGNodeStyleSetJustifyContent" (fun node justifyContent => node.style = {...node.style, justifyContent});
 
-Callback.register "CSSNodeStyleGetPositionType" (fun node => node.style.positionType);
+Callback.register "YGNodeStyleGetJustifyContent" (fun node => node.style.justifyContent);
 
 Callback.register
-  "CSSNodeStyleSetFlexDirection" (fun node flexDirection => node.style = {...node.style, flexDirection});
+  "YGNodeStyleSetAlignItems" (fun node alignItems => node.style = {...node.style, alignItems});
 
-Callback.register "CSSNodeStyleGetOverflow" (fun node => node.style.overflow);
+Callback.register "YGNodeStyleGetAlignItems" (fun node => node.style.alignItems);
 
-Callback.register "CSSNodeStyleSetFlexBasis" (fun node flexBasis => node.style = {...node.style, flexBasis});
+Callback.register
+  "YGNodeStyleSetAlignContent" (fun node alignContent => node.style = {...node.style, alignContent});
 
-Callback.register "CSSNodeStyleGetFlexBasis" cssGetFlexBasis;
+Callback.register "YGNodeStyleGetAlignContent" (fun node => node.style.alignContent);
+
+Callback.register "YGNodeStyleSetAlignSelf" (fun node alignSelf => node.style = {...node.style, alignSelf});
+
+Callback.register "YGNodeStyleGetAlignSelf" (fun node => node.style.alignSelf);
+
+Callback.register "YGNodeStyleSetMaxWidth" (fun node maxWidth => node.style = {...node.style, maxWidth});
+
+Callback.register "YGNodeStyleGetMaxWidth" (fun node => node.style.maxWidth);
+
+Callback.register "YGNodeStyleSetMaxHeight" (fun node maxHeight => node.style = {...node.style, maxHeight});
+
+Callback.register "YGNodeStyleGetMaxHeight" (fun node => node.style.maxHeight);
+
+Callback.register "YGNodeStyleSetMinWidth" (fun node minWidth => node.style = {...node.style, minWidth});
+
+Callback.register "YGNodeStyleGetMinWidth" (fun node => node.style.minWidth);
+
+Callback.register "YGNodeStyleSetMinHeight" (fun node minHeight => node.style = {...node.style, minHeight});
+
+Callback.register "YGNodeStyleGetMinHeight" (fun node => node.style.minHeight);
+
+Callback.register "YGNodeStyleGetDirection" (fun node => node.style.direction);
+
+Callback.register "YGNodeStyleSetDirection" (fun node direction => node.style = {...node.style, direction});
+
+Callback.register "YGNodeStyleGetFlexDirection" (fun node => node.style.flexDirection);
+
+Callback.register
+  "YGNodeStyleSetPositionType" (fun node positionType => node.style = {...node.style, positionType});
+
+Callback.register "YGNodeStyleGetPositionType" (fun node => node.style.positionType);
+
+Callback.register
+  "YGNodeStyleSetFlexDirection" (fun node flexDirection => node.style = {...node.style, flexDirection});
+
+Callback.register "YGNodeStyleGetOverflow" (fun node => node.style.overflow);
+
+Callback.register "YGNodeStyleSetFlexBasis" (fun node flexBasis => node.style = {...node.style, flexBasis});
+
+Callback.register "YGNodeStyleGetFlexBasis" cssGetFlexBasis;
 
 let setIfUndefined oldValue newValue =>
   if (isUndefined oldValue) {
@@ -173,12 +173,12 @@ let setIfZero oldValue newValue =>
     oldValue
   };
 
-Callback.register "CSSNodeStyleSetFlex" (fun node flex => node.style = {...node.style, flex});
+Callback.register "YGNodeStyleSetFlex" (fun node flex => node.style = {...node.style, flex});
 
-Callback.register "CSSNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
+Callback.register "YGNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
 
 Callback.register
-  "CSSNodeStyleSetPadding"
+  "YGNodeStyleSetPadding"
   (
     fun node edge v =>
       switch edge {
@@ -195,7 +195,7 @@ Callback.register
   );
 
 Callback.register
-  "CSSNodeStyleSetMargin"
+  "YGNodeStyleSetMargin"
   (
     fun node edge v =>
       switch edge {
@@ -212,7 +212,7 @@ Callback.register
   );
 
 Callback.register
-  "CSSNodeStyleSetBorder"
+  "YGNodeStyleSetBorder"
   (
     fun node edge v =>
       switch edge {
@@ -229,7 +229,7 @@ Callback.register
   );
 
 Callback.register
-  "CSSNodeStyleSetPosition"
+  "YGNodeStyleSetPosition"
   (
     fun node edge v =>
       switch edge {
@@ -246,54 +246,54 @@ Callback.register
   );
 
 Callback.register
-  "CSSNodeStyleGetPosition" (fun node edge => computedEdgeValuePosition node.style edge cssUndefined);
+  "YGNodeStyleGetPosition" (fun node edge => computedEdgeValuePosition node.style edge cssUndefined);
 
-Callback.register "CSSNodeStyleGetMargin" (fun node edge => computedEdgeValueMargin node.style edge 0);
+Callback.register "YGNodeStyleGetMargin" (fun node edge => computedEdgeValueMargin node.style edge 0);
 
-Callback.register "CSSNodeStyleGetBorder" (fun node edge => computedEdgeValueBorder node.style edge 0);
+Callback.register "YGNodeStyleGetBorder" (fun node edge => computedEdgeValueBorder node.style edge 0);
 
-Callback.register "CSSNodeStyleGetPadding" (fun node edge => computedEdgeValuePadding node.style edge 0);
+Callback.register "YGNodeStyleGetPadding" (fun node edge => computedEdgeValuePadding node.style edge 0);
 
 /* Layout */
-Callback.register "CSSNodeLayoutGetWidth" (fun node => node.layout.width);
+Callback.register "YGNodeLayoutGetWidth" (fun node => node.layout.width);
 
-Callback.register "CSSNodeLayoutGetHeight" (fun node => node.layout.height);
+Callback.register "YGNodeLayoutGetHeight" (fun node => node.layout.height);
 
-Callback.register "CSSNodeLayoutGetTop" (fun node => node.layout.top);
+Callback.register "YGNodeLayoutGetTop" (fun node => node.layout.top);
 
-Callback.register "CSSNodeLayoutGetBottom" (fun node => node.layout.bottom);
+Callback.register "YGNodeLayoutGetBottom" (fun node => node.layout.bottom);
 
-Callback.register "CSSNodeLayoutGetLeft" (fun node => node.layout.left);
+Callback.register "YGNodeLayoutGetLeft" (fun node => node.layout.left);
 
-Callback.register "CSSNodeLayoutGetRight" (fun node => node.layout.right);
+Callback.register "YGNodeLayoutGetRight" (fun node => node.layout.right);
 
-Callback.register "CSSNodeLayoutGetDirection" (fun node => node.layout.direction);
+Callback.register "YGNodeLayoutGetDirection" (fun node => node.layout.direction);
 
 /* Misc */
 Callback.register "minInt" (fun () => min_int);
 
-Callback.register "CSSNodeNew" cssNodeNew;
+Callback.register "YGNodeNew" cssNodeNew;
 
-Callback.register "CSSNodeGetSelfRef" cssNodeGetSelfRef;
+Callback.register "YGNodeGetSelfRef" cssNodeGetSelfRef;
 
-Callback.register "CSSNodeInsertChild" cssNodeInsertChild;
+Callback.register "YGNodeInsertChild" cssNodeInsertChild;
 
-Callback.register "CSSNodeRemoveChild" cssNodeRemoveChild;
+Callback.register "YGNodeRemoveChild" cssNodeRemoveChild;
 
-Callback.register "CSSNodeChildCount" cssNodeChildCount;
+Callback.register "YGNodeChildCount" cssNodeChildCount;
 
-Callback.register "CSSNodeGetChild" cssNodeGetChild;
+Callback.register "YGNodeGetChild" cssNodeGetChild;
 
-Callback.register "CSSNodeIsDirty" cssNodeIsDirty;
+Callback.register "YGNodeIsDirty" cssNodeIsDirty;
 
-Callback.register "CSSNodeCalculateLayout" cssNodeCalculateLayout;
+Callback.register "YGNodeCalculateLayout" cssNodeCalculateLayout;
 
-Callback.register "CSSNodeSetContext" (fun node context => node.context.contextPtr = context);
+Callback.register "YGNodeSetContext" (fun node context => node.context.contextPtr = context);
 
-Callback.register "CSSNodeGetContext" (fun node => node.context.contextPtr);
+Callback.register "YGNodeGetContext" (fun node => node.context.contextPtr);
 
 Callback.register
-  "CSSNodeSetMeasureFunc"
+  "YGNodeSetMeasureFunc"
   (
     fun node ptr => {
       node.context.measureFuncPtr = ptr;
@@ -305,6 +305,6 @@ Callback.register
     }
   );
 
-Callback.register "CSSNodeGetMeasureFunc" (fun node => node.context.measureFuncPtr);
+Callback.register "YGNodeGetMeasureFunc" (fun node => node.context.measureFuncPtr);
 
 Callback.register "GetMeasurement" (fun width height => {width, height});

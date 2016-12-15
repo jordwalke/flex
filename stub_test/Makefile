@@ -22,7 +22,8 @@ $(BUILDDIR)/%.o: %.cpp
 
 FLAGS = -fno-omit-frame-pointer -fexceptions -Wall -Werror -O3 -std=c++11
 
-$(BUILDDIR)/test: CSSLayoutPaddingTest.cpp CSSLayoutMinMaxDimensionTest.cpp CSSLayoutMeasureTest.cpp CSSLayoutMeasureModeTest.cpp CSSLayoutMeasureCacheTest.cpp CSSLayoutMarginTest.cpp CSSLayoutJustifyContentTest.cpp CSSLayoutFlexWrapTest.cpp CSSLayoutFlexTest.cpp CSSLayoutFlexDirectionTest.cpp CSSLayoutEdgeTest.cpp CSSLayoutDirtyMarkingTest.cpp CSSLayoutDefaultValuesTest.cpp CSSLayoutBorderTest.cpp CSSLayoutAlignSelfTest.cpp CSSLayoutAlignItemsTest.cpp CSSLayoutAlignContentTest.cpp CSSLayoutAbsolutePositionTest.cpp
+# $(BUILDDIR)/test: CSSLayoutPaddingTest.cpp CSSLayoutMinMaxDimensionTest.cpp CSSLayoutMeasureTest.cpp CSSLayoutMeasureModeTest.cpp CSSLayoutMeasureCacheTest.cpp CSSLayoutMarginTest.cpp CSSLayoutJustifyContentTest.cpp CSSLayoutFlexWrapTest.cpp CSSLayoutFlexTest.cpp CSSLayoutFlexDirectionTest.cpp CSSLayoutEdgeTest.cpp CSSLayoutDirtyMarkingTest.cpp CSSLayoutDefaultValuesTest.cpp CSSLayoutBorderTest.cpp CSSLayoutAlignSelfTest.cpp CSSLayoutAlignItemsTest.cpp CSSLayoutAlignContentTest.cpp CSSLayoutAbsolutePositionTest.cpp
+$(BUILDDIR)/test: YGAbsolutePositionTest.cpp YGAlignContentTest.cpp YGAlignItemsTest.cpp YGAlignSelfTest.cpp YGBorderTest.cpp YGDirtyMarkingTest.cpp YGEdgeTest.cpp
 	g++ -o $@ -isystem ${GTEST_DIR}/include $(FLAGS) -pthread -I $(OCAMLDIR) -I ../stub libgtest.a -L$(BUILDDIR)/.. -lrelayout ${GTEST_DIR}/src/gtest_main.cc $^
 
 gtest:

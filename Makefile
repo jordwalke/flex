@@ -12,7 +12,7 @@ $(shell nopam)
 GENERATOR_FILES=$(BUILDDIR)/stub/bindings.re
 
 # The files used to build the stub generator.
-LIBFILES=$(BUILDDIR)/stub/bindings.cmx $(BUILDDIR)/stub/CSSLayout.o
+LIBFILES=$(BUILDDIR)/stub/bindings.cmx $(BUILDDIR)/stub/Yoga.o
 
 SOURCES := $(shell find $(SRCDIR) -name '*.re')
 
