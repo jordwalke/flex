@@ -242,7 +242,7 @@ YGNodeRef YGNodeGetChild(const YGNodeRef node,
                                                     *node, Val_int(index)));
 }
 
-void YGLayoutSetLogger(YGLogger logger) {
+void YGSetLogger(YGLogger logger) {
     // TODO: implement this
     return;
 }
@@ -252,11 +252,11 @@ void YGLog(YGLogLevel level, const char *message, ...) {
     return;
 }
 
-void YGLayoutSetExperimentalFeatureEnabled(YGExperimentalFeature feature, bool enabled) {
+void YGSetExperimentalFeatureEnabled(YGExperimentalFeature feature, bool enabled) {
     // TODO: implement this
     return;
 }
-bool YGLayoutIsExperimentalFeatureEnabled(YGExperimentalFeature feature) {
+bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature) {
     // TODO: implement this
     return false;
 }
@@ -266,7 +266,12 @@ void YGNodeMarkDirty(const YGNodeRef node) {
     return;
 }
 
-
+void YGNodeCopyStyle(const YGNodeRef destNode,
+                     const YGNodeRef srcNode) {
+    camlMethod(closure);
+    caml_callback2(*closure, *destNode, *srcNode);
+    return;
+}
 
 bool YGNodeIsDirty(const YGNodeRef node) {
     camlMethod(closure);

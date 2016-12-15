@@ -299,6 +299,8 @@ Callback.register "YGNodeLayoutGetDirection" (fun node => node.layout.direction)
 /* Misc */
 Callback.register "minInt" (fun () => min_int);
 
+Callback.register "YGNodeCopyStyle" (fun destNode srcNode => destNode.style = srcNode.style);
+
 Callback.register "YGNodeNew" cssNodeNew;
 
 Callback.register "YGNodeGetSelfRef" cssNodeGetSelfRef;
