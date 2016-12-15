@@ -3,7 +3,7 @@ BUILDDIR=_build
 SRCDIR=src
 CAML_INIT=$(BUILDDIR)/stub/init.o
 
-EXTDLL:=.o
+EXTDLL:=.so
 
 $(shell mkdir -p $(BUILDDIR) $(BUILDDIR)/stub $(BUILDDIR)/$(SRCDIR) $(BUILDDIR)/test)
 
@@ -56,12 +56,12 @@ $(BUILDDIR)/%.o: %.c
 	mv $(notdir $@) $@
 
 $(BUILDDIR)/librelayout.so: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind opt -o $@ -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(PACKAGES) $^
+	ocamlfind opt -a $@ -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(PACKAGES) $^
 	# ocamlfind $(TOOLCHAIN) opt -o $(BUILDDIR)/librelayout$(EXTDLL) -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
 	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/librelayout$(EXTDLL): $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind $(TOOLCHAIN) opt -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -verbose -output-obj $(PACKAGES) $^
+	ocamlfind $(TOOLCHAIN) opt -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
 	@echo "lib genereated at: $@"
 
 clean:
