@@ -1,3 +1,99 @@
+/* type scalar = int; */
+/* let cssUndefined = min_int; */
+/* let isUndefined num => num === cssUndefined; */
+/* let isDefined num => num != cssUndefined; */
+/* let zero = 0; */
+/* let negativeOne = (-1); */
+/* let divideScalarByInt s i => { */
+/*   if (s === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (i === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   (/) s i; */
+/* }; */
+/* let unitsPerPixel = 100.0; */
+/* let scalarToFloat (f: int) => float_of_int f /. unitsPerPixel; */
+/* let (-.) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a - b */
+/* }; */
+/* let (+.) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a + b */
+/* }; */
+/* let (/.) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a / b */
+/* }; */
+/* let ( *. ) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a * b */
+/* }; */
+/* let (<) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a < b */
+/* }; */
+/* let (<=) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a <= b */
+/* }; */
+/* let (>) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a > b */
+/* }; */
+/* let (>=) a b => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   if (b === cssUndefined) { */
+/*     raise (Invalid_argument "RHS is undefined") */
+/*   }; */
+/*   a >= b */
+/* }; */
+/* let (~-.) a => { */
+/*   if (a === cssUndefined) { */
+/*     raise (Invalid_argument "LHS is undefined") */
+/*   }; */
+/*   - a */
+/* }; */
+/* let scalarToString = string_of_int; */
 /**
  * Portion of the typical `Spec` that is ignored and instead hard coded to the
  * structure items below, so that we can ensure that inlining occurs. Once we
@@ -47,3 +143,4 @@ let scalarToString = string_of_int;
 /* let (~-.) = (~-.); */
 /* let scalarToString = string_of_float; */
 /* let scalarToFloat (f: float) => f; */
+
