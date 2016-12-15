@@ -186,7 +186,7 @@ void YGNodeFree(const YGNodeRef node) {
 // On the contract, the ownership of a node always belong to the creator.
 // This function, however assumes the ownership of a node belong to the tree.
 // We have this function mostly for convenience purpose in unit tests.
-void YGNodeFreeRecursive(const YGNodeRef node) {
+void YGNodeFreeRecursive(const YGNodeRef root) {
     // deregister the value with global heap, children of this object still need to be freed
     // by its owner.
     while (YGNodeChildCount(root) > 0) {
@@ -194,7 +194,7 @@ void YGNodeFreeRecursive(const YGNodeRef node) {
         YGNodeRemoveChild(root, child);
         YGNodeFreeRecursive(child);
     }
-    YGNodeFree(node);
+    YGNodeFree(root);
 }
 
 void YGNodeInsertChild(const YGNodeRef node,
