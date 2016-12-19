@@ -34,10 +34,10 @@ char* itoa(uintnat val, int base){
 
 }
 
-static void printBinary(uintnat i) {
-    char *buffer = itoa (i,2);
-    printf ("binary: %s\n",buffer);
-}
+/* static void printBinary(uintnat i) { */
+/*     char *buffer = itoa (i,2); */
+/*     printf ("binary: %s\n",buffer); */
+/* } */
 
 // Ocaml's macro system only supports up to 3 arguments, so we have to write one by ourselves here.
 // TODO: There definitely is a better way to macro this.

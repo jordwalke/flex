@@ -3,7 +3,7 @@ BUILDDIR=_build
 SRCDIR=src
 CAML_INIT=$(BUILDDIR)/stub/init.o
 
-EXTDLL:=.so
+EXTDLL:=.o
 
 $(shell mkdir -p $(BUILDDIR) $(BUILDDIR)/stub $(BUILDDIR)/$(SRCDIR) $(BUILDDIR)/test)
 
@@ -29,6 +29,8 @@ GENERATOR = $(BUILDDIR)/generate
 PACKAGES=
 
 TOOLCHAIN=
+
+ARMV7BIN=
 
 all: sharedlib
 
@@ -57,9 +59,22 @@ $(BUILDDIR)/%.o: %.c
 	ocamlfind $(TOOLCHAIN) opt -ccopt -std=c11 -g -c $< -o $@
 	mv $(notdir $@) $@
 
-$(BUILDDIR)/librelayout$(EXTDLL): $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind $(TOOLCHAIN) opt -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $@ -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
-	@echo "lib genereated at: $@"
+$(BUILDDIR)/librelayout.o: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
+	ocamlfind $(TOOLCHAIN) opt -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $(BUILDDIR)/librelayout.o -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
+
+android-armv7: android
+	/opt/android_ndk/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o
+	/opt/android_ndk/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-ranlib $(BUILDDIR)/librelayout.a
+	@echo "lib genereated at: $(BUILDDIR)/librelayout.a"
+	@echo "lib type:"
+	@file $(BUILDDIR)/librelayout.a
+
+android-x86: android
+	/opt/android_ndk/android-ndk-r10e/toolchains/x86-4.9/prebuilt/darwin-x86_64/bin/i686-linux-android-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o
+	/opt/android_ndk/android-ndk-r10e/toolchains/x86-4.9/prebuilt/darwin-x86_64/bin/i686-linux-android-ranlib $(BUILDDIR)/librelayout.a
+	@echo "lib genereated at: $(BUILDDIR)/librelayout.a"
+	@echo "lib type:"
+	@file $(BUILDDIR)/librelayout.a
 
 clean:
 	rm -rf $(BUILDDIR)
