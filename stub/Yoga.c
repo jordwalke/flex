@@ -287,10 +287,8 @@ void YGNodeRemoveChild(const YGNodeRef node,
                        const YGNodeRef child) {
     // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
     CAMLparam0();
-    CAMLlocal1(v);
-    v = caml_copy_nativeint((intnat)child);
     camlMethod(closure);
-    re_callback2(*closure, *node, v, __func__);
+    re_callback2(*closure, *node, *child, __func__);
     CAMLreturn0;
 }
 
@@ -355,9 +353,8 @@ void YGNodeCopyStyle(const YGNodeRef destNode,
 }
 
 bool YGNodeIsDirty(const YGNodeRef node) {
-    return false;
-    /* camlMethod(closure); */
-    /* return Bool_val(re_callback(*closure, *node, __func__)); */
+    camlMethod(closure);
+    return Bool_val(re_callback(*closure, *node, __func__));
 }
 
 void YGNodePrint(const YGNodeRef node,

@@ -324,7 +324,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       node.layout.width = node.layout.measuredWidth;
       node.layout.height = node.layout.measuredHeight;
       node.hasNewLayout = true;
-      node.isDirty = true
+      node.isDirty = false
     };
     gDepth.contents = gDepth.contents - 1;
     layout.generationCount = gCurrentGenerationCount.contents;

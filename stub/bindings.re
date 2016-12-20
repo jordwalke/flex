@@ -24,7 +24,6 @@ let cssNodeNew ptr => {
   selfRef: ptr,
   children: [||],
   layout: createLayout (),
-  isDirty: true,
   /* Since context is mutated, every node must have its own new copy */
   context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
 };
@@ -89,7 +88,7 @@ let cssNodeRemoveChild nodeWithList child =>
     Layout.LayoutSupport.markDirtyInternal nodeWithList
   };
 
-let cssNodeIsDirty node => true /* node.isDirty node.context */;
+let cssNodeIsDirty node => node.isDirty;
 
 let cssNodeChildCount node => node.childrenCount;
 
@@ -110,7 +109,15 @@ Callback.register "YGNodeSetHasNewLayout" (fun node hasNewLayout => node.hasNewL
 Callback.register "YGNodeGetHasNewLayout" (fun node => node.hasNewLayout);
 
 /* Style */
-Callback.register "YGNodeStyleSetWidth" (fun node width => node.style = {...node.style, width});
+Callback.register
+  "YGNodeStyleSetWidth"
+  (
+    fun node width =>
+      if (node.style.width != width) {
+        markDirtyInternal node;
+        node.style = {...node.style, width}
+      }
+  );
 
 Callback.register "YGNodeStyleGetWidth" (fun node => node.style.width);
 
