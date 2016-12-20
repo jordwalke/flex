@@ -33,47 +33,74 @@ let cssNodeSetSelfRef node ptr => node.selfRef = ptr;
 
 let cssNodeGetSelfRef node => node.selfRef;
 
+
+/**
+ * TODO: Handle the case where `child` is already a `child` of `node` (`Yoga`
+ * doesn't appear to handle this case though).
+ */
 let cssNodeInsertChild node child index => {
-  if (Array.length node.children == node.childrenCount) {
-    let fill = Array.make (Array.length node.children + 1) theNullNode;
-    Array.blit node.children 0 fill 0 (Array.length node.children);
+  assert (child.parent === theNullNode);
+  assert (node.measure === None);
+  let capacity = Array.length node.children;
+  if (capacity == node.childrenCount) {
+    /* TODO:Simply use Array.fill (no need to allocate a separate `fill` array
+     * */
+    let fill = Array.make (capacity + 1) theNullNode;
+    Array.blit node.children 0 fill 0 capacity;
     node.children = fill
   };
   for i in node.childrenCount downto (index + 1) {
     node.children.(i) = node.children.(i - 1)
   };
   node.childrenCount = node.childrenCount + 1;
-  node.children.(index) = child
+  node.children.(index) = child;
+  child.parent = node;
+  Layout.LayoutSupport.markDirtyInternal node
 };
 
-let cssNodeRemoveChild node child => {
-  let oldChildren = node.children;
-  node.children = Array.make (Array.length oldChildren - 1) theNullNode;
-  Array.fold_left
-    (
-      fun i x =>
-        if (x.selfRef != child) {
-          i < Array.length node.children ?
-            node.children.(i) = x : node.children = Array.append node.children [|x|];
-          i + 1
-        } else {
-          i
-        }
-    )
-    0
-    oldChildren
+let nodeListRemove nodeWithList index => {
+  let list = nodeWithList.children;
+  let removed = list.(index);
+  list.(index) = theNullNode;
+  for i in index to (nodeWithList.childrenCount - 2) {
+    list.(i) = list.(i + 1);
+    list.(i + 1) = theNullNode
+  };
+  nodeWithList.childrenCount = nodeWithList.childrenCount - 1;
+  removed
 };
+
+let rec nodeListDeleteImpl nodeWithList node from =>
+  if (from < nodeWithList.childrenCount) {
+    if (nodeWithList.children.(from) === node) {
+      nodeListRemove nodeWithList from
+    } else {
+      nodeListDeleteImpl nodeWithList node (from + 1)
+    }
+  } else {
+    theNullNode
+  };
+
+let nodeListDelete nodeWithList node => nodeListDeleteImpl nodeWithList node 0;
+
+let cssNodeRemoveChild nodeWithList child =>
+  if (nodeListDelete nodeWithList child !== theNullNode) {
+    child.parent = theNullNode;
+    Layout.LayoutSupport.markDirtyInternal nodeWithList
+  };
 
 let cssNodeIsDirty node => true /* node.isDirty node.context */;
 
-let cssNodeChildCount node => Array.length node.children;
+let cssNodeChildCount node => node.childrenCount;
 
-let cssNodeGetChild node i =>
-  if (i >= Array.length node.children) {
+let cssNodeGetChild node i => {
+  let capacity = node.childrenCount;
+  if (i >= capacity) {
     Nativeint.zero
   } else {
     node.children.(i).selfRef
-  };
+  }
+};
 
 let cssNodeCalculateLayout node aw ah pd => Layout.layoutNode node aw ah pd;
 

@@ -186,6 +186,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable style: cssStyle,
     layout: cssLayout,
     mutable lineIndex: int,
+    mutable parent: node,
     mutable nextChild: node,
     mutable hasNewLayout: bool,
     mutable measure: option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),

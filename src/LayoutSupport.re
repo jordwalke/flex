@@ -391,6 +391,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      * As a clever trick, to encode "NULL" node, we can create a recursive
      * binding and point nextChild to itself, and interpreting that as NULL.
      */
+    parent: theNullNode,
     nextChild: theNullNode,
     measure: None,
     print: None,
@@ -547,6 +548,20 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | Row => node.style.borderRight
     | RowReverse => node.style.borderLeft
     };
+  let rec markDirtyInternal node =>
+    if (not node.isDirty) {
+      node.isDirty = true;
+      node.layout.computedFlexBasis = cssUndefined;
+      if (node.parent !== theNullNode) {
+        markDirtyInternal node.parent
+      }
+    };
+  let markDirty node => {
+    /* Only leaf nodes with custom measure functions
+     * should manually mark themselves as dirty */
+    assert (node.measure !== None);
+    markDirtyInternal node
+  };
 
   /**
    * Dim[] based layout dimension setter.
