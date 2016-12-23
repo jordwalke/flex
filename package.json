@@ -41,6 +41,7 @@
     "start": "eval $(dependencyEnv) && time ./_build/src/LayoutTest.native",
     "help": "eval $(dependencyEnv) && rebuild -help",
     "stubtest": "eval $(dependencyEnv) && make test && _build/test/test",
+    "stubtestbindingsperf": "eval $(dependencyEnv) && make testperf && _build/test/test",
     "clean": "eval $(dependencyEnv) && nopam && rebuild -clean",
     "top": "eval $(dependencyEnv) && rtop",
     "env": "eval $(dependencyEnv) && env",
@@ -66,8 +67,8 @@
       "engine": "native",
       "entry": "src/LayoutTestFixedEncoding.re",
       "unstable_flags": {
-        "compile": "-thread -g -verbose -inline 100 -unsafe -S",
-        "link": "-thread -noassert -linkpkg -g -verbose -S"
+        "compile": "-thread -p -g -verbose -inline 100 -unsafe -S",
+        "link": "-thread -p -noassert -linkpkg -g -verbose -S"
       }
     },
     {

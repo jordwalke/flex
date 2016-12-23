@@ -265,3 +265,23 @@ The ASCII output paints a pseudo-accurate picture of any broken layouts.
 See the [`css-layout`](https://github.com/facebook/css-layout)'s README/docs
 for more information about the limitations and special defaults of `ReLayout`.
 `Relayout` is a direct port of that project from `C` to `Reason` on `ocamlopt`.
+
+#### Profiling on Mac:
+
+This command will build the artifacts with the proper profiling/debug symbol
+flags, and will change `YGAlignContentTest` to wrap one test case in a large
+for loop.  It should be suitable for either mac or linux.
+
+```
+npm run stubtestbindingsperf
+```
+
+This command is useful for generating profiling traces on mac:
+
+Warning: You currently must clean the build before switching between `npm run
+stubtest` and `npm run stubtestbindingsperf`.
+
+
+```sh
+sudo instruments -v -t 'Time Profiler'  -D ~/Desktop/yourTrace.trace _build/test/test
+```
