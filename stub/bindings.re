@@ -21,6 +21,71 @@ external cssMeasureFFI : nativeint => int => measureMode => int => measureMode =
 /* Force allocating a new node */
 let cssNodeNew ptr => {
   ...theNullNode,
+  style: {
+    direction: Inherit,
+    flexDirection: Column,
+    justifyContent: JustifyFlexStart,
+    alignContent: AlignFlexStart,
+    alignItems: AlignStretch,
+    alignSelf: AlignAuto,
+    positionType: Relative,
+    flexWrap: CssNoWrap,
+    overflow: Visible,
+    /* TODO: What is this flex property and why am I paying for it! */
+    flex: cssUndefined,
+    /* TODO: Fix / check this. */
+    flexGrow: cssUndefined,
+    flexShrink: cssUndefined,
+    /* TODO: Fix / check this */
+    flexBasis: cssUndefined,
+    marginLeft: cssUndefined,
+    marginTop: cssUndefined,
+    marginRight: cssUndefined,
+    marginBottom: cssUndefined,
+    paddingLeft: cssUndefined,
+    paddingTop: cssUndefined,
+    paddingRight: cssUndefined,
+    paddingBottom: cssUndefined,
+    borderLeft: cssUndefined,
+    borderTop: cssUndefined,
+    borderRight: cssUndefined,
+    borderBottom: cssUndefined,
+    width: cssUndefined,
+    height: cssUndefined,
+    /* TODO: Fix / check this. (https://github.com/facebook/css-layout) */
+    minWidth: cssUndefined,
+    minHeight: cssUndefined,
+    maxWidth: cssUndefined,
+    maxHeight: cssUndefined,
+    left: cssUndefined,
+    top: cssUndefined,
+    right: cssUndefined,
+    bottom: cssUndefined,
+    start: cssUndefined,
+    endd: cssUndefined,
+    marginStart: cssUndefined,
+    marginEnd: cssUndefined,
+    paddingStart: cssUndefined,
+    paddingEnd: cssUndefined,
+    borderStart: cssUndefined,
+    borderEnd: cssUndefined,
+    /**
+     * All of these need to be reevaluated (to see if we really want them at
+     * zero or cssUndefined).
+     */
+    horizontal: cssUndefined,
+    vertical: cssUndefined,
+    position: cssUndefined,
+    padding: cssUndefined,
+    paddingHorizontal: cssUndefined,
+    paddingVertical: cssUndefined,
+    margin: cssUndefined,
+    marginVertical: cssUndefined,
+    marginHorizontal: cssUndefined,
+    borderHorizontal: cssUndefined,
+    borderVertical: cssUndefined,
+    border: cssUndefined
+  },
   selfRef: ptr,
   children: [||],
   layout: createLayout (),
@@ -115,81 +180,79 @@ Callback.register
     fun node width =>
       if (node.style.width != width) {
         markDirtyInternal node;
-        node.style = {...node.style, width}
+        node.style.width = width
       }
   );
 
 Callback.register "YGNodeStyleGetWidth" (fun node => node.style.width);
 
-Callback.register "YGNodeStyleSetHeight" (fun node height => node.style = {...node.style, height});
+Callback.register "YGNodeStyleSetHeight" (fun node height => node.style.height = height);
 
 Callback.register "YGNodeStyleGetHeight" (fun node => node.style.height);
 
-Callback.register "YGNodeStyleSetFlexGrow" (fun node flexGrow => node.style = {...node.style, flexGrow});
+Callback.register "YGNodeStyleSetFlexGrow" (fun node flexGrow => node.style.flexGrow = flexGrow);
 
 Callback.register "YGNodeStyleGetFlexGrow" cssGetFlexGrow;
 
-Callback.register
-  "YGNodeStyleSetFlexShrink" (fun node flexShrink => node.style = {...node.style, flexShrink});
+Callback.register "YGNodeStyleSetFlexShrink" (fun node flexShrink => node.style.flexShrink = flexShrink);
 
 Callback.register "YGNodeStyleGetFlexShrink" cssGetFlexShrink;
 
-Callback.register "YGNodeStyleSetFlexWrap" (fun node flexWrap => node.style = {...node.style, flexWrap});
+Callback.register "YGNodeStyleSetFlexWrap" (fun node flexWrap => node.style.flexWrap = flexWrap);
 
 Callback.register "YGNodeStyleGetFlexWrap" (fun node => node.style.flexWrap);
 
 Callback.register
-  "YGNodeStyleSetJustifyContent" (fun node justifyContent => node.style = {...node.style, justifyContent});
+  "YGNodeStyleSetJustifyContent" (fun node justifyContent => node.style.justifyContent = justifyContent);
 
 Callback.register "YGNodeStyleGetJustifyContent" (fun node => node.style.justifyContent);
 
-Callback.register
-  "YGNodeStyleSetAlignItems" (fun node alignItems => node.style = {...node.style, alignItems});
+Callback.register "YGNodeStyleSetAlignItems" (fun node alignItems => node.style.alignItems = alignItems);
 
 Callback.register "YGNodeStyleGetAlignItems" (fun node => node.style.alignItems);
 
 Callback.register
-  "YGNodeStyleSetAlignContent" (fun node alignContent => node.style = {...node.style, alignContent});
+  "YGNodeStyleSetAlignContent" (fun node alignContent => node.style.alignContent = alignContent);
 
 Callback.register "YGNodeStyleGetAlignContent" (fun node => node.style.alignContent);
 
-Callback.register "YGNodeStyleSetAlignSelf" (fun node alignSelf => node.style = {...node.style, alignSelf});
+Callback.register "YGNodeStyleSetAlignSelf" (fun node alignSelf => node.style.alignSelf = alignSelf);
 
 Callback.register "YGNodeStyleGetAlignSelf" (fun node => node.style.alignSelf);
 
-Callback.register "YGNodeStyleSetMaxWidth" (fun node maxWidth => node.style = {...node.style, maxWidth});
+Callback.register "YGNodeStyleSetMaxWidth" (fun node maxWidth => node.style.maxWidth = maxWidth);
 
 Callback.register "YGNodeStyleGetMaxWidth" (fun node => node.style.maxWidth);
 
-Callback.register "YGNodeStyleSetMaxHeight" (fun node maxHeight => node.style = {...node.style, maxHeight});
+Callback.register "YGNodeStyleSetMaxHeight" (fun node maxHeight => node.style.maxHeight = maxHeight);
 
 Callback.register "YGNodeStyleGetMaxHeight" (fun node => node.style.maxHeight);
 
-Callback.register "YGNodeStyleSetMinWidth" (fun node minWidth => node.style = {...node.style, minWidth});
+Callback.register "YGNodeStyleSetMinWidth" (fun node minWidth => node.style.minWidth = minWidth);
 
 Callback.register "YGNodeStyleGetMinWidth" (fun node => node.style.minWidth);
 
-Callback.register "YGNodeStyleSetMinHeight" (fun node minHeight => node.style = {...node.style, minHeight});
+Callback.register "YGNodeStyleSetMinHeight" (fun node minHeight => node.style.minHeight = minHeight);
 
 Callback.register "YGNodeStyleGetMinHeight" (fun node => node.style.minHeight);
 
 Callback.register "YGNodeStyleGetDirection" (fun node => node.style.direction);
 
-Callback.register "YGNodeStyleSetDirection" (fun node direction => node.style = {...node.style, direction});
+Callback.register "YGNodeStyleSetDirection" (fun node direction => node.style.direction = direction);
 
 Callback.register "YGNodeStyleGetFlexDirection" (fun node => node.style.flexDirection);
 
 Callback.register
-  "YGNodeStyleSetPositionType" (fun node positionType => node.style = {...node.style, positionType});
+  "YGNodeStyleSetPositionType" (fun node positionType => node.style.positionType = positionType);
 
 Callback.register "YGNodeStyleGetPositionType" (fun node => node.style.positionType);
 
 Callback.register
-  "YGNodeStyleSetFlexDirection" (fun node flexDirection => node.style = {...node.style, flexDirection});
+  "YGNodeStyleSetFlexDirection" (fun node flexDirection => node.style.flexDirection = flexDirection);
 
 Callback.register "YGNodeStyleGetOverflow" (fun node => node.style.overflow);
 
-Callback.register "YGNodeStyleSetFlexBasis" (fun node flexBasis => node.style = {...node.style, flexBasis});
+Callback.register "YGNodeStyleSetFlexBasis" (fun node flexBasis => node.style.flexBasis = flexBasis);
 
 Callback.register "YGNodeStyleGetFlexBasis" cssGetFlexBasis;
 
@@ -207,24 +270,24 @@ let setIfZero oldValue newValue =>
     oldValue
   };
 
-Callback.register "YGNodeStyleSetFlex" (fun node flex => node.style = {...node.style, flex});
+Callback.register "YGNodeStyleSetFlex" (fun node flex => node.style.flex = flex);
 
-Callback.register "YGNodeStyleSetOverflow" (fun node overflow => node.style = {...node.style, overflow});
+Callback.register "YGNodeStyleSetOverflow" (fun node overflow => node.style.overflow = overflow);
 
 Callback.register
   "YGNodeStyleSetPadding"
   (
     fun node edge v =>
       switch edge {
-      | Left => node.style = {...node.style, paddingLeft: v}
-      | Top => node.style = {...node.style, paddingTop: v}
-      | Right => node.style = {...node.style, paddingRight: v}
-      | Bottom => node.style = {...node.style, paddingBottom: v}
-      | Start => node.style = {...node.style, paddingStart: v}
-      | End => node.style = {...node.style, paddingEnd: v}
-      | Horizontal => node.style = {...node.style, paddingHorizontal: v}
-      | Vertical => node.style = {...node.style, paddingVertical: v}
-      | All => node.style = {...node.style, padding: v}
+      | Left => node.style.paddingLeft = v
+      | Top => node.style.paddingTop = v
+      | Right => node.style.paddingRight = v
+      | Bottom => node.style.paddingBottom = v
+      | Start => node.style.paddingStart = v
+      | End => node.style.paddingEnd = v
+      | Horizontal => node.style.paddingHorizontal = v
+      | Vertical => node.style.paddingVertical = v
+      | All => node.style.padding = v
       }
   );
 
@@ -233,15 +296,15 @@ Callback.register
   (
     fun node edge v =>
       switch edge {
-      | Left => node.style = {...node.style, marginLeft: v}
-      | Top => node.style = {...node.style, marginTop: v}
-      | Right => node.style = {...node.style, marginRight: v}
-      | Bottom => node.style = {...node.style, marginBottom: v}
-      | Start => node.style = {...node.style, marginStart: v}
-      | End => node.style = {...node.style, marginEnd: v}
-      | Horizontal => node.style = {...node.style, marginHorizontal: v}
-      | Vertical => node.style = {...node.style, marginVertical: v}
-      | All => node.style = {...node.style, margin: v}
+      | Left => node.style.marginLeft = v
+      | Top => node.style.marginTop = v
+      | Right => node.style.marginRight = v
+      | Bottom => node.style.marginBottom = v
+      | Start => node.style.marginStart = v
+      | End => node.style.marginEnd = v
+      | Horizontal => node.style.marginHorizontal = v
+      | Vertical => node.style.marginVertical = v
+      | All => node.style.margin = v
       }
   );
 
@@ -250,15 +313,15 @@ Callback.register
   (
     fun node edge v =>
       switch edge {
-      | Left => node.style = {...node.style, borderLeft: v}
-      | Top => node.style = {...node.style, borderTop: v}
-      | Right => node.style = {...node.style, borderRight: v}
-      | Bottom => node.style = {...node.style, borderBottom: v}
-      | Start => node.style = {...node.style, borderStart: v}
-      | End => node.style = {...node.style, borderEnd: v}
-      | Horizontal => node.style = {...node.style, borderHorizontal: v}
-      | Vertical => node.style = {...node.style, borderVertical: v}
-      | All => node.style = {...node.style, border: v}
+      | Left => node.style.borderLeft = v
+      | Top => node.style.borderTop = v
+      | Right => node.style.borderRight = v
+      | Bottom => node.style.borderBottom = v
+      | Start => node.style.borderStart = v
+      | End => node.style.borderEnd = v
+      | Horizontal => node.style.borderHorizontal = v
+      | Vertical => node.style.borderVertical = v
+      | All => node.style.border = v
       }
   );
 
@@ -267,15 +330,15 @@ Callback.register
   (
     fun node edge v =>
       switch edge {
-      | Left => node.style = {...node.style, left: v}
-      | Top => node.style = {...node.style, top: v}
-      | Right => node.style = {...node.style, right: v}
-      | Bottom => node.style = {...node.style, bottom: v}
-      | Start => node.style = {...node.style, start: v}
-      | End => node.style = {...node.style, endd: v}
-      | Horizontal => node.style = {...node.style, horizontal: v}
-      | Vertical => node.style = {...node.style, vertical: v}
-      | All => node.style = {...node.style, position: v}
+      | Left => node.style.left = v
+      | Top => node.style.top = v
+      | Right => node.style.right = v
+      | Bottom => node.style.bottom = v
+      | Start => node.style.start = v
+      | End => node.style.endd = v
+      | Horizontal => node.style.horizontal = v
+      | Vertical => node.style.vertical = v
+      | All => node.style.position = v
       }
   );
 

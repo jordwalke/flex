@@ -404,7 +404,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     direction: Inherit,
     cachedLayout: createCacheMeasurement ()
   };
-  let createNode withChildren::children andStyle::style=defaultStyle andMeasure::m=? context => {
+  let createNode withChildren::children andStyle::style andMeasure::m=? context => {
     ...theNullNode,
     children,
     childrenCount: Array.length children,
