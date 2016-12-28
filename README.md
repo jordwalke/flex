@@ -284,4 +284,29 @@ stubtest` and `npm run stubtestbindingsperf`.
 
 ```sh
 sudo instruments -v -t 'Time Profiler'  -D ~/Desktop/yourTrace.trace _build/test/test
+# To open in Instruments, need to restore perms.
+sudo chown -R you:staff ~/Desktop/yourTrace.trace
+# Now open Instruments.app and open the trace.
 ```
+
+Then open Instruments.app (GUI), and open file test.trace.
+- Enable "High Frequency" and disable "Hide System Libraries" in the GUI to see
+  all the content.
+- Click on the gear, then click "Invert Call Tree" and "Top Functions".
+- Right click on the table view header and enable `Self # Samples`  and `#
+  Samples`. It's important to open these to get the full picture in the
+  abscense of perfect profiling symbols.
+- Click on "Self #Samples" to sort so that the highest numbers are first.
+
+
+The result is that you have the bottlenecks at the top. When you drill down in
+the tree, it tells you who's calling that bottleneck.  Many of the symbols are
+still obfuscated (4.03 improves that).  Open up all the .s files that ocamlopt
+dumped so that when you see obfuscated symbols in the Instruments GUI, you can
+search for that symbol in all the .s files you have open. Double click on the
+actual symbol in instruments and it will show you what the assembly looks like
+and you can match it to the symbol you have open in your editor. There may be
+multiple .L123 across all the files so you can cross reference Instruments
+(double click) which shows you the assembly.  4.03 is said to greatly improve
+the source locations when profiling so it tells you the function names instead
+of assembly locations more often than not.

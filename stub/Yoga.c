@@ -47,11 +47,9 @@ char* itoa(uintnat val, int base){
 static bool inCall = false;
 
 value re_callback (value closure, value arg1, const char * tag) {
-    value arg[1];
-    arg[0] = arg1;
     /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
     inCall = true;
-    value res = caml_callbackN_exn(closure, 1, arg);
+    value res = caml_callback(closure, arg1);
     inCall = false;
     /* __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag); */
     if (Is_exception_result(res)) {
@@ -65,12 +63,9 @@ value re_callback (value closure, value arg1, const char * tag) {
 }
 
 value re_callback2 (value closure, value arg1, value arg2, const char * tag) {
-    value arg[2];
-    arg[0] = arg1;
-    arg[1] = arg2;
     /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
     inCall = true;
-    value res = caml_callbackN_exn(closure, 2, arg);
+    value res = caml_callback2(closure, arg1, arg2);
     inCall = false;
     /* __android_log_write(ANDROID_LOG_ERROR, "REASONSEND", tag); */
     if (Is_exception_result(res)) {
@@ -85,13 +80,9 @@ value re_callback2 (value closure, value arg1, value arg2, const char * tag) {
 
 value re_callback3 (value closure, value arg1, value arg2,
                     value arg3, const char * tag) {
-    value arg[3];
-    arg[0] = arg1;
-    arg[1] = arg2;
-    arg[2] = arg3;
     /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
     inCall = true;
-    value res = caml_callbackN_exn(closure, 3, arg);
+    value res = caml_callback3(closure, arg1, arg2, arg3);
     inCall = false;
     /* __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag); */
     if (Is_exception_result(res)) {
