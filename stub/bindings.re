@@ -15,8 +15,11 @@ open LayoutTypes;
 
 open Encoding;
 
+/* external caml_c_thread_register : unit => int = "caml_c_thread_register"; */
 external cssMeasureFFI : nativeint => int => measureMode => int => measureMode => dimensions = "cssMeasureFFI_bytecode"
                                                                     "cssMeasureFFI";
+
+external caml_thread_initialize : unit => unit = "caml_thread_initialize";
 
 /* Force allocating a new node */
 let cssNodeNew ptr => {
@@ -407,3 +410,12 @@ Callback.register
 Callback.register "YGNodeGetMeasureFunc" (fun node => node.context.measureFuncPtr);
 
 Callback.register "GetMeasurement" (fun width height => {width, height});
+
+Callback.register
+  "initThread"
+  (
+    fun () => {
+      ignore (Thread.self ());
+      caml_thread_initialize ()
+    }
+  );

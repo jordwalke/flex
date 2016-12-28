@@ -57,14 +57,14 @@ $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
 %.cmx: %.re $(SOURCES_IN_BUILD)
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -thread -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c
 	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -std=c11 -c $< -o $@
 	mv $(notdir $@) $@
 
 $(BUILDDIR)/librelayout.o: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $(BUILDDIR)/librelayout.o -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -thread unix.cmxa threads.cmxa -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $(BUILDDIR)/librelayout.o -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
 
 android-armv7: android
 	/opt/android_ndk/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o

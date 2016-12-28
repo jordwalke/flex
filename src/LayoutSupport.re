@@ -395,7 +395,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     nextChild: theNullNode,
     measure: None,
     print: None,
-    isDirty: false,
+    isDirty: true,
     context: Node.nullContext
   };
   /* Force allocating a new object */
