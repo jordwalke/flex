@@ -32,7 +32,7 @@ TOOLCHAIN=
 
 ARMV7BIN=
 
-OCAMLFLAGS=
+OCAMLFLAGS=-noassert -inline 100
 
 EXTRAOCAMLCCOPTFLAGS=
 
@@ -86,12 +86,8 @@ clean:
 test: all
 	$(MAKE) -C stub_test
 
-settestvars:
-	OCAMLFLAGS="-S -g -p"
-	EXTRAOCAMLCCOPTFLAGS="-ccopt -g"
-
-testperf: OCAMLFLAGS=-S -g -p
-testperf: EXTRAOCAMLCCOPTFLAGS=-ccopt -g
+testperf: OCAMLFLAGS=-nodynlink -noassert -inline 100 -S -g -p
+testperf: EXTRAOCAMLCCOPTFLAGS=-ccopt -g -ccopt -pg
 testperf: all
 	$(MAKE) testperf -C stub_test
 
