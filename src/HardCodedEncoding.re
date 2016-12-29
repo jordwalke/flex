@@ -105,9 +105,9 @@ type scalar = int;
 
 let cssUndefined = min_int;
 
-let isUndefined num => num == cssUndefined;
+let isUndefined num => num === cssUndefined;
 
-let isDefined num => num != cssUndefined;
+let isDefined num => num !== cssUndefined;
 
 let zero = 0;
 
