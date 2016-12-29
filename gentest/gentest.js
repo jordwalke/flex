@@ -577,7 +577,7 @@ window.printTest = function(testData, useFloats, LTRContainer, RTLContainer) {
     '  };',
     '  let module Core = {',
     '    let runCommand (name, func) => {',
-    '      let numIterations = 100;',
+    '      let numIterations = 10000;',
     '      let timesInMs = Array.make_float numIterations;',
     '      Gc.full_major ();',
     '      let startSeconds = Sys.time ();',
