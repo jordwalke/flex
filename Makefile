@@ -44,7 +44,7 @@ android: $(BUILDDIR)/librelayout$(EXTDLL)
 android64: $(BUILDDIR)/librelayout$(EXTDLL)
 
 sharedlib: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind opt $(OCAMLFIND) -o $(BUILDDIR)/librelayout.so -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(EXTRAOCAMLCCOPTFLAGS) $(PACKAGES) $^
+	ocamlfind opt $(OCAMLFIND) -o $(BUILDDIR)/librelayout.so -thread unix.cmxa threads.cmxa -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(EXTRAOCAMLCCOPTFLAGS) $(PACKAGES) $^
 	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/%.re: %.re
