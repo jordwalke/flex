@@ -7,6 +7,7 @@
 #include <caml/threads.h>
 #include <assert.h>
 #include <stdio.h>
+#include <pthread.h>
 #include "Yoga.h"
 
 /* #include <android/log.h> */
@@ -157,6 +158,8 @@ bridgeEnumToCamlVal(YGWrap, 0)
 bridgeEnumToCamlVal(YGPositionType, 0)
 bridgeEnumToCamlVal(YGOverflow, 0)
 
+volatile int lock = 0;
+
 value Min_int;
 __attribute__ ((__constructor__))
 void init(void) {
@@ -188,21 +191,23 @@ static float CamlValTofloat(value v) {
 
 value thread_initialize(value unit);
 
-
 static void relock(const char * tag) {
     __android_log_write(ANDROID_LOG_ERROR, "REASON", "registering");
     caml_c_thread_register();
     __android_log_write(ANDROID_LOG_ERROR, "REASON", "done registering");
     __android_log_write(ANDROID_LOG_ERROR, "REASON", "locking");
     __android_log_write(ANDROID_LOG_ERROR, "REASON", tag);
-
-    caml_acquire_runtime_system();
+    while(__sync_lock_test_and_set(&lock, 1)) {}
+    /* caml_acquire_runtime_system(); */
     __android_log_write(ANDROID_LOG_ERROR, "REASON", "got locking");
 }
 
 static void reunlock() {
     __android_log_write(ANDROID_LOG_ERROR, "REASON", "unlocking");
-    caml_release_runtime_system();
+    // read/write barrier
+    __sync_synchronize();
+    lock = 0;
+    /* caml_release_runtime_system(); */
     __android_log_write(ANDROID_LOG_ERROR, "REASON", "got unlocking");
 }
 
