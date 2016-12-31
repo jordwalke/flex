@@ -67,7 +67,7 @@
       "engine": "native",
       "entry": "src/LayoutTestFixedEncoding.re",
       "unstable_flags": {
-        "compile": "-thread -p -g -verbose -inline 100 -unsafe -S",
+        "compile": "-thread -p -noassert -g -verbose -inline 100 -unsafe -S",
         "link": "-thread -p -noassert -linkpkg -g -verbose -S"
       }
     },
