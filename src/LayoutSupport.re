@@ -700,7 +700,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         leadingPosition
       } else {
         let leadingPosition = computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
-        isUndefined leadingPosition ? 0 : leadingPosition
+        isUndefined leadingPosition ? zero : leadingPosition
       }
     } else {
       let leadingPosition = computedEdgeValuePosition node.style (leadingEdgeForAxis axis) cssUndefined;
@@ -804,11 +804,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let cssGetFlexGrow node =>
     not (isUndefined node.style.flexGrow) ?
-      node.style.flexGrow : not (isUndefined node.style.flex) && node.style.flex > 0 ? node.style.flex : zero;
+      node.style.flexGrow : not (isUndefined node.style.flex) && node.style.flex > zero ? node.style.flex : zero;
   let cssGetFlexShrink node =>
     not (isUndefined node.style.flexShrink) ?
       node.style.flexShrink :
-      not (isUndefined node.style.flex) && node.style.flex < 0 ? - node.style.flex : zero;
+      not (isUndefined node.style.flex) && node.style.flex < zero ? -. node.style.flex : zero;
   let cssGetFlexBasis node =>
     not (isUndefined node.style.flexBasis) ?
       node.style.flexBasis :
@@ -865,14 +865,14 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       let innerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
       if (widthMeasureMode === Exactly && heightMeasureMode === Exactly) {
         /* Don't bother sizing the text if both dimensions are already defined. */
-        node.layout.measuredWidth = boundAxis node Row (availableWidth - marginAxisRow);
-        node.layout.measuredHeight = boundAxis node Column (availableHeight - marginAxisColumn)
+        node.layout.measuredWidth = boundAxis node Row (availableWidth -. marginAxisRow);
+        node.layout.measuredHeight = boundAxis node Column (availableHeight -. marginAxisColumn)
       } else if (
-        not (isUndefined innerWidth) && innerWidth <= 0 || not (isUndefined innerHeight) && innerHeight <= 0
+        not (isUndefined innerWidth) && innerWidth <= zero || not (isUndefined innerHeight) && innerHeight <= zero
       ) {
         /* Don't bother sizing text if there's no horizontal or vertical space.  */
-        node.layout.measuredWidth = boundAxis node Row 0;
-        node.layout.measuredHeight = boundAxis node Column 0
+        node.layout.measuredWidth = boundAxis node Row zero;
+        node.layout.measuredHeight = boundAxis node Column zero
       } else {
         /* Measure the text under the current constraints */
         let measuredSize = measure node innerWidth widthMeasureMode innerHeight heightMeasureMode;
@@ -882,7 +882,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             Row
             (
               widthMeasureMode === Undefined || widthMeasureMode === AtMost ?
-                measuredSize.width + paddingAndBorderAxisRow : availableWidth - marginAxisRow
+                measuredSize.width +. paddingAndBorderAxisRow : availableWidth -. marginAxisRow
             );
         node.layout.measuredHeight =
           boundAxis
@@ -890,7 +890,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             Column
             (
               heightMeasureMode === Undefined || heightMeasureMode === AtMost ?
-                measuredSize.height + paddingAndBorderAxisColumn : availableHeight - marginAxisColumn
+                measuredSize.height +. paddingAndBorderAxisColumn : availableHeight -. marginAxisColumn
             )
       }
     };
