@@ -396,7 +396,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     measure: None,
     print: None,
     isDirty: false,
-    context: Node.nullContext
+    context: None
   };
   /* Force allocating a new object */
   let createLayout () => {
@@ -404,7 +404,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     direction: Inherit,
     cachedLayout: createCacheMeasurement ()
   };
-  let createNode withChildren::children andStyle::style andMeasure::m=? context => {
+  let createNode withChildren::children andStyle::style andMeasure::m=? context::c=? () => {
     ...theNullNode,
     children,
     childrenCount: Array.length children,
@@ -414,7 +414,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      * We can keep the original style because it's immutable, but layout is not.
      */
     layout: createLayout (),
-    context
+    context: c
   };
 
   /**
@@ -804,7 +804,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let cssGetFlexGrow node =>
     not (isUndefined node.style.flexGrow) ?
-      node.style.flexGrow : not (isUndefined node.style.flex) && node.style.flex > zero ? node.style.flex : zero;
+      node.style.flexGrow :
+      not (isUndefined node.style.flex) && node.style.flex > zero ? node.style.flex : zero;
   let cssGetFlexShrink node =>
     not (isUndefined node.style.flexShrink) ?
       node.style.flexShrink :
@@ -868,7 +869,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         node.layout.measuredWidth = boundAxis node Row (availableWidth -. marginAxisRow);
         node.layout.measuredHeight = boundAxis node Column (availableHeight -. marginAxisColumn)
       } else if (
-        not (isUndefined innerWidth) && innerWidth <= zero || not (isUndefined innerHeight) && innerHeight <= zero
+        not (isUndefined innerWidth) && innerWidth <= zero ||
+        not (isUndefined innerHeight) && innerHeight <= zero
       ) {
         /* Don't bother sizing text if there's no horizontal or vertical space.  */
         node.layout.measuredWidth = boundAxis node Row zero;
