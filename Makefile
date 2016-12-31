@@ -57,10 +57,10 @@ $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
 %.cmx: %.re $(SOURCES_IN_BUILD)
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -thread -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -thread -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -std=c11 -c $< -o $@
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -ccopt -std=c11 -c $< -o $@
 	mv $(notdir $@) $@
 
 $(BUILDDIR)/librelayout.o: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
