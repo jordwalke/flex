@@ -52,6 +52,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   /* }; */
   let fminf a b => isUndefined b || a < b ? a : b;
   let fmaxf a b => isUndefined b || a > b ? a : b;
+
+  /**
+   * Computes the leading *concrete* edge (not Start/End etc).
+   */
   let leadingEdgeForAxis axis =>
     switch axis {
     | Column => Top
@@ -209,7 +213,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /*     style.position : not (isUndefined style.position) ? style.position : defaultValue */
     | _ => raise (Invalid_argument "Should never be called with a non-concrete edge")
     };
-  let computedEdgeValueMargin style edge defaultValue => {
+  let computedEdgeValueMarginOriginal style edge defaultValue => {
     /* Consider passing the default (marginForEdge edge) */
     let forEdge = marginForEdge style edge;
     if (not (isUndefined forEdge)) {
@@ -234,7 +238,50 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       }
     }
   };
-  let computedEdgeValueBorder style edge defaultValue => {
+  let computedEdgeValueMargin style edge defaultValue =>
+    switch edge {
+    | Start =>
+      not (isUndefined style.marginStart) ?
+        style.marginStart :
+        not (isUndefined style.marginHorizontal) ?
+          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : cssUndefined
+    | End =>
+      not (isUndefined style.marginEnd) ?
+        style.marginEnd :
+        not (isUndefined style.marginHorizontal) ?
+          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : cssUndefined
+    | Left =>
+      not (isUndefined style.marginLeft) ?
+        style.marginLeft :
+        not (isUndefined style.marginHorizontal) ?
+          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : defaultValue
+    | Right =>
+      not (isUndefined style.marginRight) ?
+        style.marginRight :
+        not (isUndefined style.marginHorizontal) ?
+          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : defaultValue
+    | Top =>
+      not (isUndefined style.marginTop) ?
+        style.marginTop :
+        not (isUndefined style.marginVertical) ?
+          style.marginVertical : not (isUndefined style.margin) ? style.margin : defaultValue
+    | Bottom =>
+      not (isUndefined style.marginBottom) ?
+        style.marginBottom :
+        not (isUndefined style.marginVertical) ?
+          style.marginVertical : not (isUndefined style.margin) ? style.margin : defaultValue
+    /* | Vertical => */
+    /*   not (isUndefined style.marginVertical) ? */
+    /*     style.marginVertical : not (isUndefined style.margin) ? style.margin : defaultValue */
+    /* | Horizontal => */
+    /*   not (isUndefined style.marginHorizontal) ? */
+    /*     style.marginHorizontal : not (isUndefined style.margin) ? style.margin : defaultValue */
+    /* | All => */
+    /*   not (isUndefined style.margin) ? */
+    /*     style.margin : not (isUndefined style.margin) ? style.margin : defaultValue */
+    | _ => raise (Invalid_argument "Should never be called with a non-concrete edge")
+    };
+  let computedEdgeValueBorderOriginal style edge defaultValue => {
     /* Consider passing the default (borderForEdge edge) */
     let forEdge = borderForEdge style edge;
     if (not (isUndefined forEdge)) {
@@ -259,8 +306,50 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       }
     }
   };
-  let computedEdgeValuePadding style edge defaultValue => {
-    /* Consider passing the default (borderForEdge edge) */
+  let computedEdgeValueBorder style edge defaultValue =>
+    switch edge {
+    | Start =>
+      not (isUndefined style.borderStart) ?
+        style.borderStart :
+        not (isUndefined style.borderHorizontal) ?
+          style.borderHorizontal : not (isUndefined style.border) ? style.border : cssUndefined
+    | End =>
+      not (isUndefined style.borderEnd) ?
+        style.borderEnd :
+        not (isUndefined style.borderHorizontal) ?
+          style.borderHorizontal : not (isUndefined style.border) ? style.border : cssUndefined
+    | Left =>
+      not (isUndefined style.borderLeft) ?
+        style.borderLeft :
+        not (isUndefined style.borderHorizontal) ?
+          style.borderHorizontal : not (isUndefined style.border) ? style.border : defaultValue
+    | Right =>
+      not (isUndefined style.borderRight) ?
+        style.borderRight :
+        not (isUndefined style.borderHorizontal) ?
+          style.borderHorizontal : not (isUndefined style.border) ? style.border : defaultValue
+    | Top =>
+      not (isUndefined style.borderTop) ?
+        style.borderTop :
+        not (isUndefined style.borderVertical) ?
+          style.borderVertical : not (isUndefined style.border) ? style.border : defaultValue
+    | Bottom =>
+      not (isUndefined style.borderBottom) ?
+        style.borderBottom :
+        not (isUndefined style.borderVertical) ?
+          style.borderVertical : not (isUndefined style.border) ? style.border : defaultValue
+    /* | Vertical => */
+    /*   not (isUndefined style.borderVertical) ? */
+    /*     style.borderVertical : not (isUndefined style.border) ? style.border : defaultValue */
+    /* | Horizontal => */
+    /*   not (isUndefined style.borderHorizontal) ? */
+    /*     style.borderHorizontal : not (isUndefined style.border) ? style.border : defaultValue */
+    /* | All => */
+    /*   not (isUndefined style.border) ? */
+    /*     style.border : not (isUndefined style.border) ? style.border : defaultValue */
+    | _ => raise (Invalid_argument "Should never be called with a non-concrete edge")
+    };
+  let computedEdgeValuePaddingOriginal style edge defaultValue => {
     let forEdge = paddingForEdge style edge;
     if (not (isUndefined forEdge)) {
       forEdge
@@ -284,6 +373,49 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       }
     }
   };
+  let computedEdgeValuePadding style edge defaultValue =>
+    switch edge {
+    | Start =>
+      not (isUndefined style.paddingStart) ?
+        style.paddingStart :
+        not (isUndefined style.paddingHorizontal) ?
+          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : cssUndefined
+    | End =>
+      not (isUndefined style.paddingEnd) ?
+        style.paddingEnd :
+        not (isUndefined style.paddingHorizontal) ?
+          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : cssUndefined
+    | Left =>
+      not (isUndefined style.paddingLeft) ?
+        style.paddingLeft :
+        not (isUndefined style.paddingHorizontal) ?
+          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : defaultValue
+    | Right =>
+      not (isUndefined style.paddingRight) ?
+        style.paddingRight :
+        not (isUndefined style.paddingHorizontal) ?
+          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : defaultValue
+    | Top =>
+      not (isUndefined style.paddingTop) ?
+        style.paddingTop :
+        not (isUndefined style.paddingVertical) ?
+          style.paddingVertical : not (isUndefined style.padding) ? style.padding : defaultValue
+    | Bottom =>
+      not (isUndefined style.paddingBottom) ?
+        style.paddingBottom :
+        not (isUndefined style.paddingVertical) ?
+          style.paddingVertical : not (isUndefined style.padding) ? style.padding : defaultValue
+    /* | Vertical => */
+    /*   not (isUndefined style.paddingVertical) ? */
+    /*     style.paddingVertical : not (isUndefined style.padding) ? style.padding : defaultValue */
+    /* | Horizontal => */
+    /*   not (isUndefined style.paddingHorizontal) ? */
+    /*     style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : defaultValue */
+    /* | All => */
+    /*   not (isUndefined style.padding) ? */
+    /*     style.padding : not (isUndefined style.padding) ? style.padding : defaultValue */
+    | _ => raise (Invalid_argument "Should never be called with a non-concrete edge")
+    };
 
   /**
    * In the integer encoding of all
