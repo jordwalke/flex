@@ -133,8 +133,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | Bottom => style.paddingBottom
     | All => style.padding
     };
-  let computedEdgeValuePosition style edge defaultValue =>
-    /* Consider passing the default (positionForEdge edge) */
+  let computedEdgeValuePositionOriginal style edge defaultValue =>
     if (not (isUndefined (positionForEdge style edge))) {
       positionForEdge style edge
     } else if (
@@ -156,6 +155,59 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       cssUndefined
     } else {
       defaultValue
+    };
+
+  /**
+   * This should always called with a concrete edge, not Horizontal etc. We
+   * could actually make a new datatype `concreteEdge` to model this.
+   * Polymorphic variants would also solve it nicely.
+   * computedEdgeValuePosition is the version of computedEdgeValuePosition_ but
+   * with calls to `positionForEdge` inlined.
+   */
+  let computedEdgeValuePosition style edge defaultValue =>
+    /* Consider passing the default (positionForEdge edge) */
+    /* wtf: Factoring out positionForEdge causes ten pct slowdown. */
+    switch edge {
+    | Start =>
+      not (isUndefined style.start) ?
+        style.start :
+        not (isUndefined style.horizontal) ?
+          style.horizontal : not (isUndefined style.position) ? style.position : cssUndefined
+    | End =>
+      not (isUndefined style.endd) ?
+        style.endd :
+        not (isUndefined style.horizontal) ?
+          style.horizontal : not (isUndefined style.position) ? style.position : cssUndefined
+    | Left =>
+      not (isUndefined style.left) ?
+        style.left :
+        not (isUndefined style.horizontal) ?
+          style.horizontal : not (isUndefined style.position) ? style.position : defaultValue
+    | Right =>
+      not (isUndefined style.right) ?
+        style.right :
+        not (isUndefined style.horizontal) ?
+          style.horizontal : not (isUndefined style.position) ? style.position : defaultValue
+    | Top =>
+      not (isUndefined style.top) ?
+        style.top :
+        not (isUndefined style.vertical) ?
+          style.vertical : not (isUndefined style.position) ? style.position : defaultValue
+    | Bottom =>
+      not (isUndefined style.bottom) ?
+        style.bottom :
+        not (isUndefined style.vertical) ?
+          style.vertical : not (isUndefined style.position) ? style.position : defaultValue
+    /* | Vertical => */
+    /*   not (isUndefined style.vertical) ? */
+    /*     style.vertical : not (isUndefined style.position) ? style.position : defaultValue */
+    /* | Horizontal => */
+    /*   not (isUndefined style.horizontal) ? */
+    /*     style.horizontal : not (isUndefined style.position) ? style.position : defaultValue */
+    /* | All => */
+    /*   not (isUndefined style.position) ? */
+    /*     style.position : not (isUndefined style.position) ? style.position : defaultValue */
+    | _ => raise (Invalid_argument "Should never be called with a non-concrete edge")
     };
   let computedEdgeValueMargin style edge defaultValue => {
     /* Consider passing the default (marginForEdge edge) */
@@ -612,20 +664,51 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let resolveAxis flex_direction direction =>
     if (direction === Rtl) {
-      if (flex_direction === Row) {
-        RowReverse
-      } else if (flex_direction === RowReverse) {
-        Row
-      } else {
-        flex_direction
+      switch flex_direction {
+      | Row => RowReverse
+      | RowReverse => Row
+      | _ => flex_direction
       }
     } else {
       flex_direction
     };
-  let isRowDirection flexDirection => flexDirection === Row || flexDirection === RowReverse;
-  let isColumnDirection flexDirection => flexDirection === Column || flexDirection === ColumnReverse;
+  /* let isRowDirection flexDirection => flexDirection === Row || flexDirection === RowReverse; */
+
+  /**
+   * Interestingly, if this is changed to the following, it is much slower.
+   *  | Row => true
+   *  | RowReverse => true
+   *  | Column => false
+   *  | ColumnReverse => false
+   *
+   * This implementation with the default _ case seems to be the fastest (it
+   * may be faster than spelling out the two remaining variants).
+   */
+  let isRowDirection flexDirection =>
+    switch flexDirection {
+    | Row
+    | RowReverse => true
+    | _ => false
+    };
+  /* let isColumnDirection flexDirection => flexDirection === Column || flexDirection === ColumnReverse; */
+  let isColumnDirection flexDirection =>
+    switch flexDirection {
+    | Column
+    | ColumnReverse => true
+    | _ => false
+    };
   let getCrossFlexDirection flex_direction direction =>
-    isColumnDirection flex_direction ? resolveAxis Row direction : Column;
+    switch flex_direction {
+    | Column
+    | ColumnReverse =>
+      /* Inlined `resolveAxis Row` here. */
+      if (direction === Rtl) {
+        RowReverse
+      } else {
+        Row
+      }
+    | _ => Column
+    };
   let isFlex node =>
     node.style.positionType === Relative && (
       node.style.flexGrow != zero || node.style.flexShrink != zero || node.style.flex != zero
