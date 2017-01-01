@@ -709,6 +709,17 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       }
     | _ => Column
     };
+  let resolveAxises flex_direction direction =>
+    switch (direction, flex_direction) {
+    | (Rtl, Row) => (RowReverse, Column)
+    | (Rtl, RowReverse) => (Row, Column)
+    | (Rtl, Column) => (Column, RowReverse)
+    | (Rtl, ColumnReverse) => (ColumnReverse, RowReverse)
+    | (_, Column) => (Column, Row)
+    | (_, ColumnReverse) => (ColumnReverse, Row)
+    | (_, Row) => (Row, Column)
+    | (_, RowReverse) => (RowReverse, Column)
+    };
   let isFlex node =>
     node.style.positionType === Relative && (
       node.style.flexGrow != zero || node.style.flexShrink != zero || node.style.flex != zero
@@ -874,8 +885,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    * TODO: A more functional version of this.
    */
   let setPosition node direction => {
-    let mainAxis = resolveAxis node.style.flexDirection direction;
-    let crossAxis = getCrossFlexDirection mainAxis direction;
+    let (mainAxis, crossAxis) = resolveAxises node.style.flexDirection direction;
     let relativePositionMain = getRelativePosition node mainAxis;
     let relativePositionCross = getRelativePosition node crossAxis;
     setLayoutLeadingPositionForAxis node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
