@@ -459,6 +459,13 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
    * @width The available inner width.
    */
   and absoluteLayoutChild node child width widthMode direction => {
+    /**
+     * TODO: #flambda:
+     * Once we have flambda support, change this to:
+     *
+     *   let (mainAxis, crossAxis) = and ensure inlining/elimination of
+     *   allocation. Both computations already perform the same path.
+     */
     let mainAxis = resolveAxis node.style.flexDirection direction;
     let crossAxis = getCrossFlexDirection mainAxis direction;
     let childWidth = {contents: cssUndefined};
