@@ -786,6 +786,25 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | Row => node.layout.right = value
     | RowReverse => node.layout.left = value
     };
+
+  /**
+   * Leading layout setter.
+   */
+  let setLayoutPositionForAxis node axis leadingValue trailingValue =>
+    switch axis {
+    | Column =>
+      node.layout.top = leadingValue;
+      node.layout.bottom = trailingValue
+    | ColumnReverse =>
+      node.layout.bottom = leadingValue;
+      node.layout.top = trailingValue
+    | Row =>
+      node.layout.left = leadingValue;
+      node.layout.right = trailingValue
+    | RowReverse =>
+      node.layout.right = leadingValue;
+      node.layout.left = trailingValue
+    };
   let resolveDirection node parentDirection => {
     let direction = node.style.direction;
     if (direction === Inherit) {
@@ -1020,12 +1039,16 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let (mainAxis, crossAxis) = resolveAxises node.style.flexDirection direction;
     let relativePositionMain = getRelativePosition node mainAxis;
     let relativePositionCross = getRelativePosition node crossAxis;
-    setLayoutLeadingPositionForAxis node mainAxis (getLeadingMargin node mainAxis +. relativePositionMain);
-    setLayoutTrailingPositionForAxis node mainAxis (getTrailingMargin node mainAxis +. relativePositionMain);
-    setLayoutLeadingPositionForAxis
-      node crossAxis (getLeadingMargin node crossAxis +. relativePositionCross);
-    setLayoutTrailingPositionForAxis
-      node crossAxis (getTrailingMargin node crossAxis +. relativePositionCross)
+    setLayoutPositionForAxis
+      node
+      mainAxis
+      (getLeadingMargin node mainAxis +. relativePositionMain)
+      (getTrailingMargin node mainAxis +. relativePositionMain);
+    setLayoutPositionForAxis
+      node
+      crossAxis
+      (getLeadingMargin node crossAxis +. relativePositionCross)
+      (getTrailingMargin node crossAxis +. relativePositionCross)
   };
   let cssGetFlexGrow node =>
     not (isUndefined node.style.flexGrow) ?
