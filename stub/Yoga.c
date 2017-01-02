@@ -271,10 +271,9 @@ YGMeasureFunc YGNodeGetMeasureFunc(const YGNodeRef node) {
 
 void YGNodeSetHasNewLayout(const YGNodeRef node, bool hasNewLayout) {
     relock(__func__);
-    CAMLparam0();
     camlMethod(closure);
     re_callback(*closure, Val_int(hasNewLayout), __func__);
-    REreturn0;
+    reunlock();
 }
 
 void YGNodeSetContext(const YGNodeRef node, void *context) {
@@ -561,19 +560,16 @@ float YGNodeStyleGetBorder(const YGNodeRef node, YGEdge edge) {
 #define defineNodeStyle(type, name)                                     \
     void YGNodeStyleSet##name(const YGNodeRef node, const type v) {     \
         relock(__func__);                                               \
-        CAMLparam0();                                                   \
         camlMethod(closure);                                            \
         re_callback2(*closure, *node, type##ToCamlVal(v), __func__);    \
-        REreturn0;                                                      \
+        reunlock(__func__);                                             \
     }                                                                   \
     type YGNodeStyleGet##name(const YGNodeRef node) {                   \
         relock(__func__);                                               \
-        CAMLparam0();                                                   \
-        CAMLlocal1(v);                                                  \
         camlMethod(closure);                                            \
-        v = re_callback(*closure, *node, __func__);                     \
-        type ret = CamlValTo##type(v);                                  \
-        REreturnT(type, ret);                                           \
+        value v = re_callback(*closure, *node, __func__);               \
+        reunlock(__func__);                                             \
+        return CamlValTo##type(v);                                      \
     }                                                                   \
 
 /* Style */
@@ -650,52 +646,43 @@ float YGNodeLayoutGetHeight(const YGNodeRef node) {
 
 float YGNodeLayoutGetTop(const YGNodeRef node) {
     relock(__func__);
-    CAMLparam0();
-    CAMLlocal1(v);
     camlMethod(closure);
-    v = re_callback(*closure, *node, __func__);
-    float ret = CamlValTofloat(v);
-    REreturnT(float, ret);
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 float YGNodeLayoutGetBottom(const YGNodeRef node) {
     relock(__func__);
-    CAMLparam0();
-    CAMLlocal1(v);
     camlMethod(closure);
-    v = re_callback(*closure, *node, __func__);
-    float ret = CamlValTofloat(v);
-    REreturnT(float, ret);
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 float YGNodeLayoutGetLeft(const YGNodeRef node) {
     relock(__func__);
-    CAMLparam0();
-    CAMLlocal1(v);
     camlMethod(closure);
-    v = re_callback(*closure, *node, __func__);
-    float ret = CamlValTofloat(v);
-    REreturnT(float, ret);
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 float YGNodeLayoutGetRight(const YGNodeRef node) {
     relock(__func__);
-    CAMLparam0();
-    CAMLlocal1(v);
     camlMethod(closure);
-    v = re_callback(*closure, *node, __func__);
-    float ret = CamlValTofloat(v);
-    REreturnT(float, ret);
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 YGDirection YGNodeLayoutGetDirection(const YGNodeRef node) {
     relock(__func__);
-    CAMLparam0();
-    CAMLlocal1(v);
     camlMethod(closure);
-    v = re_callback(*closure, *node, __func__);
-    YGDirection ret = CamlValToYGDirection(v);
-    REreturnT(YGDirection, ret);
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValToYGDirection(v);
+
 }
 
 CAMLprim value logcat(value txt) {
