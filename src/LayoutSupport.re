@@ -1257,7 +1257,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         boundValue
       };
     let nextNextBoundValue =
-      if (not (isUndefined min) && min >= zero && isDefined nextBoundValue && nextBoundValue < min) {
+      if (not (isUndefined min) && min >= zero && not (isUndefined nextBoundValue) && nextBoundValue < min) {
         min
       } else {
         nextBoundValue
@@ -1446,8 +1446,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   };
   let fixedSizeSetMeasuredDimensions node availableWidth availableHeight widthMeasureMode heightMeasureMode =>
     if (
-      widthMeasureMode === AtMost && isDefined availableWidth && availableWidth <= zero ||
-      heightMeasureMode === AtMost && isDefined availableHeight && availableHeight <= zero ||
+      widthMeasureMode === AtMost && not (isUndefined availableWidth) && availableWidth <= zero ||
+      heightMeasureMode === AtMost && not (isUndefined availableHeight) && availableHeight <= zero ||
       widthMeasureMode === Exactly && heightMeasureMode === Exactly
     ) {
       let marginAxisColumn = getMarginAxis node Column;
