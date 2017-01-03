@@ -94,6 +94,7 @@
 /*   - a */
 /* }; */
 /* let scalarToString = string_of_int; */
+
 /**
  * Portion of the typical `Spec` that is ignored and instead hard coded to the
  * structure items below, so that we can ensure that inlining occurs. Once we
@@ -119,9 +120,23 @@ let unitsPerPixel = 100.0;
 
 let scalarToFloat (f: int) => float_of_int f /. unitsPerPixel;
 
-let (-.) a b => a == cssUndefined || b == cssUndefined ? cssUndefined : a - b;
 
-let (+.) a b => a == cssUndefined || b == cssUndefined ? cssUndefined : a + b;
+/**
+ * TODO: Test if it's the ternary that's causing the performance.
+ */
+let (-.) a b =>
+  if (a == cssUndefined || b == cssUndefined) {
+    cssUndefined
+  } else {
+    a - b
+  };
+
+let (+.) a b =>
+  if (a == cssUndefined || b == cssUndefined) {
+    cssUndefined
+  } else {
+    a + b
+  };
 
 let (/.) = (/);
 
@@ -143,4 +158,3 @@ let scalarToString = string_of_int;
 /* let (~-.) = (~-.); */
 /* let scalarToString = string_of_float; */
 /* let scalarToFloat (f: float) => f; */
-
