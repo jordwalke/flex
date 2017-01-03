@@ -29,21 +29,25 @@ let floatSub = (-.);
  * - Run `npm run build`, then `npm run bench`
  *
  */
-let module Node = {
+module Node = {
   type context = ref int;
   /* Ignored - only needed to create the dummy instance. */
   let nullContext = {contents: 0};
 };
 
-let module Encoding = FixedEncoding;
+module Encoding = FixedEncoding;
 
-let module LayoutTypes = LayoutTypes.Create Node Encoding;
+module LayoutTypes = LayoutTypes.Create Node Encoding;
 
-let module LayoutSupport = LayoutSupport.Create Node Encoding;
+open LayoutTypes;
 
-let module Layout = Layout.Create Node Encoding;
+open Encoding;
 
-let module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;
+module Layout = Layout.Create Node Encoding;
+
+module LayoutSupport = Layout.LayoutSupport;
+
+module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;
 
 open LayoutTestUtils;
 
@@ -71,8 +75,13 @@ it
           withChildren::[|root_child0|] andStyle::root_style andMeasure::measure rootContext;
       Layout.layoutNode root cssUndefined cssUndefined Ltr;
       LayoutTestUtils.assertEq 0 "parent-measure-calls" 0 rootContext.contents;
-      LayoutTestUtils.assertEq 1 "parent-measure-calls" 1 childContext.contents
+      LayoutTestUtils.assertEq 1 "child-measure-calls" 1 childContext.contents
     }
   );
 
+
+/**
+ * TODO: Add the test cases from this:
+ * https://github.com/facebook/yoga/blob/master/tests/YGMeasureModeTest.cpp
+ */
 LayoutTestUtils.displayOutcomes ();
