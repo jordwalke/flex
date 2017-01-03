@@ -62,6 +62,40 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     } else {
       b
     };
+  let cssGetFlexGrow node =>
+    if (not (isUndefined node.style.flexGrow)) {
+      node.style.flexGrow
+    } else if (
+      not (isUndefined node.style.flex) && node.style.flex > zero
+    ) {
+      node.style.flex
+    } else {
+      zero
+    };
+  let cssGetFlexShrink node =>
+    if (not (isUndefined node.style.flexShrink)) {
+      node.style.flexShrink
+    } else if (
+      not (isUndefined node.style.flex) && node.style.flex < zero
+    ) {
+      -. node.style.flex
+    } else {
+      zero
+    };
+  let cssGetFlexBasis node =>
+    if (not (isUndefined node.style.flexBasis)) {
+      node.style.flexBasis
+    } else if (
+      not (isUndefined node.style.flex)
+    ) {
+      if (node.style.flex > zero) {
+        zero
+      } else {
+        cssUndefined
+      }
+    } else {
+      cssUndefined
+    };
 
   /**
    * Computes the leading *concrete* edge (not Start/End etc).
@@ -1090,9 +1124,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | (_, RowReverse) => (RowReverse, Column)
     };
   let isFlex node =>
-    node.style.positionType === Relative && (
-      node.style.flexGrow != zero || node.style.flexShrink != zero || node.style.flex != zero
-    );
+    node.style.positionType === Relative && (cssGetFlexGrow node != zero || cssGetFlexShrink node != zero);
   let getLeadingMargin node axis =>
     if (isRowDirection axis && not (isUndefined node.style.marginStart)) {
       node.style.marginStart
@@ -1288,40 +1320,6 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       (getLeadingMargin node crossAxis +. relativePositionCross)
       (getTrailingMargin node crossAxis +. relativePositionCross)
   };
-  let cssGetFlexGrow node =>
-    if (not (isUndefined node.style.flexGrow)) {
-      node.style.flexGrow
-    } else if (
-      not (isUndefined node.style.flex) && node.style.flex > zero
-    ) {
-      node.style.flex
-    } else {
-      zero
-    };
-  let cssGetFlexShrink node =>
-    if (not (isUndefined node.style.flexShrink)) {
-      node.style.flexShrink
-    } else if (
-      not (isUndefined node.style.flex) && node.style.flex < zero
-    ) {
-      -. node.style.flex
-    } else {
-      zero
-    };
-  let cssGetFlexBasis node =>
-    if (not (isUndefined node.style.flexBasis)) {
-      node.style.flexBasis
-    } else if (
-      not (isUndefined node.style.flex)
-    ) {
-      if (node.style.flex > zero) {
-        zero
-      } else {
-        cssUndefined
-      }
-    } else {
-      cssUndefined
-    };
 
   /**
    * We break up YGConstraintMaxSizeForMode into two separate functions so that
