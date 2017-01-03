@@ -621,8 +621,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         let measureModeCrossDim = if isMainAxisRow {heightMeasureMode} else {widthMeasureMode};
 
         /** Padding/border/ margin row/column axis */
-        let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
-        let paddingAndBorderAxisColumn = getPaddingAndBorderAxis node Column;
+        let paddingAndBorderAxisRow =
+          if isMainAxisRow {paddingAndBorderAxisMain} else {paddingAndBorderAxisCross};
+        let paddingAndBorderAxisColumn =
+          if isMainAxisRow {paddingAndBorderAxisCross} else {paddingAndBorderAxisMain};
         let marginAxisRow = getMarginAxis node Row;
         let marginAxisColumn = getMarginAxis node Column;
 
