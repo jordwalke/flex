@@ -828,7 +828,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     measure: None,
     print: None,
     isDirty: false,
-    context: None
+    context: Node.nullContext
   };
   /* Force allocating a new object */
   let createLayout () => {
@@ -836,7 +836,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     direction: Inherit,
     cachedLayout: createCacheMeasurement ()
   };
-  let createNode withChildren::children andStyle::style andMeasure::m=? context::c=? () => {
+  let createNode withChildren::children andStyle::style andMeasure::m=? context => {
     ...theNullNode,
     children,
     childrenCount: Array.length children,
@@ -846,7 +846,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      * We can keep the original style because it's immutable, but layout is not.
      */
     layout: createLayout (),
-    context: c
+    context
   };
 
   /**

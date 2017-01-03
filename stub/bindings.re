@@ -1,5 +1,6 @@
 module Node = {
   type context = {mutable measureFuncPtr: nativeint, mutable contextPtr: nativeint};
+  let nullContext = {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero};
 };
 
 module Encoding = FixedEncoding;
@@ -92,7 +93,7 @@ let cssNodeNew ptr => {
   children: [||],
   layout: createLayout (),
   /* Since context is mutated, every node must have its own new copy */
-  context: None
+  context: {measureFuncPtr: Nativeint.zero, contextPtr: Nativeint.zero}
 };
 
 let cssNodeSetSelfRef node ptr => node.selfRef = ptr;
@@ -544,42 +545,16 @@ Callback.register "YGNodeIsDirty" cssNodeIsDirty;
 
 Callback.register "YGNodeCalculateLayout" cssNodeCalculateLayout;
 
-Callback.register
-  "YGNodeSetContext"
-  (
-    fun node context => {
-      open Node;
-      let nextContext =
-        switch node.context {
-        | None => Some {contextPtr: context, measureFuncPtr: Nativeint.zero}
-        | Some {measureFuncPtr} => Some {contextPtr: context, measureFuncPtr}
-        };
-      node.context = nextContext
-    }
-  );
+Callback.register "YGNodeSetContext" (fun node context => node.context.contextPtr = context);
 
-Callback.register
-  "YGNodeGetContext"
-  (
-    fun node =>
-      switch node.context {
-      | None => Nativeint.zero
-      | Some {contextPtr} => contextPtr
-      }
-  );
+Callback.register "YGNodeGetContext" (fun node => node.context.contextPtr);
 
 Callback.register
   "YGNodeSetMeasureFunc"
   (
     fun node ptr => {
-      open Node;
-      let nextContext =
-        switch node.context {
-        | None => Some {contextPtr: Nativeint.zero, measureFuncPtr: ptr}
-        | Some {contextPtr} => Some {contextPtr, measureFuncPtr: ptr}
-        };
-      node.context = nextContext;
-      if (ptr != Nativeint.zero) {
+      node.context.measureFuncPtr = ptr;
+      if (node.context.measureFuncPtr != Nativeint.zero) {
         node.measure = Some (fun node w wm h hm => cssMeasureFFI node.selfRef w wm h hm)
       } else {
         node.measure = None
@@ -587,15 +562,7 @@ Callback.register
     }
   );
 
-Callback.register
-  "YGNodeGetMeasureFunc"
-  (
-    fun node =>
-      switch node.context {
-      | None => Nativeint.zero
-      | Some {measureFuncPtr} => measureFuncPtr
-      }
-  );
+Callback.register "YGNodeGetMeasureFunc" (fun node => node.context.measureFuncPtr);
 
 Callback.register "GetMeasurement" (fun width height => {width, height});
 
