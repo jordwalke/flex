@@ -840,7 +840,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           if (not (isUndefined availableInnerMainDim)) {
             remainingFreeSpace.contents = availableInnerMainDim -. sizeConsumedOnCurrentLine.contents
           } else if (
-            isDefined sizeConsumedOnCurrentLine.contents && sizeConsumedOnCurrentLine.contents < zero
+            not (isUndefined sizeConsumedOnCurrentLine.contents) && sizeConsumedOnCurrentLine.contents < zero
           ) {
             /* availableInnerMainDim is indefinite which means the node is
              * being sized based on its content. sizeConsumedOnCurrentLine is
