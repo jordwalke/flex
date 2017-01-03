@@ -173,35 +173,77 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     /* wtf: Factoring out positionForEdge causes ten pct slowdown. */
     switch edge {
     | Start =>
-      not (isUndefined style.start) ?
-        style.start :
-        not (isUndefined style.horizontal) ?
-          style.horizontal : not (isUndefined style.position) ? style.position : cssUndefined
+      if (not (isUndefined style.start)) {
+        style.start
+      } else if (not (isUndefined style.horizontal)) {
+        style.horizontal
+      } else if (
+        not (isUndefined style.position)
+      ) {
+        style.position
+      } else {
+        cssUndefined
+      }
     | End =>
-      not (isUndefined style.endd) ?
-        style.endd :
-        not (isUndefined style.horizontal) ?
-          style.horizontal : not (isUndefined style.position) ? style.position : cssUndefined
+      if (not (isUndefined style.endd)) {
+        style.endd
+      } else if (not (isUndefined style.horizontal)) {
+        style.horizontal
+      } else if (
+        not (isUndefined style.position)
+      ) {
+        style.position
+      } else {
+        cssUndefined
+      }
     | Left =>
-      not (isUndefined style.left) ?
-        style.left :
-        not (isUndefined style.horizontal) ?
-          style.horizontal : not (isUndefined style.position) ? style.position : defaultValue
+      if (not (isUndefined style.left)) {
+        style.left
+      } else if (not (isUndefined style.horizontal)) {
+        style.horizontal
+      } else if (
+        not (isUndefined style.position)
+      ) {
+        style.position
+      } else {
+        defaultValue
+      }
     | Right =>
-      not (isUndefined style.right) ?
-        style.right :
-        not (isUndefined style.horizontal) ?
-          style.horizontal : not (isUndefined style.position) ? style.position : defaultValue
+      if (not (isUndefined style.right)) {
+        style.right
+      } else if (not (isUndefined style.horizontal)) {
+        style.horizontal
+      } else if (
+        not (isUndefined style.position)
+      ) {
+        style.position
+      } else {
+        defaultValue
+      }
     | Top =>
-      not (isUndefined style.top) ?
-        style.top :
-        not (isUndefined style.vertical) ?
-          style.vertical : not (isUndefined style.position) ? style.position : defaultValue
+      if (not (isUndefined style.top)) {
+        style.top
+      } else if (not (isUndefined style.vertical)) {
+        style.vertical
+      } else if (
+        not (isUndefined style.position)
+      ) {
+        style.position
+      } else {
+        defaultValue
+      }
     | Bottom =>
-      not (isUndefined style.bottom) ?
-        style.bottom :
-        not (isUndefined style.vertical) ?
-          style.vertical : not (isUndefined style.position) ? style.position : defaultValue
+      if (not (isUndefined style.bottom)) {
+        style.bottom
+      } else if (not (isUndefined style.vertical)) {
+        style.vertical
+      } else if (
+        not (isUndefined style.position)
+      ) {
+        style.position
+      } else {
+        defaultValue
+      }
     /* | Vertical => */
     /*   not (isUndefined style.vertical) ? */
     /*     style.vertical : not (isUndefined style.position) ? style.position : defaultValue */
@@ -241,35 +283,89 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let computedEdgeValueMargin style edge defaultValue =>
     switch edge {
     | Start =>
-      not (isUndefined style.marginStart) ?
-        style.marginStart :
-        not (isUndefined style.marginHorizontal) ?
-          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : cssUndefined
+      if (not (isUndefined style.marginStart)) {
+        style.marginStart
+      } else if (
+        not (isUndefined style.marginHorizontal)
+      ) {
+        style.marginHorizontal
+      } else if (
+        not (isUndefined style.margin)
+      ) {
+        style.margin
+      } else {
+        cssUndefined
+      }
     | End =>
-      not (isUndefined style.marginEnd) ?
-        style.marginEnd :
-        not (isUndefined style.marginHorizontal) ?
-          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : cssUndefined
+      if (not (isUndefined style.marginEnd)) {
+        style.marginEnd
+      } else if (
+        not (isUndefined style.marginHorizontal)
+      ) {
+        style.marginHorizontal
+      } else if (
+        not (isUndefined style.margin)
+      ) {
+        style.margin
+      } else {
+        cssUndefined
+      }
     | Left =>
-      not (isUndefined style.marginLeft) ?
-        style.marginLeft :
-        not (isUndefined style.marginHorizontal) ?
-          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : defaultValue
+      if (not (isUndefined style.marginLeft)) {
+        style.marginLeft
+      } else if (
+        not (isUndefined style.marginHorizontal)
+      ) {
+        style.marginHorizontal
+      } else if (
+        not (isUndefined style.margin)
+      ) {
+        style.margin
+      } else {
+        defaultValue
+      }
     | Right =>
-      not (isUndefined style.marginRight) ?
-        style.marginRight :
-        not (isUndefined style.marginHorizontal) ?
-          style.marginHorizontal : not (isUndefined style.margin) ? style.margin : defaultValue
+      if (not (isUndefined style.marginRight)) {
+        style.marginRight
+      } else if (
+        not (isUndefined style.marginHorizontal)
+      ) {
+        style.marginHorizontal
+      } else if (
+        not (isUndefined style.margin)
+      ) {
+        style.margin
+      } else {
+        defaultValue
+      }
     | Top =>
-      not (isUndefined style.marginTop) ?
-        style.marginTop :
-        not (isUndefined style.marginVertical) ?
-          style.marginVertical : not (isUndefined style.margin) ? style.margin : defaultValue
+      if (not (isUndefined style.marginTop)) {
+        style.marginTop
+      } else if (
+        not (isUndefined style.marginVertical)
+      ) {
+        style.marginVertical
+      } else if (
+        not (isUndefined style.margin)
+      ) {
+        style.margin
+      } else {
+        defaultValue
+      }
     | Bottom =>
-      not (isUndefined style.marginBottom) ?
-        style.marginBottom :
-        not (isUndefined style.marginVertical) ?
-          style.marginVertical : not (isUndefined style.margin) ? style.margin : defaultValue
+      if (not (isUndefined style.marginBottom)) {
+        style.marginBottom
+      } else if (
+        not (isUndefined style.marginVertical)
+      ) {
+        style.marginVertical
+      } else if (
+        not (isUndefined style.margin)
+      ) {
+        style.margin
+      } else {
+        defaultValue
+      }
     /* | Vertical => */
     /*   not (isUndefined style.marginVertical) ? */
     /*     style.marginVertical : not (isUndefined style.margin) ? style.margin : defaultValue */
@@ -309,35 +405,89 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let computedEdgeValueBorder style edge defaultValue =>
     switch edge {
     | Start =>
-      not (isUndefined style.borderStart) ?
-        style.borderStart :
-        not (isUndefined style.borderHorizontal) ?
-          style.borderHorizontal : not (isUndefined style.border) ? style.border : cssUndefined
+      if (not (isUndefined style.borderStart)) {
+        style.borderStart
+      } else if (
+        not (isUndefined style.borderHorizontal)
+      ) {
+        style.borderHorizontal
+      } else if (
+        not (isUndefined style.border)
+      ) {
+        style.border
+      } else {
+        cssUndefined
+      }
     | End =>
-      not (isUndefined style.borderEnd) ?
-        style.borderEnd :
-        not (isUndefined style.borderHorizontal) ?
-          style.borderHorizontal : not (isUndefined style.border) ? style.border : cssUndefined
+      if (not (isUndefined style.borderEnd)) {
+        style.borderEnd
+      } else if (
+        not (isUndefined style.borderHorizontal)
+      ) {
+        style.borderHorizontal
+      } else if (
+        not (isUndefined style.border)
+      ) {
+        style.border
+      } else {
+        cssUndefined
+      }
     | Left =>
-      not (isUndefined style.borderLeft) ?
-        style.borderLeft :
-        not (isUndefined style.borderHorizontal) ?
-          style.borderHorizontal : not (isUndefined style.border) ? style.border : defaultValue
+      if (not (isUndefined style.borderLeft)) {
+        style.borderLeft
+      } else if (
+        not (isUndefined style.borderHorizontal)
+      ) {
+        style.borderHorizontal
+      } else if (
+        not (isUndefined style.border)
+      ) {
+        style.border
+      } else {
+        defaultValue
+      }
     | Right =>
-      not (isUndefined style.borderRight) ?
-        style.borderRight :
-        not (isUndefined style.borderHorizontal) ?
-          style.borderHorizontal : not (isUndefined style.border) ? style.border : defaultValue
+      if (not (isUndefined style.borderRight)) {
+        style.borderRight
+      } else if (
+        not (isUndefined style.borderHorizontal)
+      ) {
+        style.borderHorizontal
+      } else if (
+        not (isUndefined style.border)
+      ) {
+        style.border
+      } else {
+        defaultValue
+      }
     | Top =>
-      not (isUndefined style.borderTop) ?
-        style.borderTop :
-        not (isUndefined style.borderVertical) ?
-          style.borderVertical : not (isUndefined style.border) ? style.border : defaultValue
+      if (not (isUndefined style.borderTop)) {
+        style.borderTop
+      } else if (
+        not (isUndefined style.borderVertical)
+      ) {
+        style.borderVertical
+      } else if (
+        not (isUndefined style.border)
+      ) {
+        style.border
+      } else {
+        defaultValue
+      }
     | Bottom =>
-      not (isUndefined style.borderBottom) ?
-        style.borderBottom :
-        not (isUndefined style.borderVertical) ?
-          style.borderVertical : not (isUndefined style.border) ? style.border : defaultValue
+      if (not (isUndefined style.borderBottom)) {
+        style.borderBottom
+      } else if (
+        not (isUndefined style.borderVertical)
+      ) {
+        style.borderVertical
+      } else if (
+        not (isUndefined style.border)
+      ) {
+        style.border
+      } else {
+        defaultValue
+      }
     /* | Vertical => */
     /*   not (isUndefined style.borderVertical) ? */
     /*     style.borderVertical : not (isUndefined style.border) ? style.border : defaultValue */
@@ -376,35 +526,89 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   let computedEdgeValuePadding style edge defaultValue =>
     switch edge {
     | Start =>
-      not (isUndefined style.paddingStart) ?
-        style.paddingStart :
-        not (isUndefined style.paddingHorizontal) ?
-          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : cssUndefined
+      if (not (isUndefined style.paddingStart)) {
+        style.paddingStart
+      } else if (
+        not (isUndefined style.paddingHorizontal)
+      ) {
+        style.paddingHorizontal
+      } else if (
+        not (isUndefined style.padding)
+      ) {
+        style.padding
+      } else {
+        cssUndefined
+      }
     | End =>
-      not (isUndefined style.paddingEnd) ?
-        style.paddingEnd :
-        not (isUndefined style.paddingHorizontal) ?
-          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : cssUndefined
+      if (not (isUndefined style.paddingEnd)) {
+        style.paddingEnd
+      } else if (
+        not (isUndefined style.paddingHorizontal)
+      ) {
+        style.paddingHorizontal
+      } else if (
+        not (isUndefined style.padding)
+      ) {
+        style.padding
+      } else {
+        cssUndefined
+      }
     | Left =>
-      not (isUndefined style.paddingLeft) ?
-        style.paddingLeft :
-        not (isUndefined style.paddingHorizontal) ?
-          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : defaultValue
+      if (not (isUndefined style.paddingLeft)) {
+        style.paddingLeft
+      } else if (
+        not (isUndefined style.paddingHorizontal)
+      ) {
+        style.paddingHorizontal
+      } else if (
+        not (isUndefined style.padding)
+      ) {
+        style.padding
+      } else {
+        defaultValue
+      }
     | Right =>
-      not (isUndefined style.paddingRight) ?
-        style.paddingRight :
-        not (isUndefined style.paddingHorizontal) ?
-          style.paddingHorizontal : not (isUndefined style.padding) ? style.padding : defaultValue
+      if (not (isUndefined style.paddingRight)) {
+        style.paddingRight
+      } else if (
+        not (isUndefined style.paddingHorizontal)
+      ) {
+        style.paddingHorizontal
+      } else if (
+        not (isUndefined style.padding)
+      ) {
+        style.padding
+      } else {
+        defaultValue
+      }
     | Top =>
-      not (isUndefined style.paddingTop) ?
-        style.paddingTop :
-        not (isUndefined style.paddingVertical) ?
-          style.paddingVertical : not (isUndefined style.padding) ? style.padding : defaultValue
+      if (not (isUndefined style.paddingTop)) {
+        style.paddingTop
+      } else if (
+        not (isUndefined style.paddingVertical)
+      ) {
+        style.paddingVertical
+      } else if (
+        not (isUndefined style.padding)
+      ) {
+        style.padding
+      } else {
+        defaultValue
+      }
     | Bottom =>
-      not (isUndefined style.paddingBottom) ?
-        style.paddingBottom :
-        not (isUndefined style.paddingVertical) ?
-          style.paddingVertical : not (isUndefined style.padding) ? style.padding : defaultValue
+      if (not (isUndefined style.paddingBottom)) {
+        style.paddingBottom
+      } else if (
+        not (isUndefined style.paddingVertical)
+      ) {
+        style.paddingVertical
+      } else if (
+        not (isUndefined style.padding)
+      ) {
+        style.padding
+      } else {
+        defaultValue
+      }
     /* | Vertical => */
     /*   not (isUndefined style.paddingVertical) ? */
     /*     style.paddingVertical : not (isUndefined style.padding) ? style.padding : defaultValue */
