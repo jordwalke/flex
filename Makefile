@@ -32,7 +32,7 @@ TOOLCHAIN=
 
 ARMV7BIN=
 
-OCAMLFLAGS=-no-assert -inline 100
+OCAMLFLAGS=-noassert -inline 100
 
 EXTRAOCAMLCCOPTFLAGS=
 
@@ -44,7 +44,7 @@ android: $(BUILDDIR)/librelayout$(EXTDLL)
 android64: $(BUILDDIR)/librelayout$(EXTDLL)
 
 sharedlib: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind opt $(OCAMLFIND) -o $(BUILDDIR)/librelayout.so -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(EXTRAOCAMLCCOPTFLAGS) $(PACKAGES) $^
+	ocamlfind opt $(OCAMLFIND) -o $(BUILDDIR)/librelayout.so -thread unix.cmxa threads.cmxa -linkpkg -runtime-variant _pic -verbose -ccopt -dynamiclib $(EXTRAOCAMLCCOPTFLAGS) $(PACKAGES) $^
 	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/%.re: %.re
@@ -57,14 +57,14 @@ $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
 %.cmx: %.re $(SOURCES_IN_BUILD)
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -thread -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -std=c11 -c $< -o $@
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -ccopt -std=c11 -c $< -o $@
 	mv $(notdir $@) $@
 
 $(BUILDDIR)/librelayout.o: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $(BUILDDIR)/librelayout.o -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -thread unix.cmxa threads.cmxa -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $(BUILDDIR)/librelayout.o -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
 
 android-armv7: android
 	/opt/android_ndk/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o

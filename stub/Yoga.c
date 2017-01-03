@@ -4,13 +4,16 @@
 #include <caml/fail.h>
 #include <caml/callback.h>
 #include <caml/printexc.h>
-
+#include <caml/threads.h>
 #include <assert.h>
 #include <stdio.h>
+#include <pthread.h>
 #include "Yoga.h"
 
 /* #include <android/log.h> */
 #define __android_log_write(x, y, z)
+
+
 
 #define assert__(x) for ( ; !(x) ; assert(x) )
 
@@ -24,6 +27,22 @@
     assert__(x) { \
         printf("FATAL: function %s not implemented in OCaml, check bindings.re\n", name);  \
     };
+
+
+#define CAMLdrop caml_local_roots = caml__frame
+
+#define REreturn0 do{ \
+        CAMLdrop;     \
+        reunlock();   \
+        return;       \
+    }while (0)
+
+#define REreturnT(type, result) do{ \
+        type caml__temp_result = (result);      \
+        CAMLdrop;                               \
+        reunlock();                             \
+        return caml__temp_result;               \
+    }while(0)
 
 char* itoa(uintnat val, int base){
 
@@ -44,14 +63,12 @@ char* itoa(uintnat val, int base){
 /*     printf ("binary: %s\n",buffer); */
 /* } */
 
-static bool inCall = false;
-
 value re_callback (value closure, value arg1, const char * tag) {
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
-    inCall = true;
-    value res = caml_callback(closure, arg1);
-    inCall = false;
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag); */
+    CAMLparam2 (closure, arg1);
+    CAMLlocal1 (res);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag);
+    res = caml_callback(closure, arg1);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag);
     if (Is_exception_result(res)) {
         char *exn = caml_format_exception(Extract_exception(res));
         char explain [50];
@@ -59,15 +76,15 @@ value re_callback (value closure, value arg1, const char * tag) {
         __android_log_write(ANDROID_LOG_ERROR, "REASONEXN", explain);
         caml_raise(Extract_exception(res));
     }
-    return res;
+    CAMLreturn (res);
 }
 
 value re_callback2 (value closure, value arg1, value arg2, const char * tag) {
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
-    inCall = true;
-    value res = caml_callback2(closure, arg1, arg2);
-    inCall = false;
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONSEND", tag); */
+    CAMLparam3 (closure, arg1, arg2);
+    CAMLlocal1 (res);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag);
+    res = caml_callback2(closure, arg1, arg2);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONSEND", tag);
     if (Is_exception_result(res)) {
         char *exn = caml_format_exception(Extract_exception(res));
         char explain [50];
@@ -75,16 +92,16 @@ value re_callback2 (value closure, value arg1, value arg2, const char * tag) {
         __android_log_write(ANDROID_LOG_ERROR, "REASONEXN", explain);
         caml_raise(Extract_exception(res));
     }
-    return res;
+    CAMLreturn (res);
 }
 
 value re_callback3 (value closure, value arg1, value arg2,
                     value arg3, const char * tag) {
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
-    inCall = true;
-    value res = caml_callback3(closure, arg1, arg2, arg3);
-    inCall = false;
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag); */
+    CAMLparam4 (closure, arg1, arg2, arg3);
+    CAMLlocal1 (res);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag);
+    res = caml_callback3(closure, arg1, arg2, arg3);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag);
     if (Is_exception_result(res)) {
         char *exn = caml_format_exception(Extract_exception(res));
         char explain [50];
@@ -92,21 +109,21 @@ value re_callback3 (value closure, value arg1, value arg2,
         __android_log_write(ANDROID_LOG_ERROR, "REASONEXN", explain);
         caml_raise(Extract_exception(res));
     }
-    return res;
+    CAMLreturn (res);
 }
 
 value re_callback4 (value closure, value arg1, value arg2,
                     value arg3, value arg4, const char * tag) {
+    CAMLparam5 (closure, arg1, arg2, arg3, arg4);
+    CAMLlocal1 (res);
     value arg[4];
     arg[0] = arg1;
     arg[1] = arg2;
     arg[2] = arg3;
     arg[3] = arg4;
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag); */
-    inCall = true;
-    value res = caml_callbackN_exn(closure, 4, arg);
-    inCall = false;
-    /* __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag); */
+    __android_log_write(ANDROID_LOG_ERROR, "REASONSTART", tag);
+    res = caml_callbackN_exn(closure, 4, arg);
+    __android_log_write(ANDROID_LOG_ERROR, "REASONEND", tag);
     if (Is_exception_result(res)) {
         char *exn = caml_format_exception(Extract_exception(res));
         char explain [50];
@@ -114,7 +131,7 @@ value re_callback4 (value closure, value arg1, value arg2,
         __android_log_write(ANDROID_LOG_ERROR, "REASONEXN", explain);
         caml_raise(Extract_exception(res));
     }
-    return res;
+    CAMLreturn (res);
 }
 
 static int32_t gNodeInstanceCount = 0;
@@ -141,12 +158,19 @@ bridgeEnumToCamlVal(YGWrap, 0)
 bridgeEnumToCamlVal(YGPositionType, 0)
 bridgeEnumToCamlVal(YGOverflow, 0)
 
+volatile int lock = 0;
 
 value Min_int;
 __attribute__ ((__constructor__))
-void initMinInt(void) {
+void init(void) {
+    char *caml_argv[1] = { NULL };
+    caml_startup(caml_argv);
+    camlMethodWithName(initThread, "initThread");
+    re_callback(*initThread, Val_unit, "initThread");
+
     camlMethodWithName(minInt, "minInt");
     Min_int = re_callback(*minInt, Val_unit, __func__);
+    caml_release_runtime_system();
 }
 
 inline value floatToCamlVal(const float v) {
@@ -165,74 +189,130 @@ static float CamlValTofloat(value v) {
 
 #define scale_factor 100;
 
+value thread_initialize(value unit);
+
+static void relock(const char * tag) {
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "registering");
+    caml_c_thread_register();
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "done registering");
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "locking");
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", tag);
+    while(__sync_lock_test_and_set(&lock, 1)) {}
+    /* caml_acquire_runtime_system(); */
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "got locking");
+}
+
+static void reunlock() {
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "unlocking");
+    // read/write barrier
+    __sync_synchronize();
+    lock = 0;
+    /* caml_release_runtime_system(); */
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "got unlocking");
+}
+
 YGNodeRef YGNodeNew(void) {
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "registering");
+    caml_c_thread_register();
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "registered");
+    relock(__func__);
     CAMLparam0();
     CAMLlocal2(v, selfRef);
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "getting lock");
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "got lock");
     value *valp;
     valp = (value *) malloc(sizeof *valp);
     selfRef = caml_copy_nativeint((intnat)valp);
     camlMethod(closure);
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "entering");
     v = re_callback(*closure, selfRef, __func__);
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "leaving");
+
     *valp = v;
     gNodeInstanceCount++;
     // Register the value with global heap
     caml_register_global_root(valp);
-    CAMLreturnT(value *, valp);
+    __android_log_write(ANDROID_LOG_ERROR, "REASON", "done");
+    REreturnT(value *, valp);
 }
 
 void YGNodeReset(const YGNodeRef node){
     // - Create a new, dummy node and assign it to the pointer
     // - Old value should automatically be GCed
     // - No need to call caml_register_global_root again as the pointer remain the same
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethodWithName(closure, "YGNodeNew");
-    *node = re_callback(*closure, caml_copy_nativeint((intnat)node), __func__);
+    v = caml_copy_nativeint((intnat)node);
+    *node = re_callback(*closure, v, __func__);
+    REreturn0;
 }
 
 void YGNodeSetMeasureFunc(const YGNodeRef node, YGMeasureFunc measureFunc) {
+    relock(__func__);
     CAMLparam0();
     CAMLlocal1(v);
     camlMethod(closure);
     v = caml_copy_nativeint((intnat)measureFunc);
     re_callback2(*closure, *node, v, __func__);
-    CAMLreturn0;
+    REreturn0;
 }
 
 YGMeasureFunc YGNodeGetMeasureFunc(const YGNodeRef node) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return (YGMeasureFunc)Nativeint_val(re_callback(*closure, *node, __func__));
+    v = re_callback(*closure, *node, __func__);
+    YGMeasureFunc mf = (YGMeasureFunc)Nativeint_val(v);
+    REreturnT(YGMeasureFunc, mf);
 }
 
 void YGNodeSetHasNewLayout(const YGNodeRef node, bool hasNewLayout) {
+    relock(__func__);
     camlMethod(closure);
     re_callback(*closure, Val_int(hasNewLayout), __func__);
+    reunlock();
 }
 
 void YGNodeSetContext(const YGNodeRef node, void *context) {
+    relock(__func__);
     CAMLparam0();
     CAMLlocal1(v);
     camlMethod(closure);
     v = caml_copy_nativeint((intnat)context);
     re_callback2(*closure, *node, v, __func__);
-    CAMLreturn0;
+    REreturn0;
 }
 
 void *YGNodeGetContext(const YGNodeRef node) {
-    if (node == NULL) {
-        return NULL;
-    }
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return (void *)Nativeint_val(re_callback(*closure, *node, __func__));
+    v = re_callback(*closure, *node, __func__);
+    void * ret = (void *)Nativeint_val(v);
+    REreturnT(void *, ret);
 }
 
 bool YGNodeGetHasNewLayout(const YGNodeRef node) {
-    return true;
-    /* camlMethod(closure); */
-    /* return Int_val(re_callback(*closure, *node, __func__)); */
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
+    camlMethod(closure);
+    v = re_callback(*closure, *node, __func__);
+    REreturnT(bool, Int_val(v));
 }
 
 static YGNodeRef YGNodeGetSelfRef(value node) {
+    relock(__func__);
+    CAMLparam1(node);
+    CAMLlocal1(v);
     camlMethod(closure);
-    return (YGNodeRef)Nativeint_val(re_callback(*closure, node, __func__));
+    v = re_callback(*closure, node, __func__);
+    YGNodeRef ret = (YGNodeRef)Nativeint_val(v);
+    REreturnT(YGNodeRef, ret);
 }
 
 int32_t YGNodeGetInstanceCount(void) {
@@ -245,9 +325,11 @@ void YGNodeInit(const YGNodeRef node) {
 }
 
 void YGNodeFree(const YGNodeRef node) {
+    relock(__func__);
     gNodeInstanceCount--;
     // deregister the value with global heap
     caml_remove_global_root(node);
+    reunlock();
     free(node);
 }
 
@@ -268,47 +350,58 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
 void YGNodeInsertChild(const YGNodeRef node,
                        const YGNodeRef child,
                        const uint32_t index) {
-    // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
+    relock(__func__);
+    CAMLparam0();
     camlMethod(closure);
     re_callback3(*closure, *node, *child, Val_int(index), __func__);
-    return;
+    REreturn0;
 }
 
 void YGNodeRemoveChild(const YGNodeRef node,
                        const YGNodeRef child) {
-    // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
+    relock(__func__);
     CAMLparam0();
     camlMethod(closure);
     re_callback2(*closure, *node, *child, __func__);
-    CAMLreturn0;
+    REreturn0;
 }
 
 uint32_t YGNodeChildCount(const YGNodeRef node) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    value v = re_callback(*closure, *node, __func__);
-    return (uint32_t)Int_val(v);
+    v = re_callback(*closure, *node, __func__);
+    REreturnT(uint32_t, (uint32_t)Int_val(v));
 }
 
 void YGNodeCalculateLayout(const YGNodeRef node,
-                            const float availableWidth,
-                            const float availableHeight,
-                            const YGDirection parentDirection) {
+                           const float availableWidth,
+                           const float availableHeight,
+                           const YGDirection parentDirection) {
+    /* camlMethodWithName(initThread, "initThread"); */
+    /* re_callback(*initThread, Val_unit, __func__); */
+    relock(__func__);
     CAMLparam0();
-    CAMLlocal1(v);
-    v = floatToCamlVal(availableWidth);
+    CAMLlocal2(width, height);
+    width = floatToCamlVal(availableWidth);
+    height = floatToCamlVal(availableHeight);
     camlMethod(closure);
-    re_callback4(*closure, *node, floatToCamlVal(availableWidth),
-                 floatToCamlVal(availableWidth),
+    re_callback4(*closure, *node, width, height,
                  YGDirectionToCamlVal(parentDirection), __func__);
-    CAMLreturn0;
+    REreturn0;
 }
 
 YGNodeRef YGNodeGetChild(const YGNodeRef node,
-                           const uint32_t index) {
-    // We have no local ocaml allocation here, so no need for CAMLparam/CAMLreturn/etc
+                         const uint32_t index) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return (YGNodeRef)Nativeint_val(re_callback2(*closure,
-                                                 *node, Val_int(index), __func__));
+    v = re_callback2(*closure,
+                     *node, Val_int(index), __func__);
+    YGNodeRef ret = (YGNodeRef)Nativeint_val(v);
+    REreturnT(YGNodeRef, ret);
 }
 
 void YGSetLogger(YGLogger logger) {
@@ -332,20 +425,29 @@ bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature) {
 }
 
 void YGNodeMarkDirty(const YGNodeRef node) {
-    // TODO: implement this
-    return;
+    relock(__func__);
+    CAMLparam0();
+    camlMethod(closure);
+    re_callback(*closure, *node, __func__);
+    REreturn0;
 }
 
 void YGNodeCopyStyle(const YGNodeRef destNode,
                      const YGNodeRef srcNode) {
+    relock(__func__);
+    CAMLparam0();
     camlMethod(closure);
     re_callback2(*closure, *destNode, *srcNode, __func__);
-    return;
+    REreturn0;
 }
 
 bool YGNodeIsDirty(const YGNodeRef node) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return Bool_val(re_callback(*closure, *node, __func__));
+    v = re_callback(*closure, *node, __func__);
+    REreturnT(bool, Bool_val(v));
 }
 
 void YGNodePrint(const YGNodeRef node,
@@ -365,73 +467,108 @@ YGPrintFunc YGNodeGetPrintFunc(const YGNodeRef node) {
 }
 
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
-                                    const float width,
-                                    const YGMeasureMode heightMode,
-                                    const float height,
-                                    const YGMeasureMode lastWidthMode,
-                                    const float lastWidth,
-                                    const YGMeasureMode lastHeightMode,
-                                    const float lastHeight,
-                                    const float lastComputedWidth,
-                                    const float lastComputedHeight,
-                                    const float marginRow,
-                                    const float marginColumn) {
+                                   const float width,
+                                   const YGMeasureMode heightMode,
+                                   const float height,
+                                   const YGMeasureMode lastWidthMode,
+                                   const float lastWidth,
+                                   const YGMeasureMode lastHeightMode,
+                                   const float lastHeight,
+                                   const float lastComputedWidth,
+                                   const float lastComputedHeight,
+                                   const float marginRow,
+                                   const float marginColumn) {
     // TODO: implement this
     return false;
 }
 
 /* Padding */
 void YGNodeStyleSetPadding(const YGNodeRef node, YGEdge edge, float v) {
+    relock(__func__);
+    CAMLparam0();
     camlMethod(closure);
     re_callback3(*closure, *node, YGEdgeToCamlVal(edge), floatToCamlVal(v), __func__);
+    REreturn0;
 }
 
 void YGNodeStyleSetPosition(const YGNodeRef node, YGEdge edge, float v) {
+    relock(__func__);
+    CAMLparam0();
     camlMethod(closure);
     re_callback3(*closure, *node, YGEdgeToCamlVal(edge), floatToCamlVal(v), __func__);
+    REreturn0;
 }
 
 void YGNodeStyleSetMargin(const YGNodeRef node, YGEdge edge, float v) {
+    relock(__func__);
+    CAMLparam0();
     camlMethod(closure);
     re_callback3(*closure, *node, YGEdgeToCamlVal(edge), floatToCamlVal(v), __func__);
+    REreturn0;
 }
 
 void YGNodeStyleSetBorder(const YGNodeRef node, YGEdge edge, float v) {
+    relock(__func__);
+    CAMLparam0();
     camlMethod(closure);
     re_callback3(*closure, *node, YGEdgeToCamlVal(edge), floatToCamlVal(v), __func__);
+    REreturn0;
 }
 
 
 float YGNodeStyleGetPadding(const YGNodeRef node, YGEdge edge) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return CamlValTofloat(re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__));
+    v = re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__);
+    float ret = CamlValTofloat(v);
+    REreturnT(float, ret);
 }
 
 float YGNodeStyleGetMargin(const YGNodeRef node, YGEdge edge) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return CamlValTofloat(re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__));
+    v = re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__);
+    float ret = CamlValTofloat(v);
+    REreturnT(float, ret);
 }
 
 float YGNodeStyleGetPosition(const YGNodeRef node, YGEdge edge) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return CamlValTofloat(re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__));
+    v = re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__);
+    float ret = CamlValTofloat(v);
+    REreturnT(float, ret);
 }
 
 float YGNodeStyleGetBorder(const YGNodeRef node, YGEdge edge) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return CamlValTofloat(re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__));
+    v = re_callback2(*closure, *node, YGEdgeToCamlVal(edge), __func__);
+    float ret = CamlValTofloat(v);
+    REreturnT(float, ret);
 }
 
 /* Style */
 #define defineNodeStyle(type, name)                                     \
-    void YGNodeStyleSet##name(const YGNodeRef node, const type v) {   \
+    void YGNodeStyleSet##name(const YGNodeRef node, const type v) {     \
+        relock(__func__);                                               \
         camlMethod(closure);                                            \
-        re_callback2(*closure, *node, type##ToCamlVal(v), __func__);            \
-        return;                                                         \
+        re_callback2(*closure, *node, type##ToCamlVal(v), __func__);    \
+        reunlock(__func__);                                             \
     }                                                                   \
-    type YGNodeStyleGet##name(const YGNodeRef node) {                 \
+    type YGNodeStyleGet##name(const YGNodeRef node) {                   \
+        relock(__func__);                                               \
         camlMethod(closure);                                            \
-        value v = re_callback(*closure, *node, __func__);                       \
+        value v = re_callback(*closure, *node, __func__);               \
+        reunlock(__func__);                                             \
         return CamlValTo##type(v);                                      \
     }                                                                   \
 
@@ -488,38 +625,64 @@ float YGNodeStyleGetAspectRatio(const YGNodeRef node) {
 
 /* Layout */
 float YGNodeLayoutGetWidth(const YGNodeRef node) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return CamlValTofloat(re_callback(*closure, *node, __func__));
+    v = re_callback(*closure, *node, __func__);
+    float ret = CamlValTofloat(v);
+    REreturnT(float, ret);
 }
 
 float YGNodeLayoutGetHeight(const YGNodeRef node) {
+    relock(__func__);
+    CAMLparam0();
+    CAMLlocal1(v);
     camlMethod(closure);
-    return CamlValTofloat(re_callback(*closure, *node, __func__));
+    v = re_callback(*closure, *node, __func__);
+    float ret = CamlValTofloat(v);
+    REreturnT(float, ret);
 }
 
 float YGNodeLayoutGetTop(const YGNodeRef node) {
+    relock(__func__);
     camlMethod(closure);
-    return CamlValTofloat(re_callback(*closure, *node, __func__));
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 float YGNodeLayoutGetBottom(const YGNodeRef node) {
+    relock(__func__);
     camlMethod(closure);
-    return CamlValTofloat(re_callback(*closure, *node, __func__));
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 float YGNodeLayoutGetLeft(const YGNodeRef node) {
+    relock(__func__);
     camlMethod(closure);
-    return CamlValTofloat(re_callback(*closure, *node, __func__));
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 float YGNodeLayoutGetRight(const YGNodeRef node) {
+    relock(__func__);
     camlMethod(closure);
-    return CamlValTofloat(re_callback(*closure, *node, __func__));
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValTofloat(v);
 }
 
 YGDirection YGNodeLayoutGetDirection(const YGNodeRef node) {
+    relock(__func__);
     camlMethod(closure);
-    return CamlValToYGDirection(re_callback(*closure, *node, __func__));
+    value v = re_callback(*closure, *node, __func__);
+    reunlock();
+    return CamlValToYGDirection(v);
+
 }
 
 CAMLprim value logcat(value txt) {
@@ -541,12 +704,14 @@ CAMLprim value cssMeasureFFI(value node, value w, value wm, value h, value hm) {
     ptr = re_callback(*getMeasureFunc, *ref, __func__);
 
     YGMeasureFunc f = (YGMeasureFunc)Nativeint_val(ptr);
+    reunlock();
 
     YGSize s = f(ref,
-                  CamlValTofloat(w),
-                  CamlValToYGMeasureMode(wm),
-                  CamlValTofloat(h),
-                  CamlValToYGMeasureMode(hm));
+                 CamlValTofloat(w),
+                 CamlValToYGMeasureMode(wm),
+                 CamlValTofloat(h),
+                 CamlValToYGMeasureMode(hm));
+    relock(__func__);
 
     camlMethodWithName(getMeasurement, "GetMeasurement");
 

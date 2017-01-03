@@ -15,8 +15,11 @@ open LayoutTypes;
 
 open Encoding;
 
+/* external caml_c_thread_register : unit => int = "caml_c_thread_register"; */
 external cssMeasureFFI : nativeint => int => measureMode => int => measureMode => dimensions = "cssMeasureFFI_bytecode"
                                                                     "cssMeasureFFI";
+
+external caml_thread_initialize : unit => unit = "caml_thread_initialize";
 
 /* Force allocating a new node */
 let cssNodeNew ptr => {
@@ -186,73 +189,197 @@ Callback.register
 
 Callback.register "YGNodeStyleGetWidth" (fun node => node.style.width);
 
-Callback.register "YGNodeStyleSetHeight" (fun node height => node.style.height = height);
+Callback.register
+  "YGNodeStyleSetHeight"
+  (
+    fun node height =>
+      if (node.style.height != height) {
+        markDirtyInternal node;
+        node.style.height = height
+      }
+  );
 
 Callback.register "YGNodeStyleGetHeight" (fun node => node.style.height);
 
-Callback.register "YGNodeStyleSetFlexGrow" (fun node flexGrow => node.style.flexGrow = flexGrow);
+Callback.register
+  "YGNodeStyleSetFlexGrow"
+  (
+    fun node flexGrow =>
+      if (node.style.flexGrow != flexGrow) {
+        markDirtyInternal node;
+        node.style.flexGrow = flexGrow
+      }
+  );
 
 Callback.register "YGNodeStyleGetFlexGrow" cssGetFlexGrow;
 
-Callback.register "YGNodeStyleSetFlexShrink" (fun node flexShrink => node.style.flexShrink = flexShrink);
+Callback.register
+  "YGNodeStyleSetFlexShrink"
+  (
+    fun node flexShrink =>
+      if (node.style.flexShrink != flexShrink) {
+        markDirtyInternal node;
+        node.style.flexShrink = flexShrink
+      }
+  );
 
 Callback.register "YGNodeStyleGetFlexShrink" cssGetFlexShrink;
 
-Callback.register "YGNodeStyleSetFlexWrap" (fun node flexWrap => node.style.flexWrap = flexWrap);
+Callback.register
+  "YGNodeStyleSetFlexWrap"
+  (
+    fun node flexWrap =>
+      if (node.style.flexWrap != flexWrap) {
+        markDirtyInternal node;
+        node.style.flexWrap = flexWrap
+      }
+  );
 
 Callback.register "YGNodeStyleGetFlexWrap" (fun node => node.style.flexWrap);
 
 Callback.register
-  "YGNodeStyleSetJustifyContent" (fun node justifyContent => node.style.justifyContent = justifyContent);
+  "YGNodeStyleSetJustifyContent"
+  (
+    fun node justifyContent =>
+      if (node.style.justifyContent != justifyContent) {
+        markDirtyInternal node;
+        node.style.justifyContent = justifyContent
+      }
+  );
 
 Callback.register "YGNodeStyleGetJustifyContent" (fun node => node.style.justifyContent);
 
-Callback.register "YGNodeStyleSetAlignItems" (fun node alignItems => node.style.alignItems = alignItems);
+Callback.register
+  "YGNodeStyleSetAlignItems"
+  (
+    fun node alignItems =>
+      if (node.style.alignItems != alignItems) {
+        markDirtyInternal node;
+        node.style.alignItems = alignItems
+      }
+  );
 
 Callback.register "YGNodeStyleGetAlignItems" (fun node => node.style.alignItems);
 
 Callback.register
-  "YGNodeStyleSetAlignContent" (fun node alignContent => node.style.alignContent = alignContent);
+  "YGNodeStyleSetAlignContent"
+  (
+    fun node alignContent =>
+      if (node.style.alignContent != alignContent) {
+        markDirtyInternal node;
+        node.style.alignContent = alignContent
+      }
+  );
 
 Callback.register "YGNodeStyleGetAlignContent" (fun node => node.style.alignContent);
 
-Callback.register "YGNodeStyleSetAlignSelf" (fun node alignSelf => node.style.alignSelf = alignSelf);
+Callback.register
+  "YGNodeStyleSetAlignSelf"
+  (
+    fun node alignSelf =>
+      if (node.style.alignSelf != alignSelf) {
+        markDirtyInternal node;
+        node.style.alignSelf = alignSelf
+      }
+  );
 
 Callback.register "YGNodeStyleGetAlignSelf" (fun node => node.style.alignSelf);
 
-Callback.register "YGNodeStyleSetMaxWidth" (fun node maxWidth => node.style.maxWidth = maxWidth);
+Callback.register
+  "YGNodeStyleSetMaxWidth"
+  (
+    fun node maxWidth =>
+      if (node.style.maxWidth != maxWidth) {
+        markDirtyInternal node;
+        node.style.maxWidth = maxWidth
+      }
+  );
 
 Callback.register "YGNodeStyleGetMaxWidth" (fun node => node.style.maxWidth);
 
-Callback.register "YGNodeStyleSetMaxHeight" (fun node maxHeight => node.style.maxHeight = maxHeight);
+Callback.register
+  "YGNodeStyleSetMaxHeight"
+  (
+    fun node maxHeight =>
+      if (node.style.maxHeight != maxHeight) {
+        markDirtyInternal node;
+        node.style.maxHeight = maxHeight
+      }
+  );
 
 Callback.register "YGNodeStyleGetMaxHeight" (fun node => node.style.maxHeight);
 
-Callback.register "YGNodeStyleSetMinWidth" (fun node minWidth => node.style.minWidth = minWidth);
+Callback.register
+  "YGNodeStyleSetMinWidth"
+  (
+    fun node minWidth =>
+      if (node.style.minWidth != minWidth) {
+        markDirtyInternal node;
+        node.style.minWidth = minWidth
+      }
+  );
 
 Callback.register "YGNodeStyleGetMinWidth" (fun node => node.style.minWidth);
 
-Callback.register "YGNodeStyleSetMinHeight" (fun node minHeight => node.style.minHeight = minHeight);
+Callback.register
+  "YGNodeStyleSetMinHeight"
+  (
+    fun node minHeight =>
+      if (node.style.minHeight != minHeight) {
+        markDirtyInternal node;
+        node.style.minHeight = minHeight
+      }
+  );
 
 Callback.register "YGNodeStyleGetMinHeight" (fun node => node.style.minHeight);
 
 Callback.register "YGNodeStyleGetDirection" (fun node => node.style.direction);
 
-Callback.register "YGNodeStyleSetDirection" (fun node direction => node.style.direction = direction);
+Callback.register
+  "YGNodeStyleSetDirection"
+  (
+    fun node direction =>
+      if (node.style.direction != direction) {
+        markDirtyInternal node;
+        node.style.direction = direction
+      }
+  );
 
 Callback.register "YGNodeStyleGetFlexDirection" (fun node => node.style.flexDirection);
 
 Callback.register
-  "YGNodeStyleSetPositionType" (fun node positionType => node.style.positionType = positionType);
+  "YGNodeStyleSetPositionType"
+  (
+    fun node positionType =>
+      if (node.style.positionType != positionType) {
+        markDirtyInternal node;
+        node.style.positionType = positionType
+      }
+  );
 
 Callback.register "YGNodeStyleGetPositionType" (fun node => node.style.positionType);
 
 Callback.register
-  "YGNodeStyleSetFlexDirection" (fun node flexDirection => node.style.flexDirection = flexDirection);
+  "YGNodeStyleSetFlexDirection"
+  (
+    fun node flexDirection =>
+      if (node.style.flexDirection != flexDirection) {
+        markDirtyInternal node;
+        node.style.flexDirection = flexDirection
+      }
+  );
 
 Callback.register "YGNodeStyleGetOverflow" (fun node => node.style.overflow);
 
-Callback.register "YGNodeStyleSetFlexBasis" (fun node flexBasis => node.style.flexBasis = flexBasis);
+Callback.register
+  "YGNodeStyleSetFlexBasis"
+  (
+    fun node flexBasis =>
+      if (node.style.flexBasis != flexBasis) {
+        markDirtyInternal node;
+        node.style.flexBasis = flexBasis
+      }
+  );
 
 Callback.register "YGNodeStyleGetFlexBasis" cssGetFlexBasis;
 
@@ -270,14 +397,31 @@ let setIfZero oldValue newValue =>
     oldValue
   };
 
-Callback.register "YGNodeStyleSetFlex" (fun node flex => node.style.flex = flex);
+Callback.register
+  "YGNodeStyleSetFlex"
+  (
+    fun node flex =>
+      if (node.style.flex != flex) {
+        markDirtyInternal node;
+        node.style.flex = flex
+      }
+  );
 
-Callback.register "YGNodeStyleSetOverflow" (fun node overflow => node.style.overflow = overflow);
+Callback.register
+  "YGNodeStyleSetOverflow"
+  (
+    fun node overflow =>
+      if (node.style.overflow != overflow) {
+        markDirtyInternal node;
+        node.style.overflow = overflow
+      }
+  );
 
 Callback.register
   "YGNodeStyleSetPadding"
   (
-    fun node edge v =>
+    fun node edge v => {
+      markDirtyInternal node;
       switch edge {
       | Left => node.style.paddingLeft = v
       | Top => node.style.paddingTop = v
@@ -289,12 +433,14 @@ Callback.register
       | Vertical => node.style.paddingVertical = v
       | All => node.style.padding = v
       }
+    }
   );
 
 Callback.register
   "YGNodeStyleSetMargin"
   (
-    fun node edge v =>
+    fun node edge v => {
+      markDirtyInternal node;
       switch edge {
       | Left => node.style.marginLeft = v
       | Top => node.style.marginTop = v
@@ -306,12 +452,14 @@ Callback.register
       | Vertical => node.style.marginVertical = v
       | All => node.style.margin = v
       }
+    }
   );
 
 Callback.register
   "YGNodeStyleSetBorder"
   (
-    fun node edge v =>
+    fun node edge v => {
+      markDirtyInternal node;
       switch edge {
       | Left => node.style.borderLeft = v
       | Top => node.style.borderTop = v
@@ -323,12 +471,14 @@ Callback.register
       | Vertical => node.style.borderVertical = v
       | All => node.style.border = v
       }
+    }
   );
 
 Callback.register
   "YGNodeStyleSetPosition"
   (
-    fun node edge v =>
+    fun node edge v => {
+      markDirtyInternal node;
       switch edge {
       | Left => node.style.left = v
       | Top => node.style.top = v
@@ -340,6 +490,7 @@ Callback.register
       | Vertical => node.style.vertical = v
       | All => node.style.position = v
       }
+    }
   );
 
 Callback.register
@@ -369,7 +520,14 @@ Callback.register "YGNodeLayoutGetDirection" (fun node => node.layout.direction)
 /* Misc */
 Callback.register "minInt" (fun () => min_int);
 
-Callback.register "YGNodeCopyStyle" (fun destNode srcNode => destNode.style = srcNode.style);
+Callback.register
+  "YGNodeCopyStyle"
+  (
+    fun destNode srcNode => {
+      markDirtyInternal destNode;
+      destNode.style = srcNode.style
+    }
+  );
 
 Callback.register "YGNodeNew" cssNodeNew;
 
@@ -407,3 +565,14 @@ Callback.register
 Callback.register "YGNodeGetMeasureFunc" (fun node => node.context.measureFuncPtr);
 
 Callback.register "GetMeasurement" (fun width height => {width, height});
+
+Callback.register "YGNodeMarkDirty" markDirtyInternal;
+
+Callback.register
+  "initThread"
+  (
+    fun () => {
+      ignore (Thread.self ());
+      caml_thread_initialize ()
+    }
+  );
