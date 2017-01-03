@@ -654,6 +654,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 shouldContinue.contents = false
               }
             } else if (
+              /* TODO: fixedPoint guard against cssUndefined when testing w > and <
+                 This specific case is fine but only coincidentally. */
               cssGetFlexGrow child > zero && cssGetFlexShrink child > zero
             ) {
               singleFlexChild.contents = child
