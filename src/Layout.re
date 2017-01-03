@@ -341,7 +341,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     let isRowStyleDimDefined = isStyleDimDefined child Row;
     let isColumnStyleDimDefined = isStyleDimDefined child Column;
     let thisChildFlexBasis = LayoutSupport.cssGetFlexBasis child;
-    if (not (isUndefined thisChildFlexBasis) && not (isUndefined (isMainAxisRow ? width : height))) {
+    if (not (isUndefined thisChildFlexBasis) && not (isUndefined (if isMainAxisRow {width} else {height}))) {
       if (
         isUndefined child.layout.computedFlexBasis ||
         isExperimentalFeatureEnabled () &&
@@ -449,7 +449,13 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           measureString;
       child.layout.computedFlexBasis =
         fmaxf
-          (isMainAxisRow ? child.layout.measuredWidth : child.layout.measuredHeight)
+          (
+            if isMainAxisRow {
+              child.layout.measuredWidth
+            } else {
+              child.layout.measuredHeight
+            }
+          )
           (getPaddingAndBorderAxis child mainAxis)
     };
     child.layout.computedFlexBasisGeneration = gCurrentGenerationCount.contents
@@ -493,8 +499,20 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
      * TODO: Insert some aspect ratio logic here.
      */
     if (isUndefined childWidth.contents || isUndefined childHeight.contents) {
-      childWidthMeasureMode.contents = isUndefined childWidth.contents ? Undefined : Exactly;
-      childHeightMeasureMode.contents = isUndefined childHeight.contents ? Undefined : Exactly;
+      childWidthMeasureMode.contents = (
+        if (isUndefined childWidth.contents) {
+          Undefined
+        } else {
+          Exactly
+        }
+      );
+      childHeightMeasureMode.contents = (
+        if (isUndefined childHeight.contents) {
+          Undefined
+        } else {
+          Exactly
+        }
+      );
       /*
        * According to the spec, if the main size is not definite and the
        * child's inline axis is parallel to the main axis (i.e. it's
@@ -599,8 +617,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         let paddingAndBorderAxisCross = getPaddingAndBorderAxis node crossAxis;
 
         /** Measure mode */
-        let measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
-        let measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
+        let measureModeMainDim = if isMainAxisRow {widthMeasureMode} else {heightMeasureMode};
+        let measureModeCrossDim = if isMainAxisRow {heightMeasureMode} else {widthMeasureMode};
 
         /** Padding/border/ margin row/column axis */
         let paddingAndBorderAxisRow = getPaddingAndBorderAxis node Row;
@@ -611,8 +629,8 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
         /** STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS */
         let availableInnerWidth = availableWidth -. marginAxisRow -. paddingAndBorderAxisRow;
         let availableInnerHeight = availableHeight -. marginAxisColumn -. paddingAndBorderAxisColumn;
-        let availableInnerMainDim = isMainAxisRow ? availableInnerWidth : availableInnerHeight;
-        let availableInnerCrossDim = isMainAxisRow ? availableInnerHeight : availableInnerWidth;
+        let availableInnerMainDim = if isMainAxisRow {availableInnerWidth} else {availableInnerHeight};
+        let availableInnerCrossDim = if isMainAxisRow {availableInnerHeight} else {availableInnerWidth};
         let child = {contents: theNullNode};
         let childCount = node.childrenCount;
 
@@ -943,15 +961,17 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                 /* Is this child able to shrink? */
                 if (flexShrinkScaledFactor != zero) {
                   let childSize =
-                    totalFlexShrinkScaledFactors.contents == zero ?
-                      childFlexBasis +. flexShrinkScaledFactor :
+                    if (totalFlexShrinkScaledFactors.contents == zero) {
+                      childFlexBasis +. flexShrinkScaledFactor
+                    } else {
                       childFlexBasis +.
                       /*
                        * Important to first scale, then divide - to support
                        * fixed point encoding.
                        */
                       flexShrinkScaledFactor *. remainingFreeSpace.contents /.
-                      totalFlexShrinkScaledFactors.contents;
+                      totalFlexShrinkScaledFactors.contents
+                    };
                   updatedMainSize.contents = boundAxis currentRelativeChild.contents mainAxis childSize
                 }
               } else if (
@@ -995,7 +1015,13 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   not (isStyleDimDefined currentRelativeChild.contents Column)
                 ) {
                   childHeight.contents = availableInnerCrossDim;
-                  childHeightMeasureMode.contents = isUndefined childHeight.contents ? Undefined : AtMost
+                  childHeightMeasureMode.contents = (
+                    if (isUndefined childHeight.contents) {
+                      Undefined
+                    } else {
+                      AtMost
+                    }
+                  )
                 } else {
                   childHeight.contents =
                     currentRelativeChild.contents.style.height +.
@@ -1018,7 +1044,13 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   not (isStyleDimDefined currentRelativeChild.contents Row)
                 ) {
                   childWidth.contents = availableInnerCrossDim;
-                  childWidthMeasureMode.contents = isUndefined childWidth.contents ? Undefined : AtMost
+                  childWidthMeasureMode.contents = (
+                    if (isUndefined childWidth.contents) {
+                      Undefined
+                    } else {
+                      AtMost
+                    }
+                  )
                 } else {
                   childWidth.contents =
                     currentRelativeChild.contents.style.width +.
@@ -1105,9 +1137,11 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
             | JustifyFlexEnd => (remainingFreeSpace.contents, zero)
             | JustifySpaceBetween => (
                 zero,
-                itemsOnLine.contents > 1 ?
-                  divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1) :
+                if (itemsOnLine.contents > 1) {
+                  divideScalarByInt (fmaxf remainingFreeSpace.contents zero) (itemsOnLine.contents - 1)
+                } else {
                   zero
+                }
               )
             | JustifySpaceAround =>
               let betweenMainDim = divideScalarByInt remainingFreeSpace.contents itemsOnLine.contents;
@@ -1256,8 +1290,18 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
                   /* If the child defines a definite size for its cross axis,
                    * there's no need to stretch. */
                   if (not isCrossSizeDefinite) {
-                    let childWidthMeasureMode = isUndefined childWidth ? Undefined : Exactly;
-                    let childHeightMeasureMode = isUndefined childHeight ? Undefined : Exactly;
+                    let childWidthMeasureMode =
+                      if (isUndefined childWidth) {
+                        Undefined
+                      } else {
+                        Exactly
+                      };
+                    let childHeightMeasureMode =
+                      if (isUndefined childHeight) {
+                        Undefined
+                      } else {
+                        Exactly
+                      };
                     let _ =
                       layoutNodeInternal
                         child.contents
