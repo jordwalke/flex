@@ -29,19 +29,21 @@ let floatSub = (-.);
  * - Run `npm run build`, then `npm run bench`
  *
  */
-module Node = {
-  type context = int;
+let module Node = {
+  type context = ref int;
+  /* Ignored - only needed to create the dummy instance. */
+  let nullContext = {contents: 0};
 };
 
-module Encoding = FixedEncoding;
+let module Encoding = FixedEncoding;
 
-module LayoutTypes = LayoutTypes.Create Node Encoding;
+let module LayoutTypes = LayoutTypes.Create Node Encoding;
 
-module LayoutSupport = LayoutSupport.Create Node Encoding;
+let module LayoutSupport = LayoutSupport.Create Node Encoding;
 
-module Layout = Layout.Create Node Encoding;
+let module Layout = Layout.Create Node Encoding;
 
-module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;
+let module LayoutTestUtils = LayoutTestUtils.Create Node Encoding;
 
 open LayoutTestUtils;
 
@@ -51,12 +53,7 @@ it
     fun () => {
       open Encoding;
       let measure node width widthMode height heightMode => {
-        let nextContextVal =
-          switch node.LayoutTypes.context {
-          | None => Some 1
-          | Some i => Some (i + 1)
-          };
-        node.LayoutTypes.context = nextContextVal;
+        node.LayoutTypes.context.contents = node.context.contents + 1;
         {
           LayoutTypes.width: widthMode === LayoutTypes.Undefined ? 10 : width,
           height: heightMode === LayoutTypes.Undefined ? 10 : height
@@ -64,17 +61,17 @@ it
       };
       let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
       let root_child0_style = {...LayoutSupport.defaultStyle, positionType: Relative};
-      let childContext = 0;
+      let childContext = {contents: 0};
       let root_child0 =
         LayoutSupport.createNode
-          withChildren::[||] andStyle::root_child0_style andMeasure::measure context::childContext ();
-      let rootContext = 0;
+          withChildren::[||] andStyle::root_child0_style andMeasure::measure childContext;
+      let rootContext = {contents: 0};
       let root =
         LayoutSupport.createNode
-          withChildren::[|root_child0|] andStyle::root_style andMeasure::measure context::rootContext ();
+          withChildren::[|root_child0|] andStyle::root_style andMeasure::measure rootContext;
       Layout.layoutNode root cssUndefined cssUndefined Ltr;
-      LayoutTestUtils.assertEq 0 "parent-measure-calls" 0 rootContext;
-      LayoutTestUtils.assertEq 1 "parent-measure-calls" 1 childContext
+      LayoutTestUtils.assertEq 0 "parent-measure-calls" 0 rootContext.contents;
+      LayoutTestUtils.assertEq 1 "parent-measure-calls" 1 childContext.contents
     }
   );
 

@@ -1,4 +1,4 @@
-module type Node = {type context;};
+module type Node = {type context; let nullContext: context;};
 
 module type Encoding = {
 

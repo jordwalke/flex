@@ -190,10 +190,10 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable nextChild: node,
     mutable hasNewLayout: bool,
     mutable measure: option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
-    print: option (option Node.context => unit),
+    print: option (Node.context => unit),
     mutable children: array node,
     mutable childrenCount: int,
     mutable isDirty: bool,
-    mutable context: option Node.context
+    mutable context: Node.context
   };
 };
