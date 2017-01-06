@@ -62,15 +62,13 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | AtMost => isLayoutInsteadOfMeasure ? "LAY_AT_MOST" : "AT_MOST"
     };
   let canUseCachedMeasurement
-      (
-        availableWidth,
-        availableHeight,
-        marginRow,
-        marginColumn,
-        widthMeasureMode,
-        heightMeasureMode,
-        cachedLayout
-      ) =>
+      availableWidth
+      availableHeight
+      marginRow
+      marginColumn
+      widthMeasureMode
+      heightMeasureMode
+      cachedLayout =>
     if (
       cachedLayout.availableWidth == availableWidth &&
       cachedLayout.availableHeight == availableHeight &&
@@ -177,15 +175,14 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
       let marginAxisColumn = getMarginAxis node Column;
       /* First, try to use the layout cache.*/
       if (
-        canUseCachedMeasurement (
-          availableWidth,
-          availableHeight,
-          marginAxisRow,
-          marginAxisColumn,
-          widthMeasureMode,
-          heightMeasureMode,
+        canUseCachedMeasurement
+          availableWidth
+          availableHeight
+          marginAxisRow
+          marginAxisColumn
+          widthMeasureMode
+          heightMeasureMode
           layout.cachedLayout
-        )
       ) {
         cachedResults.contents = Some layout.cachedLayout
       } else {
@@ -196,15 +193,14 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
           if (not foundCached.contents) {
             let cachedMeasurementAtIndex = cachedMeasurementAt layout i;
             if (
-              canUseCachedMeasurement (
-                availableWidth,
-                availableHeight,
-                marginAxisRow,
-                marginAxisColumn,
-                widthMeasureMode,
-                heightMeasureMode,
+              canUseCachedMeasurement
+                availableWidth
+                availableHeight
+                marginAxisRow
+                marginAxisColumn
+                widthMeasureMode
+                heightMeasureMode
                 cachedMeasurementAtIndex
-              )
             ) {
               cachedResults.contents = Some cachedMeasurementAtIndex;
               foundCached.contents = true
