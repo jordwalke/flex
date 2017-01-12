@@ -24,7 +24,8 @@ $(BUILDDIR)/test.native: $(BUILDDIR)/test.o
 	$(LD) -keep_dwarf_unwind -pg -g -isystem ${GTEST} -o $@ $< -L$(BUILDDIR)/.. -lrelayout libgtest.a -pthread
 
 $(BUILDDIR)/%.o: %.cpp
-	$(CC) -pg -g -c -o $@ -I $(OCAMLDIR) -I ../stub $<
+  $(CC)  -stdlib=libc++ -std=c++14 -Wall -Wpointer-arith -ftrapv -fsanitize=undefined-trap -fsanitize-undefined-trap-on-error -pg -g -c -o $@ -I $(OCAMLDIR) -I ../stub $<
+	
 
 FLAGS = -fno-omit-frame-pointer -fexceptions -Wall -Werror -O3 -std=c++11
 

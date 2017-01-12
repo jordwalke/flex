@@ -39,7 +39,7 @@ typedef struct YGSize {
 } YGSize;
 
 #include <caml/mlvalues.h>
-typedef value *YGNodeRef;
+typedef int YGNodeRef;
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float width,
                                 YGMeasureMode widthMode,
@@ -101,8 +101,11 @@ WIN_EXPORT bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
 WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode);
 
 #define YG_NODE_PROPERTY(type, name, paramName)                          \
-  WIN_EXPORT void YGNodeSet##name(const YGNodeRef node, type paramName); \
   WIN_EXPORT type YGNodeGet##name(const YGNodeRef node);
+
+// #define YG_NODE_PROPERTY(type, name, paramName)                          \
+//   WIN_EXPORT void YGNodeSet##name(const YGNodeRef node, type paramName); \
+//   WIN_EXPORT type YGNodeGet##name(const YGNodeRef node);
 
 #define YG_NODE_STYLE_PROPERTY(type, name, paramName)                               \
   WIN_EXPORT void YGNodeStyleSet##name(const YGNodeRef node, const type paramName); \
