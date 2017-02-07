@@ -48,34 +48,37 @@ sharedlib: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
 	@echo "sharedlib genereated at: $@"
 
 $(BUILDDIR)/%.re: %.re
+	mkdir -p $(dir $@)
 	cp $< $@
 
 $(BUILDDIR)/%.ml: %.ml
+	mkdir -p $(dir $@)
 	cp $< $@
 
 $(BUILDDIR)/%.re: %.ml
 	refmt -print re -parse ml $< > $@
 
 %.cmx: %.re $(SOURCES_IN_BUILD)
-	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -thread -w -40 -pp refmt -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
+	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -thread -w -40 -pp 'refmt --print binary' -c -o $@ -I $(BUILDDIR)/src  $(PACKAGES) -impl $<
 
 $(BUILDDIR)/%.o: %.c
 	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -ccopt -fPIC -ccopt -std=c11 -c $< -o $@
+	mkdir -p $(dir $@)
 	mv $(notdir $@) $@
 
 $(BUILDDIR)/librelayout.o: $(CAML_INIT) $(CMXS_IN_BUILD) $(LIBFILES)
 	ocamlfind $(TOOLCHAIN) opt $(OCAMLFLAGS) $(EXTRAOCAMLCCOPTFLAGS) -thread unix.cmxa threads.cmxa -ccopt -fno-omit-frame-pointer -ccopt -fPIC -ccopt -O3 -o $(BUILDDIR)/librelayout.o -linkpkg -output-complete-obj -linkall -runtime-variant _pic -output-obj -verbose $(PACKAGES) $^
 
-android-armv7: android
-	/opt/android_ndk/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o
-	/opt/android_ndk/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-ranlib $(BUILDDIR)/librelayout.a
+android-armv7: clean android
+	$(ANDROID_NDK)/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o
+	$(ANDROID_NDK)/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ranlib $(BUILDDIR)/librelayout.a
 	@echo "lib genereated at: $(BUILDDIR)/librelayout.a"
 	@echo "lib type:"
 	@file $(BUILDDIR)/librelayout.a
 
-android-x86: android
-	/opt/android_ndk/android-ndk-r10e/toolchains/x86-4.9/prebuilt/darwin-x86_64/bin/i686-linux-android-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o
-	/opt/android_ndk/android-ndk-r10e/toolchains/x86-4.9/prebuilt/darwin-x86_64/bin/i686-linux-android-ranlib $(BUILDDIR)/librelayout.a
+android-x86: clean android
+	$(ANDROID_NDK)/toolchains/x86-4.9/prebuilt/linux-x86_64/bin/i686-linux-android-ar rc $(BUILDDIR)/librelayout.a $(BUILDDIR)/librelayout.o
+	$(ANDROID_NDK)/toolchains/x86-4.9/prebuilt/linux-x86_64/bin/i686-linux-android-ranlib $(BUILDDIR)/librelayout.a
 	@echo "lib genereated at: $(BUILDDIR)/librelayout.a"
 	@echo "lib type:"
 	@file $(BUILDDIR)/librelayout.a
@@ -92,6 +95,6 @@ testperf: all
 	$(MAKE) testperf -C stub_test
 
 depend: $(SOURCES_IN_BUILD) $(GENERATOR_FILES)
-	$(OCAMLDEP) -I _build/src -I -pp refmt -ml-synonym .re -mli-synonym .rei $^ > .depend
+	$(OCAMLDEP) -I _build/src -I -pp 'refmt --print binary' -ml-synonym .re -mli-synonym .rei $^ > .depend
 
 include .depend
