@@ -19,10 +19,11 @@ npm install
 > Note that installing may take a while (expect 20 minutes).
 
 ## Crosscompiling to armv7 and x86
-Simple as two steps:
-- Install [docker](https://docs.docker.com/engine/installation)
-- run `build_android.sh`
-- Artifacts will be generated in `_dist` directory
+Simple as 3 steps:
+
+1. Install [docker](https://docs.docker.com/engine/installation)
+2. Run `build_android.sh`
+3. Artifacts will be generated in `_dist` directory
 
 ## Rebuilding
 ```sh
