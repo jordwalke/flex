@@ -6,4 +6,5 @@ a.out
 /node_modules/
 npm-debug.log
 _build
+_dist
 .jenga
