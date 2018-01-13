@@ -1,5 +1,9 @@
-module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
-  type printOptions = {printLayout: bool, printStyle: bool, printChildren: bool};
+module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
+  type printOptions = {
+    printLayout: bool,
+    printStyle: bool,
+    printChildren: bool
+  };
   type edge =
     | Left
     | Top
@@ -47,14 +51,14 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS;
   let css_max_cached_result_count = 6;
 
-  /**
+  /***
    * We really *want* to be using the definitions from `Encoding`, but we want
    * to guarantee that all of the floating point operations are inlined.
    * Therefore, we directly reference the `HardCodedEncoding`. functors,
    */
   type unitOfM = HardCodedEncoding.scalar;
 
-  /**
+  /***
    * Intentionally, nothing is mutable inside each
    */
   type cachedMeasurement = {
@@ -72,19 +76,25 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
   type wrapType =
     | CssNoWrap
     | CssWrap;
-  type dimensions = {width: unitOfM, height: unitOfM};
-  type coordinates = {left: unitOfM, top: unitOfM};
+  type dimensions = {
+    width: unitOfM,
+    height: unitOfM
+  };
+  type coordinates = {
+    left: unitOfM,
+    top: unitOfM
+  };
   /* TODO: Benchmark the immutable version versus mutable version */
   type cssStyle = {
-    mutable direction: direction,
-    mutable flexDirection: flexDirection,
+    mutable direction,
+    mutable flexDirection,
     mutable justifyContent: justify,
     mutable alignContent: align,
     mutable alignItems: align,
     mutable alignSelf: align,
-    mutable positionType: positionType,
+    mutable positionType,
     mutable flexWrap: wrapType,
-    mutable overflow: overflow,
+    mutable overflow,
     mutable flex: unitOfM,
     mutable flexGrow: unitOfM,
     mutable flexShrink: unitOfM,
@@ -108,18 +118,18 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable top: unitOfM,
     mutable right: unitOfM,
     mutable bottom: unitOfM,
-    /**
+    /***
      * Start position.
      */
     mutable start: unitOfM,
-    /**
+    /***
      * End position.
      */
     mutable endd: unitOfM,
     mutable horizontal: unitOfM,
     mutable vertical: unitOfM,
     mutable position: unitOfM,
-    /**
+    /***
      * You should skip all the rules that contain negative values for the
      * following attributes. For example:
      *   {padding: 10, paddingLeft: -5}
@@ -149,7 +159,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable border: unitOfM
   };
 
-  /**
+  /***
    * Analog to "computed style" - the position takes into account all of the CSS
    * styles and inheritance.
    */
@@ -160,7 +170,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable bottom: unitOfM,
     mutable width: unitOfM,
     mutable height: unitOfM,
-    mutable direction: direction,
+    mutable direction,
     /* Instead of recomputing the entire layout every single time, we
      * cache some information to break early when nothing changed */
     mutable generationCount: int,
@@ -168,7 +178,7 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable lastParentDirection: direction,
     mutable computedFlexBasis: unitOfM,
     mutable nextCachedMeasurementsIndex: int,
-    /**
+    /***
      * Hardcoded to 6 previous measurements.
      */
     mutable cachedMeasurement1: cachedMeasurement,
@@ -189,9 +199,9 @@ module Create (Node: Spec.Node) (Encoding: Spec.Encoding) => {
     mutable parent: node,
     mutable nextChild: node,
     mutable hasNewLayout: bool,
-    mutable measure: option (node => unitOfM => measureMode => unitOfM => measureMode => dimensions),
-    print: option (Node.context => unit),
-    mutable children: array node,
+    mutable measure: option((node, unitOfM, measureMode, unitOfM, measureMode) => dimensions),
+    print: option(Node.context => unit),
+    mutable children: array(node),
     mutable childrenCount: int,
     mutable isDirty: bool,
     mutable context: Node.context

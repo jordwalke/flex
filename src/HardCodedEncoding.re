@@ -95,7 +95,7 @@
 /* }; */
 /* let scalarToString = string_of_int; */
 
-/**
+/***
  * Portion of the typical `Spec` that is ignored and instead hard coded to the
  * structure items below, so that we can ensure that inlining occurs. Once we
  * upgrade to `4.03+`, this hard coded module that the implementation relies
@@ -106,9 +106,9 @@ type scalar = int;
 
 let cssUndefined = min_int;
 
-let isUndefined num => num === cssUndefined;
+let isUndefined = (num) => num === cssUndefined;
 
-let isDefined num => num !== cssUndefined;
+let isDefined = (num) => num !== cssUndefined;
 
 let zero = 0;
 
@@ -118,20 +118,20 @@ let divideScalarByInt = (/);
 
 let unitsPerPixel = 100.0;
 
-let scalarToFloat (f: int) => float_of_int f /. unitsPerPixel;
+let scalarToFloat = (f: int) => float_of_int(f) /. unitsPerPixel;
 
 
-/**
+/***
  * TODO: Test if it's the ternary that's causing the performance.
  */
-let (-.) a b =>
+let (-.) = (a, b) =>
   if (a == cssUndefined || b == cssUndefined) {
     cssUndefined
   } else {
     a - b
   };
 
-let (+.) a b =>
+let (+.) = (a, b) =>
   if (a == cssUndefined || b == cssUndefined) {
     cssUndefined
   } else {
