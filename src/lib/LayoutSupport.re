@@ -558,7 +558,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   /***
    * In the integer encoding of all
    */
-  let dummyMeasure = (context, width, widthMeasureMode, height, heightMeasureMode) =>
+  let dummyMeasure = (_context, _width, _widthMeasureMode, _height, _heightMeasureMode) =>
     if (failOnDummyMeasure) {
       raise(
         Invalid_argument(

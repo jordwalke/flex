@@ -1,0 +1,4 @@
+B ../../_build/default/src/layout-test-fixed-encoding
+B ../../_build/default/src/lib
+FLG -w -40
+S ../lib

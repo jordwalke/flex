@@ -15,7 +15,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   open HardCodedEncoding;
   let shouldFilter = true;
   let indent = (n) =>
-    for (i in 0 to n - 1) {
+    for (_i in 0 to n - 1) {
       print_string("  ")
     };
   let print_number_0 = ((indentNum, str, number)) =>

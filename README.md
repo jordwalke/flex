@@ -1,44 +1,107 @@
 
-# ReLayout: Reason CSS Flexbox implementation.
+# ReLayout: FlexBox For Reason
 
 [![Build Status](https://travis-ci.org/jordwalke/ReLayout.svg?branch=master)](https://travis-ci.org/jordwalke/ReLayout)
 
 
-This is a [`Reason`](https://github.com/facebook/reason) implementation of CSS Flexbox layout.
-It is a port of the [`css-layout`](https://github.com/facebook/css-layout)
-project.
+This is a **native** [`Reason`](https://github.com/facebook/reason)
+implementation of CSS Flexbox layout. It is a port of the
+[`Yoga`](https://github.com/facebook/Yoga) project.
 
+It can also be compiled to JavaScript.
 
 ## Building and Installing
+
+#### Install [`esy`](https://github.com/esy/esy)
+
+Esy is "npm for native Reason". You install dependencies and make sure they're
+prepared via the `esy install`, and `esy build` commands.
+
+
 ```sh
-git clone git+ssh://git@github.com/jordwalke/ReLayout.git
-cd ReLayout
-npm install
+npm install -g esy
 ```
 
-> Note that installing may take a while (expect 20 minutes).
+
+#### Clone, and Build
+```
+git clone git+ssh://git@github.com/jordwalke/ReLayout.git
+cd ReLayout
+esy install
+esy build
+```
+
+> Installing may take several minutes if this is your first time doing native
+> Reason development. Next time you create a project it will be fast.
+
+## Rebuilding
+Edit source and then just run:
+```sh
+esy build
+```
+
+## Running The Tests:
+
+There are known failures where we are not compliant with browser's current
+implementations - for some of those our implementation may be more compliant
+with the W3C spec.
+
+
+```sh
+./test              # Run the test in native.
+./test byte         # Run the tests in compiled bytecode.
+./test jsc          # Run tests in JavaScriptCore.
+./test jscWithJit   # Run tests in JavaScriptCore with JIT.
+./test v8           # Run tests in v8.
+```
+
+The tests only run the layout tests (not the measurement test) so that we can
+run the tests as a way to approximate startup time. (Otherwise JS engines would
+be dually punished since they'd have to start up twice, whereas native targets
+don't really have a "startup" process).
+
+## Benchmarking:
+While benchmarking, close any programs that are running so they do not
+interfere with benchmarks (especially Chrome, or music/media apps).
+
+After running `esy build`:
+
+```sh
+./bench              # Run the test in native.
+./bench byte         # Run the tests in compiled bytecode.
+./bench jsc          # Run tests in JavaScriptCore.
+./bench jscWithJit   # Run tests in JavaScriptCore with JIT.
+./bench v8           # Run tests in v8.
+```
+
+It will print the `mean` and `median` running time of the layout test runs.
+The `median` is not reliably on any of the `JS` targets due to lack of
+ubiquitous high precision timers in JS environments, so the `mean` is the only
+universally comparable metric - still, the `median` is useful when comparing
+against the `C` implementation of `Yoga`, and
+
+## More Debuggable JavaScript
+
+If you need to debug an issue in the JS behavior, generate more readable
+JavaScript by explicitly asking for `--dev` versions of a JS file.
+
+```sh
+esy build jbuilder build --dev ./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js
+node ./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js
+```
+
+After doing so, and before you run any benchmarks on the native/byte versions,
+completely rm `_build` to make sure the `--dev` flag didn't cause deoptimized
+native binaries.
+
 
 ## Crosscompiling to armv7 and x86
-Simple as 3 steps:
+This was as simple as 3 steps, but it needs to be brought up to date and
+retested. It generates a pure C API that any library can consume.
 
 1. Install [docker](https://docs.docker.com/engine/installation)
 2. Run `build_android.sh`
 3. Artifacts will be generated in `_dist` directory
-
-## Rebuilding
-```sh
-npm run build
-```
-
-## Running Tests
-```sh
-npm run test              # Run the test in native.
-npm run test:byte         # Run the tests in compiled bytecode.
-npm run test:jsc          # Run tests in JavaScriptCore.
-npm run test:jscWithJit   # Run tests in JavaScriptCore with JIT.
-npm run test:v8           # Run tests in v8.
-npm run testMeasure       # Run measurement tests.
-```
 
 ## Building and running cstub tests 
 ```sh
@@ -48,23 +111,6 @@ cd ../
 npm run stubtest
 ```
 
-## Running Benchmarks
-While benchmarking, close any programs that are running so they do not
-interfere with benchmarks (especially Chrome, or music/media apps).
-
-```sh
-npm run bench              # Run the benchmarks in native.
-npm run bench:byte         # Run the benchmarks in compiled bytecode.
-npm run bench:jsc          # Run benchmarks in JavaScriptCore.
-npm run bench:jscWithJit   # Run benchmarks in JavaScriptCore with JIT.
-npm run bench:v8           # Run benchmarks in v8.
-```
-
-It will print the `mean` and `median` running time of the layout test runs.
-The `median` is not reliably on any of the `JS` targets due to lack of
-ubiquitous high precision timers in JS environments, so the `mean` is the only
-universally comparable metric - still, the `median` is useful when comparing
-against the `C` implementation of `css-layout`, and
 
 ## Some sample benchmark results (for those curious):
 
@@ -87,13 +133,21 @@ shortly - so that neither is significantly advantaged).
 | `v8`         | `3.28ms`                        | Yes
 
 
+> Update: Retesting on the newer compiler shows a greater difference between
+> ocamlopt and ocamlc. I will investigate further once I have the C version
+> rebuilt on the same machine.
+
 ## Comparison to `C` Implementation.
 
-The native `C` implementation in the table above uses the official `css-layout`
+The native `C` implementation in the table above uses the official `Yoga`
 implementation, but with a benchmark test suite that matches the `ReLayout`
 benchmark tests. You can run the `C` benchmark yourself by cloning the official
-`css-layout` project, and replacing the official benchmark with
-[this](./benchmarks/CSSBenchmark.c).
+`Yoga` project, checking out the revision at the time ReLayout was ported from
+Yoga, and replacing the official benchmark with
+[this](./benchmarks/CSSBenchmark.c). It's important to check out the revision
+at the time this was ported to Reason because only then are the algorithms
+identical (this cross-language benchmark attempts as much as possible to only
+change one thing at a time - the language of implementation).
 
 
 Here are several datapoints gathered from running the `ReLayout` test suite,
@@ -199,6 +253,10 @@ natively compiled code, where all compilation has been done ahead of time.
 
 Measurements use the `time` command line program (`real`).
 
+To test startup time, change the number numIterations to `1` in
+`LayoutTestFixedEncoding.re`, rerun `esy build`, then do `./bench` or `./bench
+byte` etc.
+
 
 ## Multiple layout representations:
 
@@ -269,7 +327,7 @@ The ASCII output paints a pseudo-accurate picture of any broken layouts.
 <br />
 <br />
 
-See the [`css-layout`](https://github.com/facebook/css-layout)'s README/docs
+See the [`Yoga`](https://github.com/facebook/yoga)'s README/docs
 for more information about the limitations and special defaults of `ReLayout`.
 `Relayout` is a direct port of that project from `C` to `Reason` on `ocamlopt`.
 

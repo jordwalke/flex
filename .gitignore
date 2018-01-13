@@ -7,4 +7,6 @@ a.out
 npm-debug.log
 _build
 _dist
-.jenga
+*.install
+src/.DS_Store
+.DS_Store

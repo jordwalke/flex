@@ -10,13 +10,16 @@
     "css",
     "flexbox",
     "layout",
-    "reason",
-    "reasonml",
-    "ocaml"
+    "reason"
   ],
   "esy": {
     "build": [
-      [ "refmterr", "jbuilder", "build" ]
+      [ "refmterr", "jbuilder", "build", "./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe"],
+      [ "refmterr", "jbuilder", "build", "./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.exe"],
+      [ "refmterr", "jbuilder", "build", "./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc"],
+      [ "refmterr", "jbuilder", "build", "./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.bc"],
+      [ "refmterr", "jbuilder", "build", "./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js"],
+      [ "refmterr", "jbuilder", "build", "./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.bc.js"]
     ],
     "install": [
       "esy-installer"
@@ -41,6 +44,6 @@
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
-    "postinstall": "Welcome to Flex! You have installed Flex with npm, but Flex is a native Reason library. Use 'esy' to manage native Reason projects. See the README instructions - it's really easy."
+    "test": "npm install -g esy@next && esy install && esy build && esy x LayoutTestFixedEncoding && esy x MeasureTestFixedEncoding"
   }
 }

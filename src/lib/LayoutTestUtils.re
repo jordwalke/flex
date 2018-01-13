@@ -51,12 +51,12 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     | [hd, hdHd, ...tl] =>
       String.compare(name, hd) === 0 || shouldRun(~withTestFilter=[hdHd, ...tl], name)
     };
-  let rec it = (~withTestFilter as filter=testNameFilter, desc, test) =>
+  let it = (~withTestFilter as _filter=testNameFilter, desc, test) =>
     if (shouldRun(desc)) {
       doTest(desc, test)
     };
   let displayOutcomes = () => {
-    let forEachException = ((desc: string, exc)) => {
+    let forEachException = ((desc: string, _exc)) => {
       print_string("[Exception] " ++ desc);
       print_newline()
     };
@@ -96,7 +96,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     };
     print_newline();
     if (List.length(exceptions.contents) > 0) {
-      let (tlDesc, tlExc) = List.hd(List.rev(exceptions.contents));
+      let (_tlDesc, tlExc) = List.hd(List.rev(exceptions.contents));
       raise_notrace(tlExc)
     };
     testCount.contents = 0;

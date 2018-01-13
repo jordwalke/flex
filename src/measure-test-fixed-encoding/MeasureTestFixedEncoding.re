@@ -1,8 +1,3 @@
-/*
- * vim: set ft=rust:
- * vim: set ft=reason:
- */
-
 /***
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
@@ -11,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+open Flex;
 let floatMult = ( *. );
 
 let floatDiv = (/.);
@@ -40,8 +36,6 @@ module Encoding = FixedEncoding;
 module LayoutTypes = LayoutTypes.Create(Node, Encoding);
 
 open LayoutTypes;
-
-open Encoding;
 
 module Layout = Layout.Create(Node, Encoding);
 

@@ -1,0 +1,27 @@
+#! /bin/bash
+if [ "$1" == "jsc" ]; then
+  echo "Running JSC (NO JIT) Benchmarks"
+  /System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=false -e "console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; " -f ./_build/default/src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js
+  exit 0
+fi
+
+if [ "$1" == "v8" ]; then
+  echo "Running V8 Benchmarks"
+  node ./_build/default/src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js -quota 20
+  exit 0
+fi
+
+if [ "$1" == "jscWithJit" ]; then
+  echo "Running JSC+JIT Benchmarks"
+  /System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc --useJIT=true -e "console = {log:print}; process = {argv: [0, 'a.out',  '-quota', '20']}; " -f ./_build/default/src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js
+  exit 0
+fi
+
+if [ "$1" == "byte" ]; then
+  echo "Running Byte Code Benchmarks"
+  ./_build/default/src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc -quota 20
+  exit 0
+fi
+
+echo "Running Native Benchmarks"
+./_build/default/src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe -quota 20
