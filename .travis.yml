@@ -1,5 +1,12 @@
 language: node_js
 node_js:
-  - "6"
-  - "6.1"
-  - "5.11"
+- 6
+- 8
+os:
+- linux
+- osx
+install:
+- npm install --global esy
+- esy install
+script:
+- esy build
