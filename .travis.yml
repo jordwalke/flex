@@ -9,4 +9,4 @@ install:
 - npm install --global esy
 - esy install
 script:
-- esy build
+- travis_wait esy build
