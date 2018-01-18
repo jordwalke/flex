@@ -4,10 +4,11 @@
   "description": "Implementation CSS layout using pure Reason - powered by css-layout project",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jordwalke/re-layout.git"
+    "url": "https://github.com/jordwalke/flex.git"
   },
   "keywords": [
     "css",
+    "flex",
     "flexbox",
     "layout",
     "reason",
