@@ -1,7 +1,7 @@
 
-# ReLayout: FlexBox For Reason
+# Flex: FlexBox For Reason
 
-[![Build Status](https://travis-ci.org/jordwalke/ReLayout.svg?branch=master)](https://travis-ci.org/jordwalke/ReLayout)
+[![Build Status](https://travis-ci.org/jordwalke/flex.svg?branch=master)](https://travis-ci.org/jordwalke/flex)
 
 
 This is a **native** [`Reason`](https://github.com/facebook/reason)
@@ -25,8 +25,8 @@ npm install -g esy
 
 #### Clone, and Build
 ```
-git clone git+ssh://git@github.com/jordwalke/ReLayout.git
-cd ReLayout
+git clone git+ssh://git@github.com/jordwalke/flex.git
+cd flex
 esy install
 esy build
 ```
@@ -140,9 +140,9 @@ shortly - so that neither is significantly advantaged).
 ## Comparison to `C` Implementation.
 
 The native `C` implementation in the table above uses the official `Yoga`
-implementation, but with a benchmark test suite that matches the `ReLayout`
+implementation, but with a benchmark test suite that matches the `flex`
 benchmark tests. You can run the `C` benchmark yourself by cloning the official
-`Yoga` project, checking out the revision at the time ReLayout was ported from
+`Yoga` project, checking out the revision at the time flex was ported from
 Yoga, and replacing the official benchmark with
 [this](./benchmarks/CSSBenchmark.c). It's important to check out the revision
 at the time this was ported to Reason because only then are the algorithms
@@ -150,7 +150,7 @@ identical (this cross-language benchmark attempts as much as possible to only
 change one thing at a time - the language of implementation).
 
 
-Here are several datapoints gathered from running the `ReLayout` test suite,
+Here are several datapoints gathered from running the `flex` test suite,
 and comparing it with those same tests executed in the `C` implementation.  We
 include both the fixed point and the floating point encodings.
 
@@ -199,7 +199,7 @@ not only will the `JS` output's performance benefit, but likely the
 Still, regardless of what we do to improve the JS output, it's likely not going
 to recover the order(s) of magnitude.
 
-One interesting fact is that `ReLayout` is compiles the `byte` version using
+One interesting fact is that `flex` is compiles the `byte` version using
 `ocamlc`, which produces a Virtual Machine byte code, but this VM is
 interesting in that it does not use any runtime JIT to achieve decent
 performance. If a JIT is out of the question for you (or you just don't want to
@@ -279,7 +279,7 @@ haven't gotten to that yet.
 
 ## More accurate benchmarks for native compilation
 
-`ReLayout` depends on `Core_bench`, which allows much better isolation of
+`flex` depends on `Core_bench`, which allows much better isolation of
 benchmarks, and ensures that various batch sizes are tested to attempt to
 eliminate misleading measurements caused by convenient (or inconvenient) batch
 sizes.
@@ -328,8 +328,8 @@ The ASCII output paints a pseudo-accurate picture of any broken layouts.
 <br />
 
 See the [`Yoga`](https://github.com/facebook/yoga)'s README/docs
-for more information about the limitations and special defaults of `ReLayout`.
-`Relayout` is a direct port of that project from `C` to `Reason` on `ocamlopt`.
+for more information about the limitations and special defaults of `flex`.
+`flex` is a direct port of that project from `C` to `Reason` on `ocamlopt`.
 
 #### Profiling on Mac:
 
@@ -375,3 +375,10 @@ multiple .L123 across all the files so you can cross reference Instruments
 (double click) which shows you the assembly.  4.03 is said to greatly improve
 the source locations when profiling so it tells you the function names instead
 of assembly locations more often than not.
+
+#### Thanks
+A very special Thank You goes out to [Yehor Lvivski](http://lvivski.com/), who
+was kind enough to donate his `npm` package name `flex`. You may still install
+the previous package `flex` under its respective versions. All versions
+`1.0.0` and greater will refer to this package - the flex box layout
+computation algorithm written in Reason.
