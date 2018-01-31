@@ -126,8 +126,8 @@ shortly - so that neither is significantly advantaged).
 | Method       | Average time per test execution | Requires JIT |
 | -------------|---------------------------------|---------------
 | `c`          | `0.33ms`                        | No
-| `native`     | `0.26ms`                        | No
-| `byte`       | `5.0ms`                         | No
+| `native(Reason)`     | `0.26ms`                        | No
+| `byte(Reason)`       | `5.0ms`                         | No
 | `jsc`        | `18.6ms`                        | No
 | `jscWithJit` | `4.05ms`                        | Yes
 | `v8`         | `3.28ms`                        | Yes
@@ -152,7 +152,8 @@ change one thing at a time - the language of implementation).
 
 Here are several datapoints gathered from running the `flex` test suite,
 and comparing it with those same tests executed in the `C` implementation.  We
-include both the fixed point and the floating point encodings.
+include both the fixed point and the floating point encodings. All tests performed
+on `ocamlopt`(native Reason).
 
 The Reason implementation of layout hasn't been optimized at all. Cleaning up
 the code to be less imperative will likely make it even faster. Upgrading to
