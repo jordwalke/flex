@@ -40,6 +40,9 @@
     "@opam/merlin": "esy-ocaml/merlin#22c0d3de3fd4684090383084655e20747d253cc5",
     "ocaml": "~4.6.0"
   },
+   "resolutions": {
+    "**/@opam/result": "1.2.0"
+  },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
     "postinstall": "Welcome to Flex! You have installed Flex with npm, but Flex is a native Reason library. Use 'esy' to manage native Reason projects. See the README instructions - it's really easy."
