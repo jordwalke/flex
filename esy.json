@@ -29,7 +29,7 @@
   "dependencies": {
     "@esy-ocaml/esy-installer": "^0.0.0",
     "@opam/jbuilder": "^1.0.0-beta14",
-    "@opam/reason": "^3.0.0",
+    "@esy-ocaml/reason": "^3.0.0",
     "refmterr": "^3.0.4",
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
@@ -39,7 +39,7 @@
     "ocaml": "~4.6.0"
   },
   "devDependencies": {
-    "@opam/merlin": "esy-ocaml/merlin#22c0d3de3fd4684090383084655e20747d253cc5",
+    "@esy-ocaml/merlin": "^3.0.0",
     "ocaml": "~4.6.0"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
