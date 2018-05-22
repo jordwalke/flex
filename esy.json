@@ -14,12 +14,7 @@
   ],
   "esy": {
     "build": [
-      [ "refmterr", "jbuilder", "build", "./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe"],
-      [ "refmterr", "jbuilder", "build", "./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.exe"],
-      [ "refmterr", "jbuilder", "build", "./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc"],
-      [ "refmterr", "jbuilder", "build", "./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.bc"],
-      [ "refmterr", "jbuilder", "build", "./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.bc.js"],
-      [ "refmterr", "jbuilder", "build", "./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.bc.js"]
+      ["refmterr", "jbuilder", "build"]
     ],
     "install": [
       "esy-installer"
@@ -30,16 +25,16 @@
     "@esy-ocaml/esy-installer": "^0.0.0",
     "@opam/jbuilder": "^1.0.0-beta14",
     "@esy-ocaml/reason": "^3.0.0",
-    "refmterr": "^3.0.4",
-    "@opam/js_of_ocaml": "*",
-    "@opam/js_of_ocaml-ppx": "*",
-    "@opam/js_of_ocaml-lwt": "*"
+    "refmterr": "^3.0.4"
   },
   "peerDependencies": {
     "ocaml": "~4.6.0"
   },
   "devDependencies": {
     "@esy-ocaml/merlin": "^3.0.0",
+    "@opam/js_of_ocaml": "*",
+    "@opam/js_of_ocaml-ppx": "*",
+    "@opam/js_of_ocaml-lwt": "*",
     "ocaml": "~4.6.0"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
