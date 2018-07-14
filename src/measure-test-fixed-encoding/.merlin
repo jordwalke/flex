@@ -1,4 +1,0 @@
-B ../../_build/default/src/lib
-B ../../_build/default/src/measure-test-fixed-encoding
-FLG -w -40
-S ../lib

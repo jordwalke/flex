@@ -8,5 +8,6 @@ npm-debug.log
 _build
 _dist
 *.install
+.merlin
 src/.DS_Store
 .DS_Store

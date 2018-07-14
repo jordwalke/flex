@@ -1,4 +1,0 @@
-B ../../_build/default/src/layout-test-float-encoding
-B ../../_build/default/src/lib
-FLG -w -40
-S ../lib
