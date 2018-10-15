@@ -22,16 +22,18 @@
     "buildsInSource": "_build"
   },
   "dependencies": {
-    "@esy-ocaml/esy-installer": "^0.0.0",
-    "@opam/jbuilder": "^1.0.0-beta14",
+    "@opam/dune": "^1.0.0",
     "@esy-ocaml/reason": "^3.0.0",
     "refmterr": "^3.0.4"
+  },
+  "resolutions": {
+    "@opam/re": "1.8.0"
   },
   "peerDependencies": {
     "ocaml": "~4.6.0"
   },
   "devDependencies": {
-    "@esy-ocaml/merlin": "^3.0.0",
+    "@opam/merlin": "*",
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
