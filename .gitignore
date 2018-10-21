@@ -3,8 +3,9 @@ a.out
 /**/java/out/*
 /**/.idea/workspace.xml
 /lib/
-/node_modules/
+/node_modules
 npm-debug.log
+_esy
 _build
 _dist
 *.install

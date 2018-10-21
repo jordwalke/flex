@@ -6,25 +6,19 @@
     "type": "git",
     "url": "https://github.com/jordwalke/re-layout.git"
   },
-  "keywords": [
-    "css",
-    "flexbox",
-    "layout",
-    "reason"
-  ],
+  "keywords": ["css", "flexbox", "layout", "reason"],
   "esy": {
-    "build": [
-      ["refmterr", "jbuilder", "build"]
-    ],
-    "install": [
-      "esy-installer"
-    ],
+    "build": [["dune", "build", "--profile=release"]],
     "buildsInSource": "_build"
+  },
+  "scripts": {
+    "build:dev": "refmterr dune build --no-buffer",
+    "clean": "dune clean",
+    "test": "esy x LayoutTestFixedEncoding && esy x MeasureTestFixedEncoding"
   },
   "dependencies": {
     "@opam/dune": "^1.0.0",
-    "@esy-ocaml/reason": "^3.0.0",
-    "refmterr": "^3.0.4"
+    "@esy-ocaml/reason": "^3.0.0"
   },
   "resolutions": {
     "@opam/re": "1.8.0"
@@ -37,10 +31,8 @@
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
-    "ocaml": "~4.6.0"
+    "ocaml": "~4.6.0",
+    "refmterr": "^3.1.9"
   },
-  "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
-  "scripts": {
-    "test": "npm install -g esy@next && esy install && esy build && esy x LayoutTestFixedEncoding && esy x MeasureTestFixedEncoding"
-  }
+  "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs."
 }
