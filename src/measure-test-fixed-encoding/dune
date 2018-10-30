@@ -1,0 +1,4 @@
+(executable
+ (name MeasureTestFixedEncoding)
+ (public_name MeasureTestFixedEncoding)
+ (libraries Flex))

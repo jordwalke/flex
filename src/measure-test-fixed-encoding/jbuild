@@ -1,6 +1,0 @@
-(jbuild_version 1)
-
-(executable
- ((name MeasureTestFixedEncoding)
-  (public_name MeasureTestFixedEncoding)
-  (libraries (Flex))))
