@@ -1,6 +1,6 @@
 {
   "name": "flex",
-  "version": "1.1.1",
+  "version": "1.2.2",
   "description": "Implementation CSS layout using pure Reason - powered by css-layout project",
   "repository": {
     "type": "git",
