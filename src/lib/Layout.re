@@ -21,13 +21,12 @@
  *      Else, `min(max-content size, max(min-content size, fill-available size))`
  *      (Although, we don't support min-content)
  */
-module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
+[@inline always] module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   module LayoutSupport = LayoutSupport.Create(Node, Encoding);
   module LayoutPrint = LayoutPrint.Create(Node, Encoding);
   open LayoutSupport.LayoutTypes;
   open LayoutSupport;
-  /* open Encoding; */
-  open HardCodedEncoding;
+  open Encoding;
   let gCurrentGenerationCount = ref(0);
   let gDepth = ref(0);
   let gPrintTree = {contents: false};
@@ -48,8 +47,8 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     | CSS_MEASURE_MODE_NEGATIVE_ONE_WHATEVER_THAT_MEANS => "-1";
   let getSpacer = (level) => {
     let spacerLen = String.length(spacer);
-    let lvl = level > spacerLen ? level : spacerLen;
-    String.sub(spacer, lvl, String.length(spacer))
+    let lvl = level > spacerLen ? spacerLen : level;
+    String.sub(spacer, lvl, spacerLen - lvl)
   };
   let getModeName = ((mode, isLayoutInsteadOfMeasure)) =>
     switch mode {
@@ -186,7 +185,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
             heightMeasureMode,
             layout.cachedLayout
           )) {
-        cachedResults.contents = Some(layout.cachedLayout)
+        cachedResults := Some(layout.cachedLayout)
       } else {
         /* Try to use the measurement cache.*/
         let foundCached = {contents: false};

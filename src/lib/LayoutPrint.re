@@ -1,4 +1,4 @@
-module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
+[@inline always] module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
 
   /***
    * It's okay to shadow existing modules, even though you can't export two
@@ -11,8 +11,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   module LayoutSupport_TODO_REMOVE_ME = LayoutSupport.Create(Node, Encoding);
   open LayoutSupport_TODO_REMOVE_ME.LayoutTypes;
   open LayoutSupport_TODO_REMOVE_ME;
-  /* open Encoding; */
-  open HardCodedEncoding;
+  open Encoding;
   let shouldFilter = true;
   let indent = (n) =>
     for (_i in 0 to n - 1) {

@@ -1,9 +1,8 @@
-module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
+[@inline always] module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   module LayoutTypes = LayoutTypes.Create(Node, Encoding);
   module LayoutPrint = LayoutPrint.Create(Node, Encoding);
   let round = (num) => int_of_float(floor(num +. 0.5));
-  /* open Encoding; */
-  open HardCodedEncoding;
+  open Encoding;
   let exceptions = {contents: []};
   let failures = {contents: []};
   let testCount = {contents: 0};

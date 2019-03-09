@@ -8,8 +8,7 @@
   },
   "keywords": ["css", "flexbox", "layout", "reason"],
   "esy": {
-    "build": [["dune", "build", "--profile=release"]],
-    "buildsInSource": "_build"
+    "build": [["dune", "build", "--profile=release"]]
   },
   "scripts": {
     "build:dev": "refmterr dune build --no-buffer",
@@ -18,20 +17,17 @@
   },
   "dependencies": {
     "@opam/dune": "^1.0.0",
-    "@esy-ocaml/reason": "^3.0.0"
+    "@esy-ocaml/reason": "^3.0.0",
+    "ocaml": ">=4.3.0"
   },
   "resolutions": {
     "@opam/re": "1.8.0"
-  },
-  "peerDependencies": {
-    "ocaml": "~4.6.0"
   },
   "devDependencies": {
     "@opam/merlin": "*",
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
-    "ocaml": "~4.6.0",
     "refmterr": "^3.1.9"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs."

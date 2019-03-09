@@ -1,4 +1,4 @@
-module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
+[@inline always] module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   type printOptions = {
     printLayout: bool,
     printStyle: bool,
@@ -56,7 +56,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
    * to guarantee that all of the floating point operations are inlined.
    * Therefore, we directly reference the `HardCodedEncoding`. functors,
    */
-  type unitOfM = HardCodedEncoding.scalar;
+  type unitOfM = Encoding.scalar;
 
   /***
    * Intentionally, nothing is mutable inside each
