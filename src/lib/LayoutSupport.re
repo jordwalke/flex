@@ -1,6 +1,6 @@
 let nodeWithNoMeasureStr = "Passed node with no measurement function";
 
-module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
+[@inline always] module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
 
   /***
    * Copyright (c) 2014, Facebook, Inc.
@@ -40,7 +40,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
    */
   module LayoutTypes = LayoutTypes.Create(Node, Encoding);
   open LayoutTypes;
-  open HardCodedEncoding;
+  open Encoding;
   let positive_flex_is_auto = false;
   let gCurrentGenerationCount = 0;
   let failOnDummyMeasure = true;
