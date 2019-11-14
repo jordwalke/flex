@@ -8,8 +8,7 @@
   },
   "keywords": ["css", "flexbox", "layout", "reason"],
   "esy": {
-    "build": [["dune", "build", "--profile=release"]],
-    "buildsInSource": "_build"
+    "build": [["dune", "build", "--profile=release"]]
   },
   "scripts": {
     "build:dev": "refmterr dune build --no-buffer",
