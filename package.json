@@ -16,9 +16,8 @@
     "ocaml"
   ],
   "esy": {
-    "build": [
-      [ "refmterr", "dune", "build", "-p", "#{self.name}" ]
-    ],
+    "build": "dune build -p #{self.name}",
+    "buildDev": "refmterr dune build -j1 --no-buffer --verbose",
     "install": [
       "esy-installer"
     ],
@@ -26,8 +25,7 @@
   },
   "dependencies": {
     "@opam/dune": "^1.0.0",
-    "@esy-ocaml/reason": "^3.0.0",
-    "refmterr": "^3.0.4"
+    "@esy-ocaml/reason": "^3.0.0"
   },
   "peerDependencies": {
     "ocaml": "~4.6.0"
@@ -37,11 +35,11 @@
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
-    "ocaml": "~4.6.0"
+    "ocaml": "~4.6.0",
+    "refmterr": "^3.0.4"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
-    "build:dev": "refmterr dune build --no-buffer",
     "clean": "dune clean",
     "test": "esy x LayoutTestFixedEncoding && esy x MeasureTestFixedEncoding",
     "postinstall": "Welcome to Flex! You have installed Flex with npm, but Flex is a native Reason library. Use 'esy' to manage native Reason projects. See the README instructions - it's really easy."
