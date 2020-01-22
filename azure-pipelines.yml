@@ -26,16 +26,3 @@ jobs:
     parameters:
       platform: Windows
       vmImage: windows-2019
-
-  # This job is kept here as we want to have the platform names in the same file
-  - job: Release
-    displayName: Release
-    dependsOn:
-      - Linux
-      - macOS
-      - Windows
-    pool:
-      vmImage: macOS-10.13
-      demands: node.js
-    steps:
-      - template: .ci/cross-release.yml
