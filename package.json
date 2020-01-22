@@ -24,18 +24,15 @@
     "buildsInSource": "_build"
   },
   "dependencies": {
+    "ocaml": ">=4.6.1 <4.10.0",
     "@opam/dune": "^1.0.0",
     "@esy-ocaml/reason": "^3.0.0"
-  },
-  "peerDependencies": {
-    "ocaml": "~4.6.0"
   },
   "devDependencies": {
     "@opam/merlin": "*",
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
-    "ocaml": "~4.6.0",
     "refmterr": "^3.0.4"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
