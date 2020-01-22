@@ -18,9 +18,6 @@
   "esy": {
     "build": "dune build -p #{self.name}",
     "buildDev": "refmterr dune build -j1 --no-buffer --verbose",
-    "install": [
-      "esy-installer"
-    ],
     "buildsInSource": "_build"
   },
   "dependencies": {
@@ -38,6 +35,7 @@
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
     "clean": "dune clean",
+    "format": "dune build @fmt --auto-promote",
     "test": "esy b dune exec ./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe && esy b dune exec ./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.exe",
     "postinstall": "Welcome to Flex! You have installed Flex with npm, but Flex is a native Reason library. Use 'esy' to manage native Reason projects. See the README instructions - it's really easy."
   }
