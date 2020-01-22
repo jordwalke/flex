@@ -38,7 +38,7 @@
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
     "clean": "dune clean",
-    "test": "esy x LayoutTestFixedEncoding && esy x MeasureTestFixedEncoding",
+    "test": "esy b dune exec ./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe && esy b dune exec ./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.exe",
     "postinstall": "Welcome to Flex! You have installed Flex with npm, but Flex is a native Reason library. Use 'esy' to manage native Reason projects. See the README instructions - it's really easy."
   }
 }
