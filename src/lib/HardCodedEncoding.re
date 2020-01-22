@@ -106,9 +106,9 @@ type scalar = int;
 
 let cssUndefined = min_int;
 
-let isUndefined = (num) => num === cssUndefined;
+let isUndefined = num => num === cssUndefined;
 
-let isDefined = (num) => num !== cssUndefined;
+let isDefined = num => num !== cssUndefined;
 
 let zero = 0;
 
@@ -120,22 +120,21 @@ let unitsPerPixel = 100.0;
 
 let scalarToFloat = (f: int) => float_of_int(f) /. unitsPerPixel;
 
-
 /***
  * TODO: Test if it's the ternary that's causing the performance.
  */
 let (-.) = (a, b) =>
   if (a == cssUndefined || b == cssUndefined) {
-    cssUndefined
+    cssUndefined;
   } else {
-    a - b
+    a - b;
   };
 
 let (+.) = (a, b) =>
   if (a == cssUndefined || b == cssUndefined) {
-    cssUndefined
+    cssUndefined;
   } else {
-    a + b
+    a + b;
   };
 
 let (/.) = (/);

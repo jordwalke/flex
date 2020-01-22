@@ -13,7 +13,6 @@ let floatDiv = (/.);
 
 let floatSub = (-.);
 
-
 /***
  * Since Core_bench is such a huge dependency and it doesn't compile with byte,
  * we include a fake shim of it that we enable by default. To use the far
@@ -45,41 +44,54 @@ module LayoutTestUtils = LayoutTestUtils.Create(Node, Encoding);
 
 open LayoutTestUtils;
 
-it(
-  "should measure correctly",
-  () => {
-    open Encoding;
-    let measure = (node, width, widthMode, height, heightMode) => {
-      node.LayoutTypes.context.contents = node.context.contents + 1;
-      {
-        LayoutTypes.width: widthMode === LayoutTypes.Undefined ? 10 : width,
-        height: heightMode === LayoutTypes.Undefined ? 10 : height
-      }
+it("should measure correctly", () => {
+  open Encoding;
+  let measure = (node, width, widthMode, height, heightMode) => {
+    node.LayoutTypes.context.contents = node.context.contents + 1;
+    {
+      LayoutTypes.width: widthMode === LayoutTypes.Undefined ? 10 : width,
+      height: heightMode === LayoutTypes.Undefined ? 10 : height,
     };
-    let root_style = {...LayoutSupport.defaultStyle, width: 10000, height: 10000};
-    let root_child0_style = {...LayoutSupport.defaultStyle, positionType: Relative};
-    let childContext = {contents: 0};
-    let root_child0 =
-      LayoutSupport.createNode(
-        ~withChildren=[||],
-        ~andStyle=root_child0_style,
-        ~andMeasure=measure,
-        childContext
-      );
-    let rootContext = {contents: 0};
-    let root =
-      LayoutSupport.createNode(
-        ~withChildren=[|root_child0|],
-        ~andStyle=root_style,
-        ~andMeasure=measure,
-        rootContext
-      );
-    Layout.layoutNode(root, cssUndefined, cssUndefined, Ltr);
-    LayoutTestUtils.assertEq(0, "parent-measure-calls", 0, rootContext.contents);
-    LayoutTestUtils.assertEq(1, "child-measure-calls", 1, childContext.contents)
-  }
-);
-
+  };
+  let root_style = {
+    ...LayoutSupport.defaultStyle,
+    width: 10000,
+    height: 10000,
+  };
+  let root_child0_style = {
+    ...LayoutSupport.defaultStyle,
+    positionType: Relative,
+  };
+  let childContext = {contents: 0};
+  let root_child0 =
+    LayoutSupport.createNode(
+      ~withChildren=[||],
+      ~andStyle=root_child0_style,
+      ~andMeasure=measure,
+      childContext,
+    );
+  let rootContext = {contents: 0};
+  let root =
+    LayoutSupport.createNode(
+      ~withChildren=[|root_child0|],
+      ~andStyle=root_style,
+      ~andMeasure=measure,
+      rootContext,
+    );
+  Layout.layoutNode(root, cssUndefined, cssUndefined, Ltr);
+  LayoutTestUtils.assertEq(
+    0,
+    "parent-measure-calls",
+    0,
+    rootContext.contents,
+  );
+  LayoutTestUtils.assertEq(
+    1,
+    "child-measure-calls",
+    1,
+    childContext.contents,
+  );
+});
 
 /***
  * TODO: Add the test cases from this:

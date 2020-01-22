@@ -1,0 +1,4 @@
+(executable
+ (name LayoutTestFixedEncoding)
+ (ocamlopt_flags -inline 100 -g)
+ (libraries flex))

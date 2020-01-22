@@ -1,7 +1,7 @@
 {
   "name": "flex",
   "version": "1.2.2",
-  "description": "Implementation CSS layout using pure Reason - powered by css-layout project",
+  "description": "Implementation CSS layout using pure Reason - powered by css-layout project.",
   "repository": {
     "type": "git",
     "url": "https://github.com/jordwalke/flex.git"
@@ -16,31 +16,27 @@
     "ocaml"
   ],
   "esy": {
-    "build": [
-      [ "refmterr", "jbuilder", "build" ]
-    ],
-    "install": [
-      "esy-installer"
-    ],
+    "build": "dune build -p #{self.name}",
+    "buildDev": "refmterr dune build -j1 --no-buffer --verbose",
     "buildsInSource": "_build"
   },
   "dependencies": {
-    "@opam/dune": "^1.0.0",
-    "@esy-ocaml/reason": "^3.0.0",
-    "refmterr": "^3.0.4"
-  },
-  "peerDependencies": {
-    "ocaml": "~4.6.0"
+    "ocaml": ">=4.6.1 <4.10.0",
+    "@opam/dune": "^2.0.0",
+    "@esy-ocaml/reason": "^3.0.0"
   },
   "devDependencies": {
     "@opam/merlin": "*",
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
-    "ocaml": "~4.6.0"
+    "refmterr": "^3.0.4"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
+    "clean": "dune clean",
+    "format": "dune build @fmt --auto-promote",
+    "test": "esy b dune exec ./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe && esy b dune exec ./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.exe",
     "postinstall": "Welcome to Flex! You have installed Flex with npm, but Flex is a native Reason library. Use 'esy' to manage native Reason projects. See the README instructions - it's really easy."
   }
 }

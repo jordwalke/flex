@@ -1,1 +1,1 @@
-(ignored_subdirs (node_modules))
+(dirs benchmarks gentest integration src)

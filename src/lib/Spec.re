@@ -1,7 +1,9 @@
-module type Node = {type context; let nullContext: context;};
+module type Node = {
+  type context;
+  let nullContext: context;
+};
 
 module type Encoding = {
-
   /***
    * Custom encoding of layout related information. This is ignored, and instead
    */
