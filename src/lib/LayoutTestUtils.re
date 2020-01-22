@@ -1,7 +1,7 @@
 module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   module LayoutTypes = LayoutTypes.Create(Node, Encoding);
   module LayoutPrint = LayoutPrint.Create(Node, Encoding);
-  let round = (num) => int_of_float(floor(num +. 0.5));
+  let round = num => int_of_float(floor(num +. 0.5));
   /* open Encoding; */
   open HardCodedEncoding;
   let exceptions = {contents: []};
@@ -16,65 +16,75 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
    * single -) and the runMode flag `--bench` which begins with two dashes, and
    * is used to toggle between benchmark mode and test mode.
    */
-  let isFilterArg = (arg) => String.length(arg) > 3 && String.sub(arg, 0, 3) == "---";
-  let getSearchStr = (arg) => String.sub(arg, 3, String.length(arg) - 3);
+  let isFilterArg = arg =>
+    String.length(arg) > 3 && String.sub(arg, 0, 3) == "---";
+  let getSearchStr = arg => String.sub(arg, 3, String.length(arg) - 3);
   let testNameFilter =
-    Array.length(Sys.argv) > 1 ?
-      List.find_all(isFilterArg, Array.to_list(Sys.argv)) |> List.map(getSearchStr) : [];
+    Array.length(Sys.argv) > 1
+      ? List.find_all(isFilterArg, Array.to_list(Sys.argv))
+        |> List.map(getSearchStr)
+      : [];
   type runMode =
     | Bench
     | Test;
-  let hasAnArgMatching = (tester) =>
-    Array.length(Sys.argv) > 1 && List.length(List.find_all(tester, Array.to_list(Sys.argv))) > 0;
+  let hasAnArgMatching = tester =>
+    Array.length(Sys.argv) > 1
+    && List.length(List.find_all(tester, Array.to_list(Sys.argv))) > 0;
 
   /***
    * Specifying `-quota` turns the application into a benchmarking suite instead
    * of a test. Supplying `-v` will run the `-bench` in verbose mode, and will
    * also cause the tests to be broken down by individual test case.
    */
-  let runMode = hasAnArgMatching((arg) => String.compare(arg, "-quota") === 0) ? Bench : Test;
-  let shouldBenchmarkAllAsOne = ! hasAnArgMatching((arg) => String.compare(arg, "-v") === 0);
+  let runMode =
+    hasAnArgMatching(arg => String.compare(arg, "-quota") === 0)
+      ? Bench : Test;
+  let shouldBenchmarkAllAsOne =
+    !hasAnArgMatching(arg => String.compare(arg, "-v") === 0);
   let currentTestName = {contents: ""};
   let doTest = (desc, test) => {
     currentTestName.contents = desc;
     testCount.contents = testCount.contents + 1;
-    try (test()) {
+    try(test()) {
     | e => exceptions.contents = [(desc, e), ...exceptions.contents]
-    }
+    };
   };
   let rec shouldRun = (~withTestFilter as filter=testNameFilter, name) =>
-    switch filter {
+    switch (filter) {
     /* No filter at all means run everything.  */
     | [] => true
     /* If there's only one item, it had better match. */
     | [hd] => String.compare(name, hd) === 0
     | [hd, hdHd, ...tl] =>
-      String.compare(name, hd) === 0 || shouldRun(~withTestFilter=[hdHd, ...tl], name)
+      String.compare(name, hd) === 0
+      || shouldRun(~withTestFilter=[hdHd, ...tl], name)
     };
   let it = (~withTestFilter as _filter=testNameFilter, desc, test) =>
     if (shouldRun(desc)) {
-      doTest(desc, test)
+      doTest(desc, test);
     };
   let displayOutcomes = () => {
     let forEachException = ((desc: string, _exc)) => {
       print_string("[Exception] " ++ desc);
-      print_newline()
+      print_newline();
     };
     let forEachFailure = ((desc: string, msg)) => {
       print_string("[TestFailure] " ++ desc ++ " - " ++ msg);
-      print_newline()
+      print_newline();
     };
     exceptions.contents |> List.iter(forEachException);
     failures.contents |> List.iter(forEachFailure);
     let exceptionsLength = List.length(exceptions.contents);
     let failuresLength = List.length(failures.contents);
     if (exceptionsLength === 0 && failuresLength === 0) {
-      print_string("[SUCCESS] " ++ string_of_int(testCount.contents) ++ " tests passed");
-      print_newline()
+      print_string(
+        "[SUCCESS] " ++ string_of_int(testCount.contents) ++ " tests passed",
+      );
+      print_newline();
     } else {
       print_newline();
       print_string(
-        "\239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128"
+        "\239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128",
       );
       print_newline();
       print_string(
@@ -86,23 +96,23 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
         ++ string_of_int(failuresLength)
         ++ "/"
         ++ string_of_int(assertionCount.contents)
-        ++ ") assertions failed."
+        ++ ") assertions failed.",
       );
       print_newline();
       print_string(
-        "\239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128"
+        "\239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128  \239\191\189\159\146\128",
       );
-      print_newline()
+      print_newline();
     };
     print_newline();
     if (List.length(exceptions.contents) > 0) {
       let (_tlDesc, tlExc) = List.hd(List.rev(exceptions.contents));
-      raise_notrace(tlExc)
+      raise_notrace(tlExc);
     };
     testCount.contents = 0;
     assertionCount.contents = 0;
     exceptions.contents = [];
-    failures.contents = []
+    failures.contents = [];
   };
   let assertEq = (testNum, layoutAttr, a, b) => {
     assertionCount.contents = assertionCount.contents + 1;
@@ -118,14 +128,14 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
           ++ scalarToString(a)
           ++ ", observed="
           ++ scalarToString(b)
-          ++ ")"
+          ++ ")",
         ),
-        ...failures.contents
-      ]
-    }
+        ...failures.contents,
+      ];
+    };
   };
-  let rec hasMismatchedLayout = (observedAndExpected) =>
-    switch observedAndExpected {
+  let rec hasMismatchedLayout = observedAndExpected =>
+    switch (observedAndExpected) {
     | [] => false
     | [(expected, observed), ...tl] =>
       expected.LayoutTypes.top != observed.LayoutTypes.top
@@ -135,43 +145,66 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
       || hasMismatchedLayout(tl)
     };
   let rec best = (cmp, extract, hd, tl) =>
-    switch tl {
+    switch (tl) {
     | [] => extract(hd)
     | [tlHd, ...tlTl] =>
       let hdVal = extract(hd);
       let minFromTail = best(cmp, extract, tlHd, tlTl);
-      cmp(minFromTail, hdVal) ? minFromTail : hdVal
+      cmp(minFromTail, hdVal) ? minFromTail : hdVal;
     };
   let renderBox = (matrix, minLeft, minTop, layout, ch) => {
-    let leftIndex = int_of_float(scalarToFloat(layout.LayoutTypes.left -. minLeft));
+    let leftIndex =
+      int_of_float(scalarToFloat(layout.LayoutTypes.left -. minLeft));
     let topIndex = int_of_float(scalarToFloat(layout.top -. minTop));
-    let rightIndex = round(scalarToFloat(layout.left +. layout.width -. minLeft));
-    let bottomIndex = round(scalarToFloat(layout.top +. layout.height -. minTop));
+    let rightIndex =
+      round(scalarToFloat(layout.left +. layout.width -. minLeft));
+    let bottomIndex =
+      round(scalarToFloat(layout.top +. layout.height -. minTop));
     for (y in topIndex to bottomIndex) {
       for (x in leftIndex to rightIndex) {
-        if (x === leftIndex || x === rightIndex || y === topIndex || y === bottomIndex) {
-          matrix[x][y] = ch
-        }
-      }
-    }
+        if (x === leftIndex
+            || x === rightIndex
+            || y === topIndex
+            || y === bottomIndex) {
+          matrix[x][y] = ch;
+        };
+      };
+    };
   };
   let renderDiagram =
-      (containerLayout: LayoutTypes.cssLayout, childLayouts, containerChar, childChar) => {
-    let minLeft = best((<), (layout) => layout.LayoutTypes.left, containerLayout, childLayouts);
-    let minTop = best((<), (layout) => layout.LayoutTypes.top, containerLayout, childLayouts);
+      (
+        containerLayout: LayoutTypes.cssLayout,
+        childLayouts,
+        containerChar,
+        childChar,
+      ) => {
+    let minLeft =
+      best(
+        (<),
+        layout => layout.LayoutTypes.left,
+        containerLayout,
+        childLayouts,
+      );
+    let minTop =
+      best(
+        (<),
+        layout => layout.LayoutTypes.top,
+        containerLayout,
+        childLayouts,
+      );
     let maxRight =
       best(
         (>),
-        (layout) => layout.LayoutTypes.left +. layout.LayoutTypes.width,
+        layout => layout.LayoutTypes.left +. layout.LayoutTypes.width,
         containerLayout,
-        childLayouts
+        childLayouts,
       );
     let maxBottom =
       best(
         (>),
-        (layout) => layout.LayoutTypes.top +. layout.LayoutTypes.height,
+        layout => layout.LayoutTypes.top +. layout.LayoutTypes.height,
         containerLayout,
-        childLayouts
+        childLayouts,
       );
 
     /***
@@ -182,81 +215,94 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     let matrix = Array.make_matrix(numCols, numRows, '.');
     renderBox(matrix, minLeft, minTop, containerLayout, containerChar);
     List.iter(
-      (childLayout) => renderBox(matrix, minLeft, minTop, childLayout, childChar),
-      childLayouts
+      childLayout =>
+        renderBox(matrix, minLeft, minTop, childLayout, childChar),
+      childLayouts,
     );
     let ret = {contents: ""};
     for (y in 0 to numRows - 1) {
       for (x in 0 to numCols - 1) {
         let ch = matrix[x][y];
-        ret.contents = ret.contents ++ String.make(1, ch)
+        ret.contents = ret.contents ++ String.make(1, ch);
       };
-      ret.contents = ret.contents ++ "\n"
+      ret.contents = ret.contents ++ "\n";
     };
-    ret.contents
+    ret.contents;
   };
-  let mismatchText = ((expectedContainerLayout, observedContainerLayout), childExpectedAndObserved) => {
+  let mismatchText =
+      (
+        (expectedContainerLayout, observedContainerLayout),
+        childExpectedAndObserved,
+      ) => {
     let childStr = ((expected, observed)) =>
       "  Child[expected(e)]:"
       ++ LayoutPrint.layoutStr(expected)
       ++ "\n  Child[observed(o)]:"
       ++ LayoutPrint.layoutStr(observed);
     let containerExpected =
-      "Container[expected(E)]:" ++ LayoutPrint.layoutStr(expectedContainerLayout) ++ "\n";
+      "Container[expected(E)]:"
+      ++ LayoutPrint.layoutStr(expectedContainerLayout)
+      ++ "\n";
     let containerObserved =
-      "Container[observed(O)]:" ++ LayoutPrint.layoutStr(observedContainerLayout) ++ "\n";
+      "Container[observed(O)]:"
+      ++ LayoutPrint.layoutStr(observedContainerLayout)
+      ++ "\n";
     containerExpected
     ++ containerObserved
-    ++ String.concat("\n", List.map(childStr, childExpectedAndObserved))
+    ++ String.concat("\n", List.map(childStr, childExpectedAndObserved));
   };
   let assertLayouts =
-      (testNum, (expectedContainerLayout, observedContainerLayout), childExpectedAndObserved) => {
+      (
+        testNum,
+        (expectedContainerLayout, observedContainerLayout),
+        childExpectedAndObserved,
+      ) => {
     assertionCount.contents = assertionCount.contents + 1;
     if (hasMismatchedLayout([
           (expectedContainerLayout, observedContainerLayout),
-          ...childExpectedAndObserved
+          ...childExpectedAndObserved,
         ])) {
-      try {
+      try({
         let text =
           mismatchText(
             (expectedContainerLayout, observedContainerLayout),
-            childExpectedAndObserved
+            childExpectedAndObserved,
           );
         let expectedDiagram =
           renderDiagram(
             expectedContainerLayout,
             List.map(fst, childExpectedAndObserved),
             'E',
-            'e'
+            'e',
           );
         let observedDiagram =
           renderDiagram(
             observedContainerLayout,
             List.map(snd, childExpectedAndObserved),
             'O',
-            'o'
+            'o',
           );
         let title = "Test " ++ string_of_int(testNum) ++ ":\n";
         let expected = "\nEXPECTED\n========\n" ++ expectedDiagram;
         let observed = "\nOBSERVED\n========\n" ++ observedDiagram;
         failures.contents = [
           (currentTestName.contents, title ++ text ++ expected ++ observed),
-          ...failures.contents
-        ]
-      } {
+          ...failures.contents,
+        ];
+      }) {
       | _ =>
         let title = "Test " ++ string_of_int(testNum) ++ ":\n";
         let text =
           mismatchText(
             (expectedContainerLayout, observedContainerLayout),
-            childExpectedAndObserved
+            childExpectedAndObserved,
           );
         let err = "\nERROR PRINTING DIAGRAMS\n========\n";
         failures.contents = [
           (currentTestName.contents, title ++ text ++ err),
-          ...failures.contents
-        ]
-      }
-    }
+          ...failures.contents,
+        ];
+      };
+    };
   };
 };

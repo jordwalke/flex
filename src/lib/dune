@@ -1,4 +1,5 @@
 (library
  (name Flex)
- (ocamlopt_flags (-inline 100 -g))
+ (ocamlopt_flags
+  (-inline 100 -g))
  (public_name flex))

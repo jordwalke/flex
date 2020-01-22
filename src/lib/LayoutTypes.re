@@ -2,7 +2,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
   type printOptions = {
     printLayout: bool,
     printStyle: bool,
-    printChildren: bool
+    printChildren: bool,
   };
   type edge =
     | Left
@@ -67,7 +67,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     mutable widthMeasureMode: measureMode,
     mutable heightMeasureMode: measureMode,
     mutable computedWidth: unitOfM,
-    mutable computedHeight: unitOfM
+    mutable computedHeight: unitOfM,
   };
   type overflow =
     | Visible
@@ -78,11 +78,11 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     | CssWrap;
   type dimensions = {
     width: unitOfM,
-    height: unitOfM
+    height: unitOfM,
   };
   type coordinates = {
     left: unitOfM,
-    top: unitOfM
+    top: unitOfM,
   };
   /* TODO: Benchmark the immutable version versus mutable version */
   type cssStyle = {
@@ -156,7 +156,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     mutable borderEnd: unitOfM,
     mutable borderHorizontal: unitOfM,
     mutable borderVertical: unitOfM,
-    mutable border: unitOfM
+    mutable border: unitOfM,
   };
 
   /***
@@ -189,7 +189,7 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     mutable cachedMeasurement6: cachedMeasurement,
     mutable measuredWidth: unitOfM,
     mutable measuredHeight: unitOfM,
-    mutable cachedLayout: cachedMeasurement
+    mutable cachedLayout: cachedMeasurement,
   };
   type node = {
     mutable selfRef: nativeint, /* a C pointer pointing to itself, needed for introp with C's memory management */
@@ -199,11 +199,14 @@ module Create = (Node: Spec.Node, Encoding: Spec.Encoding) => {
     mutable parent: node,
     mutable nextChild: node,
     mutable hasNewLayout: bool,
-    mutable measure: option((node, unitOfM, measureMode, unitOfM, measureMode) => dimensions),
+    mutable measure:
+      option(
+        (node, unitOfM, measureMode, unitOfM, measureMode) => dimensions,
+      ),
     print: option(Node.context => unit),
     mutable children: array(node),
     mutable childrenCount: int,
     mutable isDirty: bool,
-    mutable context: Node.context
+    mutable context: Node.context,
   };
 };
