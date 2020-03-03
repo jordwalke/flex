@@ -18,10 +18,12 @@
   "esy": {
     "build": "dune build -p #{self.name}",
     "buildDev": "refmterr dune build -j1 --no-buffer --verbose",
-    "buildsInSource": "_build"
+    "release": {
+      "bin": []
+    }
   },
   "dependencies": {
-    "ocaml": ">=4.6.1 <4.10.0",
+    "ocaml": ">=4.6.1 <= 4.10.0",
     "@opam/dune": "^2.0.0",
     "@esy-ocaml/reason": "^3.0.0"
   },
@@ -30,10 +32,13 @@
     "@opam/js_of_ocaml": "*",
     "@opam/js_of_ocaml-ppx": "*",
     "@opam/js_of_ocaml-lwt": "*",
-    "refmterr": "^3.0.4"
+    "refmterr": "*",
+    "@opam/odoc": "*",
+    "ocaml": "~4.7.0"
   },
   "TODO": "Add back the jsoo targets and some scripts to run the benchmarks in various JS VMs.",
   "scripts": {
+    "doc": "refmterr dune build --profile=release @doc",
     "clean": "dune clean",
     "format": "dune build @fmt --auto-promote",
     "test": "esy b dune exec ./src/layout-test-fixed-encoding/LayoutTestFixedEncoding.exe && esy b dune exec ./src/measure-test-fixed-encoding/MeasureTestFixedEncoding.exe",
